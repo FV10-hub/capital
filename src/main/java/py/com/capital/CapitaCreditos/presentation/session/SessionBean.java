@@ -3,16 +3,16 @@
  */
 package py.com.capital.CapitaCreditos.presentation.session;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.services.base.BsUsuarioService;
 
+import javax.annotation.PostConstruct;
+import javax.faces.bean.SessionScoped;
 import java.io.IOException;
 import java.util.Objects;
 

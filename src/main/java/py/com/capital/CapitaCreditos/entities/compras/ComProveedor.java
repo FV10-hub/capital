@@ -1,6 +1,6 @@
 package py.com.capital.CapitaCreditos.entities.compras;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.base.Common;

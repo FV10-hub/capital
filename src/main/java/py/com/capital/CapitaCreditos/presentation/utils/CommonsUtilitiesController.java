@@ -1,6 +1,6 @@
 package py.com.capital.CapitaCreditos.presentation.utils;
 
-import jakarta.enterprise.context.SessionScoped;
+import javax.faces.bean.SessionScoped;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsTalonario;

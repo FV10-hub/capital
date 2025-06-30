@@ -2,7 +2,7 @@ package py.com.capital.CapitaCreditos.services.client;
 
 import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 
-import jakarta.ws.rs.core.Response;
+import javax.ws.rs.core.Response;
 
 /*
 * 14 dic. 2023 - Elitebook

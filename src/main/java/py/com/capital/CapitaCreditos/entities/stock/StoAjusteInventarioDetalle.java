@@ -1,6 +1,6 @@
 package py.com.capital.CapitaCreditos.entities.stock;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -1,8 +1,8 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.cobranzas.reportes;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.view.ViewScoped;
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;

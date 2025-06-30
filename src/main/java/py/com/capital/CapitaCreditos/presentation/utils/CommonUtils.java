@@ -1,9 +1,8 @@
 package py.com.capital.CapitaCreditos.presentation.utils;
 
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.application.FacesMessage.Severity;
-import jakarta.faces.context.ExternalContext;
-import jakarta.faces.context.FacesContext;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -17,12 +16,12 @@ public class CommonUtils {
 	/**
 	 * Metodo que permite mostrar un mensaje al usuario.
 	 * 
-	 * @param severity {@link Severity} objeto que indica el tipo de mensaje a
+	 * @param severity {@link } objeto que indica el tipo de mensaje a
 	 *                 mostrar.
 	 * @param summary  {@link String} titulo del mensaje.
 	 * @param detail   {@link String} detalle del mensaje.
 	 */
-	public static void mostrarMensaje(Severity severity, String summary, String detail) {
+	public static void mostrarMensaje(FacesMessage.Severity severity, String summary, String detail) {
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, detail));
 	}
 

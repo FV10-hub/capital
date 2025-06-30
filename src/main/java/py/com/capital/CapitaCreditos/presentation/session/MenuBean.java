@@ -3,8 +3,8 @@
  */
 package py.com.capital.CapitaCreditos.presentation.session;
 
-import jakarta.annotation.PreDestroy;
-import jakarta.enterprise.context.SessionScoped;
+import javax.annotation.PreDestroy;
+import javax.faces.bean.SessionScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;

@@ -3,7 +3,7 @@
  */
 package py.com.capital.CapitaCreditos.presentation.utils;
 
-import jakarta.faces.context.FacesContext;
+import javax.faces.context.FacesContext;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.ComparatorUtils;
 import org.primefaces.model.FilterMeta;

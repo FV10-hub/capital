@@ -3,7 +3,7 @@ package py.com.capital.CapitaCreditos.entities.cobranzas;
 * 15 ene. 2024 - Elitebook
 */
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsTalonario;
 import py.com.capital.CapitaCreditos.entities.base.Common;

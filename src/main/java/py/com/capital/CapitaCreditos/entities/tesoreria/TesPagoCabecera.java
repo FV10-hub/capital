@@ -3,7 +3,7 @@ package py.com.capital.CapitaCreditos.entities.tesoreria;
 * 15 ene. 2024 - Elitebook
 */
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;

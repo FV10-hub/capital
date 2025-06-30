@@ -3,11 +3,11 @@
  */
 package py.com.capital.CapitaCreditos.presentation.session;
 
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.ExternalContext;
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.view.ViewScoped;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 

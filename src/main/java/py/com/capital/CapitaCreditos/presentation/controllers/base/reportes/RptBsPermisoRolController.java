@@ -1,7 +1,7 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.base.reportes;
 
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.view.ViewScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

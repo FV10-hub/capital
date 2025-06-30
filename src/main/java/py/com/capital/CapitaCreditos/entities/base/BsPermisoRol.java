@@ -3,7 +3,7 @@ package py.com.capital.CapitaCreditos.entities.base;
 * Aug 30, 2023-5:34:18 PM-fvazquez
 **/
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.time.LocalDateTime;
 

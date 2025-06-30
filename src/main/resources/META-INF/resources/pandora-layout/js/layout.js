@@ -615,7 +615,7 @@ PrimeFaces.PandoraConfigurator = {
     },
 
     replaceLink: function(linkElement, href, themeParam) {
-        PrimeFaces.ajax.RESOURCE = 'jakarta.faces.Resource';
+        PrimeFaces.ajax.RESOURCE = 'javax.faces.Resource';
         
         var isIE = this.isIE();
 

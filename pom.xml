@@ -1,43 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.7.18</version>
+        <relativePath/>
     </parent>
+
     <groupId>py.com.capital</groupId>
     <artifactId>CapitaCreditos</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>CapitaCreditos</name>
-    <description>Aplicacion Capital Creditos</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+    <description>Aplicación Capital Créditos</description>
+
     <properties>
         <java.version>17</java.version>
-        <joinfaces.version>5.5.3</joinfaces.version>
-        <jasypt-version>1.9.3</jasypt-version>
+        <joinfaces.version>4.6.0</joinfaces.version>
+        <primefaces.version>12.0.0</primefaces.version>
+        <pandora.version>4.1.0</pandora.version>
+        <primefaces-extensions.version>13.0.0</primefaces-extensions.version>
+        <gson.version>2.10.1</gson.version>
         <commons-lang3-version>3.14.0</commons-lang3-version>
-        <jersey-version>3.1.9</jersey-version>
+        <jersey-version>2.31</jersey-version>
         <jersey-hk2>2.28</jersey-hk2>
-        <primefaces-version>12.0.0</primefaces-version>
-        <gson-version>2.10.1</gson-version>
-        <primefaces-extensions-version>13.0.0</primefaces-extensions-version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.joinfaces</groupId>
+                <artifactId>joinfaces-dependencies</artifactId>
+                <version>${joinfaces.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+        <!-- JSF -->
+        <dependency>
+            <groupId>org.joinfaces</groupId>
+            <artifactId>jsf-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- PrimeFaces -->
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>${primefaces.version}</version>
+        </dependency>
+
+        <!-- Tema Pandora -->
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>pandora</artifactId>
+            <version>${pandora.version}</version>
+        </dependency>
+
+        <!-- PrimeFlex -->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>primeflex</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+
+        <!-- PrimeFaces Extensions -->
+        <dependency>
+            <groupId>org.primefaces.extensions</groupId>
+            <artifactId>primefaces-extensions</artifactId>
+            <version>${primefaces-extensions.version}</version>
+        </dependency>
+
+        <!-- Spring Boot JPA y Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -47,37 +86,69 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- DevTools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
+
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Apache Commons -->
         <dependency>
-            <groupId>org.joinfaces</groupId>
-            <artifactId>primefaces-spring-boot-starter</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
+
+        <!-- Gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+
+        <!-- Encriptación -->
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>1.9.3</version>
         </dependency>
 
         <dependency>
-            <artifactId>commons-lang3</artifactId>
-            <groupId>org.apache.commons</groupId>
-            <version>${commons-lang3-version}</version>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.4</version>
         </dependency>
+
+        <!--
+		https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson -->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
@@ -95,69 +166,7 @@
             <artifactId>jersey-hk2</artifactId>
             <version>${jersey-hk2}</version>
         </dependency>
-        <!--
-               <dependency>
-                   <groupId>org.primefaces</groupId>
-                   <artifactId>primefaces</artifactId>
-                   <version>${primefaces-version}</version>
-               </dependency>
-       -->
-               <dependency>
-                   <groupId>org.primefaces</groupId>
-                   <artifactId>pandora</artifactId>
-                   <version>4.1.0</version>
-               </dependency>
-
-               <dependency>
-                   <groupId>org.webjars.npm</groupId>
-                   <artifactId>primeflex</artifactId>
-                   <version>3.3.1</version>
-               </dependency>
-
-               <!-- utilidades de apache -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.primefaces.extensions</groupId>
-            <artifactId>primefaces-extensions</artifactId>
-            <version>${primefaces-extensions-version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson-version}</version>
-        </dependency>
-
-        <!-- Esta dependencia es para encriptar la contraseña -->
-        <dependency>
-            <groupId>org.jasypt</groupId>
-            <artifactId>jasypt</artifactId>
-            <version>${jasypt-version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.9.4</version> <!-- Utiliza la última versión disponible -->
-        </dependency>
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.joinfaces</groupId>
-                <artifactId>joinfaces-platform</artifactId>
-                <version>${joinfaces.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>
@@ -165,6 +174,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <source>17</source>
+                    <target>17</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -187,5 +198,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

@@ -3,7 +3,7 @@
  */
 package py.com.capital.CapitaCreditos.entities.base;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

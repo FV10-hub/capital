@@ -1,6 +1,6 @@
 package py.com.capital.CapitaCreditos.entities.stock;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import org.apache.commons.lang3.BooleanUtils;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsIva;

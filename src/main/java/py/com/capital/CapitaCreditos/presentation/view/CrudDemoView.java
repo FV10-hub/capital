@@ -15,8 +15,8 @@
  */
 package py.com.capital.CapitaCreditos.presentation.view;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.faces.view.ViewScoped;
+import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.Visibility;

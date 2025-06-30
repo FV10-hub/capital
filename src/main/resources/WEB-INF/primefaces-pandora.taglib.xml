@@ -29,7 +29,7 @@
 			<description><![CDATA[An el expression referring to a server side UIComponent instance in a backing bean.]]></description>
 			<name>binding</name>
 			<required>false</required>
-			<type>jakarta.faces.component.UIComponent</type>
+			<type>javax.faces.component.UIComponent</type>
 		</attribute>
 		<attribute>
 			<description><![CDATA[Name of the client side widget.]]></description>

@@ -1,6 +1,6 @@
 package py.com.capital.CapitaCreditos.entities.base;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
 import java.time.LocalDateTime;

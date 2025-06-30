@@ -15,8 +15,8 @@
  */
 package py.com.capital.CapitaCreditos.presentation.view;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.faces.bean.SessionScoped;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;

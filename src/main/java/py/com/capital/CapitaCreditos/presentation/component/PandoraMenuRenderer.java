@@ -1,23 +1,11 @@
 /*
-   Adapted version for Jakarta Faces & PrimeFaces ≥13.
+   Adapted version for javax Faces & PrimeFaces ≥13.
    Changes:
-   - javax.faces.* → jakarta.faces.*
+   - javax.faces.* → javax.faces.*
    - ComponentTraversalUtils.closestForm(context, component) → closestForm(component)
    - Ensure imports updated.
 */
 package py.com.capital.CapitaCreditos.presentation.component;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import jakarta.faces.FacesException;
-import jakarta.faces.component.UIComponent;
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.context.ResponseWriter;
 
 import org.primefaces.component.api.AjaxSource;
 import org.primefaces.component.api.UIOutcomeTarget;
@@ -32,6 +20,17 @@ import org.primefaces.model.menu.Submenu;
 import org.primefaces.util.AjaxRequestBuilder;
 import org.primefaces.util.ComponentTraversalUtils;
 import org.primefaces.util.WidgetBuilder;
+
+import javax.faces.FacesException;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PandoraMenuRenderer extends BaseMenuRenderer {
 
@@ -249,7 +248,7 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
             else {
                 writer.writeAttribute("href", "#", null);
 
-                UIComponent form = ComponentTraversalUtils.closestForm(menu);
+                UIComponent form = ComponentTraversalUtils.closestForm(context, menu);
                 if(form == null) {
                     throw new FacesException("MenuItem must be inside a form element");
                 }

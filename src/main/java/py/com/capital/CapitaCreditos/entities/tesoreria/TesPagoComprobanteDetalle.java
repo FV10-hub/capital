@@ -3,7 +3,7 @@ package py.com.capital.CapitaCreditos.entities.tesoreria;
 * 15 ene. 2024 - Elitebook
 */
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
