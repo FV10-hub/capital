@@ -1,0 +1,115 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Roles</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsRolController.cleanFields}"
+									update=":form:manage-rol" onclick="PF('manageRolDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-rol" widgetVar="dtRol" var="rol"
+							value="#{bsRolController.lazyModel}" reflow="true"
+							selection="#{bsRolController.bsRolSelected}" rowKey="#{rol.id}"
+							paginator="true" rows="10" rowSelectMode="add"
+							paginatorPosition="bottom" emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Roles</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtRol').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Nombre" sortBy="#{rol.nombre}"
+								filterBy="#{rol.nombre}">
+								<h:outputText value="#{rol.nombre}" />
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{rol.estado}"
+								filterBy="#{rol.estado}">
+								<h:outputText value="#{rol.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil" update=":form:manage-rol :form:lbHeader"
+									oncomplete="PF('manageRolDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{rol}"
+										target="#{bsRolController.bsRolSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteRolDialog').show()">
+									<f:setPropertyActionListener value="#{rol}"
+										target="#{bsRolController.bsRolSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageRolDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsRolController.esModificar ? 'Editar' : 'Nuevo'}" />
+							</f:facet>
+							<p:outputPanel id="manage-rol" class="ui-fluid">
+
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="nombre">Nombre</p:outputLabel>
+										<p:inputText id="nombre"
+											value="#{bsRolController.bsRol.nombre}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="personalb">Estado</p:outputLabel>
+										<p:selectOneMenu id="personalb"
+											value="#{bsRolController.bsRol.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsRolController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsRolController.guardar}"
+									update=":form:manage-rol" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsRolController.cleanFields}"
+									update=":form"
+									onclick="PF('manageRolDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteRolDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsRolController.delete}" process="@this"
+								oncomplete="PF('deleteRolDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteRolDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

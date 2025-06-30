@@ -1,0 +1,32 @@
+.enlace-boton-type {
+	background-color: transparent !important;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	padding: 5px 8px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	border-color: transparent !important;
+	color: #8b8e90 !important;
+	-moz-transition: background-color 0.2s;
+	-o-transition: background-color 0.2s;
+	-webkit-transition: background-color 0.2s;
+	transition: background-color 0.2s;
+	width: 180px !important;
+}
+
+.ui-menuitem-text {
+	word-wrap: break-word !important;
+	overflow-wrap: break-word !important;
+}
+
+.ui-growl-message {
+	float: left;
+	word-wrap: break-word !important;
+	overflow-wrap: break-word !important;
+	width: 85%;
+}

@@ -1,0 +1,459 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+	<h:head>
+		<script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+		</script>
+	</h:head>
+	<ui:define name="title">Depositos</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4"
+							rendered="#{not tesDepositoController.esVisibleFormulario}">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{tesDepositoController.setEsVisibleFormulario(true)}"
+									update=":form" styleClass="ui-button-success"
+									style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable
+							rendered="#{not tesDepositoController.esVisibleFormulario}"
+							id="dt-deposito" widgetVar="dtDeposito" var="deposito"
+							value="#{tesDepositoController.lazyModel}" reflow="true"
+							selection="#{tesDepositoController.tesDepositoSelected}"
+							rowKey="#{deposito.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Depositos</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtDeposito').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column>
+								<f:facet name="header">Banco</f:facet>
+								<h:outputText
+									value="#{deposito.tesBanco.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">Fecha Deposito</f:facet>
+								<h:outputText value="#{deposito.fechaDeposito}"
+									converter="localDateConverter">
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Nro. Boleta" sortBy="#{deposito.nroBoleta}"
+								filterBy="#{deposito.nroBoleta}">
+								<h:outputText value="#{deposito.nroBoleta}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">Monto</f:facet>
+								<h:outputText value="#{deposito.montoTotalDeposito}">
+									<f:convertNumber currencySymbol="Gs." pattern="###,###,###" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{deposito.estado}"
+								filterBy="#{deposito.estado}">
+								<h:outputText value="#{deposito.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-eye" update=":form" process="@this"
+									title="Ver Registro"
+									styleClass="edit-button rounded-button ui-button-primary">
+									<f:setPropertyActionListener value="#{deposito}"
+										target="#{tesDepositoController.tesDepositoSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash"
+									oncomplete="PF('deleteDepositoDialog').show()">
+									<f:setPropertyActionListener value="#{deposito}"
+										target="#{tesDepositoController.tesDepositoSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<p:panel id="manage-deposito"
+							rendered="#{tesDepositoController.esVisibleFormulario}">
+							<p:toolbar styleClass="mb-4" id="toolbarBotones">
+								<p:toolbarGroup>
+									<p:commandButton value="Guardar" icon="pi pi-save"
+										id="btnGuardar"
+										disabled="#{tesDepositoController.cobrosValoresList.size() == 0}"
+										actionListener="#{tesDepositoController.guardar}"
+										update=":form" styleClass="ui-button-success"
+										style="margin-right: .5rem" />
+									<p:commandButton value="Cancelar"
+										icon="pi pi-arrow-circle-left"
+										actionListener="#{tesDepositoController.cleanFields}"
+										update=":form" styleClass="ui-button-info"
+										style="margin-right: .5rem" />
+									<p:commandButton value="Eliminar" icon="pi pi-trash"
+										rendered="#{tesDepositoController.tesDeposito.id != null}"
+										actionListener="#{tesDepositoController.delete}"
+										update=":form" styleClass="ui-button-danger"
+										style="margin-right: .5rem" />
+
+								</p:toolbarGroup>
+							</p:toolbar>
+							<div class="col-12">
+								<div class="card ui-fluid">
+									<h5>Depositos</h5>
+									<div class="ui-fluid formgrid grid">
+										<div class="col-12 md:col-6 flex flex-column">
+											<div class="field grid">
+												<p:outputLabel for="fechaOpLb"
+													styleClass="col-12 mb-2 md:col-4 mb-md-0">Fecha Deposito</p:outputLabel>
+												<div class="col-12 md:col-4">
+													<p:datePicker id="fechaOpLb" showIcon="true"
+														value="#{tesDepositoController.tesDeposito.fechaDeposito}"
+														pattern="dd/MM/yyyy">
+													</p:datePicker>
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="nroBoletaLb"
+													styleClass="col-12 mb-2 md:col-4 mb-md-0">Nro. Boleta</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:inputText rows="3" id="nroBoletaLb" autocomplete="off"
+														value="#{tesDepositoController.tesDeposito.nroBoleta}" />
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="obsLb"
+													styleClass="col-12 mb-2 md:col-4 mb-md-0">Observacion</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:inputTextarea rows="3" id="obsLb" autocomplete="off"
+														value="#{tesDepositoController.tesDeposito.observacion}" />
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="bancoLb"
+													styleClass="col-12 mb-2 md:col-4 mb-md-0">Banco</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:inputText id="bancoLb"
+														placeholder="Pulse F9 para buscar" autocomplete="off"
+														styleClass="#{tesDepositoController.tesDeposito.tesBanco.id != null ? '' : 'ui-state-error'}"
+														value="#{tesDepositoController.tesDeposito.tesBanco.bsPersona.nombreCompleto}"
+														onkeydown="if (event.keyCode == 120) {
+														PF('dlgBanco').show()
+													}" />
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="estadoLb"
+													styleClass="col-12 mb-2 md:col-4 mb-md-0">Estado</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:selectOneMenu id="estadoLb"
+														value="#{tesDepositoController.tesDeposito.estado}">
+														<f:selectItem itemLabel="Seleccione un estado"
+															itemValue="#{null}" noSelectionOption="true" />
+														<f:selectItems value="#{tesDepositoController.estadoList}" />
+													</p:selectOneMenu>
+												</div>
+											</div>
+										</div>
+										<div class="col-12 md:col-12 flex flex-row">
+											<div class="col-4 md:col-2">
+												<p:commandButton id="btnAddDetalle" value="Agregar Detalle"
+													icon="pi pi-sync" onclick="PF('dlgValores').show()"
+													update=":form:dt-valor  :form:btnLimpiar :form:btnGuardar"
+													styleClass="ui-button-info" style="margin-right: .5rem" />
+											</div>
+											<div class="col-4 md:col-2">
+												<p:commandButton value="Limpiar Detalles" icon="pi pi-bolt"
+													id="btnLimpiar"
+													disabled="#{tesDepositoController.cobrosValoresList.size() == 0}"
+													actionListener="#{tesDepositoController.limpiarDetalle}"
+													process="@this" update=":form:dt-detalle :form:btnGuardar"
+													styleClass="ui-button-primary" style="margin-right: .5rem" />
+											</div>
+
+										</div>
+										<h5 class="col-12 md:col-12">Detalle de Cuotas</h5>
+										<div class="col-12 md:col-12">
+											<p:dataTable id="dt-detalle" widgetVar="dtDetalle"
+												var="detalle"
+												value="#{tesDepositoController.cobrosValoresList}"
+												reflow="true" paginator="true" rows="12" scrollable="true"
+												scrollHeight="300" paginatorPosition="bottom"
+												emptyMessage="No hay Registros">
+
+												<p:column headerText="Tipo Valor"
+													sortBy="#{detalle.bsTipoValor.descripcion}"
+													filterBy="#{detalle.bsTipoValor.descripcion}">
+													<h:outputText value="#{detalle.bsTipoValor.descripcion}" />
+												</p:column>
+												<p:column headerText="Nro. Comprobante"
+													sortBy="#{detalle.nroComprobanteCompleto}"
+													filterBy="#{detalle.nroComprobanteCompleto}">
+													<h:outputText value="#{detalle.nroComprobanteCompleto}" />
+												</p:column>
+												<p:column headerText="Tipo Comprobante"
+													sortBy="#{detalle.tipoComprobante}"
+													filterBy="#{detalle.tipoComprobante}">
+													<h:outputText value="#{detalle.tipoComprobante}" />
+												</p:column>
+												<p:column headerText="Nro. Valor"
+													sortBy="#{detalle.nroValor}">
+													<h:outputText value="#{detalle.nroValor}">
+														<f:convertNumber pattern="###,###,###" />
+													</h:outputText>
+												</p:column>
+												<p:column>
+													<f:facet name="header">Fecha Valor</f:facet>
+													<h:outputText value="#{detalle.fechaValor}"
+														converter="localDateConverter">
+													</h:outputText>
+												</p:column>
+												<p:column>
+													<f:facet name="header">Fecha Vencimiento Valor</f:facet>
+													<div class="flex align-items-center flex-wrap">
+														<f:facet name="footer">
+															<h5 class="text-sm">Totale a Depositar:</h5>
+														</f:facet>
+														<h:outputText value="#{detalle.fechaVencimiento}"
+															converter="localDateConverter">
+														</h:outputText>
+													</div>
+												</p:column>
+												<p:column headerText="Monto Valor">
+													<f:facet name="footer">
+														<h:outputText
+															value="#{tesDepositoController.montoTotalDeposito}">
+															<f:convertNumber pattern="###,###,###" />
+														</h:outputText>
+													</f:facet>
+													<h:outputText value="#{detalle.montoValor}">
+														<f:convertNumber pattern="###,###,###" />
+													</h:outputText>
+												</p:column>
+											</p:dataTable>
+										</div>
+									</div>
+								</div>
+							</div>
+						</p:panel>
+
+						<!-- DIALOGOS -->
+						<p:dialog showEffect="fade" modal="true" widgetVar="dlgValores"
+							width="1200" closable="false">
+							<f:facet name="header">
+								<div class="field flex justify-content-start align-items-center">
+									<p:commandButton value="Agregar Detalle" icon="pi pi-plus"
+										class="ui-button-success" oncomplete="PF('dlgValores').hide()"
+										update=":form:dt-detalle :form:btnLimpiar" />
+									<p:commandButton value="Cancelar" icon="pi pi-times"
+										actionListener="#{tesDepositoController.limpiarDetalle}"
+										class="ui-button-secondary ml-3"
+										oncomplete="PF('dlgValores').hide()"
+										update=":form:dt-detalle :form:btnLimpiar" />
+								</div>
+							</f:facet>
+							<p:dataTable id="dt-valor" widgetVar="dtCobroValores" var="valor"
+								value="#{tesDepositoController.lazyModelValores}"
+								selection="#{tesDepositoController.cobrosValoresList}"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								rowKey="#{valor.id}" selectionPageOnly="false"
+								emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtCobroValores').filter()"
+												placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+
+								<!-- 
+								<p:ajax event="rowSelect"
+								<p:ajax event="rowUnselect"
+								 -->
+								<p:ajax event="rowSelectCheckbox"
+									listener="#{tesDepositoController.onRowSelect}" />
+								<p:ajax event="rowUnselectCheckbox"
+									listener="#{tesDepositoController.onRowUnselect}" />
+								<p:column selectionMode="multiple"
+									style="width:16px;text-align:center" />
+								<p:column headerText="Tipo Valor"
+									sortBy="#{valor.bsTipoValor.descripcion}"
+									filterBy="#{valor.bsTipoValor.descripcion}">
+									<h:outputText value="#{valor.bsTipoValor.descripcion}" />
+								</p:column>
+								<p:column headerText="Nro. Comprobante"
+									sortBy="#{valor.nroComprobanteCompleto}"
+									filterBy="#{valor.nroComprobanteCompleto}">
+									<h:outputText value="#{valor.nroComprobanteCompleto}" />
+								</p:column>
+								<p:column headerText="Tipo Comprobante"
+									sortBy="#{valor.tipoComprobante}"
+									filterBy="#{valor.tipoComprobante}">
+									<h:outputText value="#{valor.tipoComprobante}" />
+								</p:column>
+								<p:column headerText="Nro. Valor" sortBy="#{valor.nroValor}">
+									<h:outputText value="#{valor.nroValor}">
+										<f:convertNumber pattern="###,###,###" />
+									</h:outputText>
+								</p:column>
+								<p:column>
+									<f:facet name="header">Fecha Valor</f:facet>
+									<f:facet name="footer">
+										<h5 class="text-sm">Total Seleccionado:</h5>
+									</f:facet>
+									<h:outputText value="#{valor.fechaValor}"
+										converter="localDateConverter">
+									</h:outputText>
+								</p:column>
+								<p:column>
+									<f:facet name="header">Fecha Vencimiento Valor</f:facet>
+									<h:outputText value="#{valor.fechaVencimiento}"
+										converter="localDateConverter">
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Monto Valor">
+									<f:facet name="footer">
+										<h:outputText
+											value="#{tesDepositoController.montoTotalDeposito}">
+											<f:convertNumber pattern="###,###,###" />
+										</h:outputText>
+									</f:facet>
+									<h:outputText value="#{valor.montoValor}">
+										<f:convertNumber pattern="###,###,###" />
+									</h:outputText>
+								</p:column>
+
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgBanco" header="Buscar Banco" width="650"
+							showEffect="fade" modal="true">
+							<p:dataTable widgetVar="dtBanco" var="banco"
+								value="#{tesDepositoController.lazyModelBanco}" id="dt-banco"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtBanco').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgBanco').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:bancoLb">
+										<f:setPropertyActionListener value="#{banco}"
+											target="#{tesDepositoController.tesDeposito.tesBanco}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nro. Cuenta" sortBy="#{banco.codBnaco}"
+									filterBy="#{banco.codBnaco}">
+									<h:outputText value="#{banco.codBnaco}" />
+								</p:column>
+								<p:column headerText="Nombre"
+									sortBy="#{banco.bsPersona.nombreCompleto}"
+									filterBy="#{banco.bsPersona.nombreCompleto}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{banco.bsPersona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento"
+									sortBy="#{banco.bsPersona.documento}"
+									filterBy="#{banco.bsPersona.documento}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{banco.bsPersona.documento}" />
+								</p:column>
+								<p:column headerText="Moneda"
+									sortBy="#{banco.bsMoneda.codMoneda}"
+									filterBy="#{banco.bsMoneda.codMoneda}">
+									<h:outputText value="#{banco.bsMoneda.codMoneda}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+						
+						<p:dialog widgetVar="dlgNoTieneHabilitacion" modal="true"
+							responsive="true" closable="false" width="400" showEffect="fade"
+							hideEffect="fade">
+							<div
+								class="flex flex-column align-items-center align-items-center">
+								<h4>¡Atención!</h4>
+								<i class="pi pi-info-circle ui-color-danger"
+									style="font-size: 5rem; color: #D32F2F;"></i>
+								<h5 class="mt-3">EL USUARIO NO HABILITACION</h5>
+								<p class="mb-0">¡POR FAVOR CREA UNA UNA HABILITACION PARA
+									ESTA OPERACION!</p>
+							</div>
+
+							<f:facet name="footer">
+								<p:commandButton value="Habilitar Caja"
+									icon="pi pi-angle-double-right"
+									styleClass="ui-button-outlined ui-button-info"
+									actionListener="#{tesDepositoController.redireccionarAHabilitaciones}" />
+							</f:facet>
+						</p:dialog>
+						
+						<!-- DIALOGOS -->
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteDepositoDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{tesDepositoController.delete}" process="@this"
+								oncomplete="PF('deleteDepositoDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteDepositoDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

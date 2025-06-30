@@ -1,0 +1,221 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Talonarios</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsTalonarioController.cleanFields}"
+									update="manage-talonario"
+									onclick="PF('manageTalonarioDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-talonario" widgetVar="dtTalonario"
+							var="talonario" value="#{bsTalonarioController.lazyModel}"
+							reflow="true"
+							selection="#{bsTalonarioController.bsTalonarioSelected}"
+							rowKey="#{talonario.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Talonarios</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtTalonario').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Timbrado"
+								sortBy="#{talonario.bsTimbrado.nroTimbrado}"
+								filterBy="#{talonario.bsTimbrado.nroTimbrado}">
+								<h:outputText value="#{talonario.bsTimbrado.nroTimbrado}" />
+							</p:column>
+							<p:column headerText="Establecimiento"
+								sortBy="#{talonario.bsTimbrado.codEstablecimiento}"
+								filterBy="#{talonario.bsTimbrado.codEstablecimiento}">
+								<h:outputText value="#{talonario.bsTimbrado.codEstablecimiento}" />
+							</p:column>
+							<p:column headerText="Expedicion"
+								sortBy="#{talonario.bsTimbrado.codExpedicion}"
+								filterBy="#{talonario.bsTimbrado.codExpedicion}">
+								<h:outputText value="#{talonario.bsTimbrado.codExpedicion}" />
+							</p:column>
+							<p:column headerText="Comprobante"
+								sortBy="#{talonario.bsTipoComprobante.descripcion}"
+								filterBy="#{talonario.bsTipoComprobante.descripcion}">
+								<h:outputText value="#{talonario.bsTipoComprobante.descripcion}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-talonario :form:lbHeader" process="@this"
+									oncomplete="PF('manageTalonarioDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{talonario}"
+										target="#{bsTalonarioController.bsTalonarioSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteParametroDialog').show()">
+									<f:setPropertyActionListener value="#{talonario}"
+										target="#{bsTalonarioController.bsTalonarioSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageTalonarioDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsTalonarioController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-talonario" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="timbradoLb">Timbrado</p:outputLabel>
+										<p:inputText id="timbradoLb"
+											placeholder="Pulse F9 para buscar"
+											value="#{bsTalonarioController.bsTalonario.bsTimbrado.nroTimbrado}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgTimbrado').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="comprobanteLb">Tipo Comprobante</p:outputLabel>
+										<p:inputText id="comprobanteLb"
+											placeholder="Pulse F9 para buscar"
+											value="#{bsTalonarioController.bsTalonario.bsTipoComprobante.descripcion}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgTipComprobante').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="estadolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="estadolb"
+											value="#{bsTalonarioController.bsTalonario.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsTalonarioController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsTalonarioController.guardar}"
+									update=":form:manage-talonario" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsTalonarioController.cleanFields}"
+									update=":form" onclick="PF('manageTalonarioDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgTipComprobante" header="Buscar Tipo"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgTipComprobante" var="tipoComprobante"
+								value="#{bsTalonarioController.lazyModelBsTipoComprobante}"
+								id="dt-tipo" paginator="true" rows="10"
+								paginatorPosition="bottom" emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgTipComprobante').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:comprobanteLb">
+										<f:setPropertyActionListener value="#{tipoComprobante}"
+											target="#{bsTalonarioController.bsTalonario.bsTipoComprobante}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Modulo"
+									sortBy="#{tipoComprobante.bsModulo.nombre}"
+									filterBy="#{tipoComprobante.bsModulo.nombre}">
+									<h:outputText value="#{tipoComprobante.bsModulo.nombre}" />
+								</p:column>
+								<p:column headerText="Codigo"
+									sortBy="#{tipoComprobante.codTipoComprobante}"
+									filterBy="#{tipoComprobante.codTipoComprobante}">
+									<h:outputText value="#{tipoComprobante.codTipoComprobante}" />
+								</p:column>
+								<p:column headerText="Descripcion"
+									sortBy="#{tipoComprobante.descripcion}"
+									filterBy="#{tipoComprobante.descripcion}">
+									<h:outputText value="#{tipoComprobante.descripcion}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgTimbrado" header="Buscar Timbrado"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgTimbrado" var="timbrado"
+								value="#{bsTalonarioController.lazyModelBsTimbrado}"
+								id="dt-timbrado" paginator="true" rows="10"
+								paginatorPosition="bottom" emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgTimbrado').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:timbradoLb">
+										<f:setPropertyActionListener value="#{timbrado}"
+											target="#{bsTalonarioController.bsTalonario.bsTimbrado}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Tipo Comprobante"
+									sortBy="#{timbrado.nroTimbrado}"
+									filterBy="#{timbrado.nroTimbrado}">
+									<h:outputText value="#{timbrado.nroTimbrado}" />
+								</p:column>
+								<p:column headerText="Establec.-Exped."
+									sortBy="#{timbrado.codEstablecimiento} - #{timbrado.codExpedicion}"
+									filterBy="#{timbrado.codEstablecimiento} - #{timbrado.codExpedicion}">
+									<h:outputText
+										value="#{timbrado.codEstablecimiento} - #{timbrado.codExpedicion}" />
+								</p:column>
+								<p:column headerText="Nro. Timbrado"
+									sortBy="#{timbrado.nroTimbrado}"
+									filterBy="#{timbrado.nroTimbrado}">
+									<h:outputText value="#{timbrado.nroTimbrado}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">Validez Desde</f:facet>
+									<h:outputText value="#{timbrado.fechaVigenciaDesde}"
+										converter="localDateConverter">
+									</h:outputText>
+								</p:column>
+								<p:column>
+									<f:facet name="header">Validez Hasta</f:facet>
+									<h:outputText value="#{timbrado.fechaVigenciaHasta}"
+										converter="localDateConverter">
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteParametroDialog"
+							showEffect="fade" width="300"
+							message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsTalonarioController.delete}" process="@this"
+								oncomplete="PF('deleteParametroDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteParametroDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

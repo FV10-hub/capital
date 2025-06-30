@@ -1,0 +1,266 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+	<h:head>
+		<script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+		</script>
+	</h:head>
+	<ui:define name="title">Habilitaciones de Caja por Usuario</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton id="btnNuevo" value="Nuevo" icon="pi pi-plus"
+									disabled="#{cobHabilitacionCajaController.tieneHabilitacionAbiertaRendered}"
+									actionListener="#{cobHabilitacionCajaController.cleanFields}"
+									update=":form:manage-habilitacion :form:headerLb"
+									onclick="PF('manageHabilitacionDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-habilitacion" widgetVar="dtHabilitacion"
+							var="habilitacion"
+							value="#{cobHabilitacionCajaController.lazyModel}" reflow="true"
+							selection="#{cobHabilitacionCajaController.cobHabilitacionCajaSelected}"
+							rowKey="#{habilitacion.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Habilitaciones de Caja
+										por Usuario</span> <span class="filter-container ui-input-icon-left">
+										<i class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtHabilitacion').filter()"
+											placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Usuario"
+								sortBy="#{habilitacion.bsUsuario.codUsuario}"
+								filterBy="#{habilitacion.bsUsuario.codUsuario}">
+								<h:outputText value="#{habilitacion.bsUsuario.codUsuario}" />
+							</p:column>
+							<p:column headerText="Nro. Habilitacion"
+								sortBy="#{habilitacion.nroHabilitacion}"
+								filterBy="#{habilitacion.nroHabilitacion}">
+								<h:outputText value="#{habilitacion.nroHabilitacion}">
+									<f:convertNumber type="number" />
+								</h:outputText>
+							</p:column>
+							<p:column>
+								<f:facet name="header">Fecha Apertura</f:facet>
+								<h:outputText value="#{habilitacion.fechaApertura}"
+									converter="localDateTimeConverter">
+								</h:outputText>
+							</p:column>
+							<p:column>
+								<f:facet name="header">Fecha Cierre</f:facet>
+								<h:outputText value="#{habilitacion.fechaCierre}"
+									converter="localDateTimeConverter">
+								</h:outputText>
+							</p:column>
+							<p:column>
+								<f:facet name="header">Cerrado?</f:facet>
+								<p:selectBooleanCheckbox
+									value="#{habilitacion.indCerradoBoolean}" disabled="true" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-habilitacion :form:headerLb"
+									process="@this"
+									oncomplete="PF('manageHabilitacionDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{habilitacion}"
+										target="#{cobHabilitacionCajaController.cobHabilitacionCajaSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteHabilitacionDialog').show()">
+									<f:setPropertyActionListener value="#{habilitacion}"
+										target="#{cobHabilitacionCajaController.cobHabilitacionCajaSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true" width="500"
+							widgetVar="manageHabilitacionDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="headerLb"
+									value="#{cobHabilitacionCajaController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-habilitacion" class="ui-fluid">
+								<p:outputPanel>
+									<div class="col-12 md:col-12">
+										<div class="field grid">
+											<p:outputLabel for="nombre" styleClass="col-12 md:col-4">Nombre Usuario</p:outputLabel>
+											<div class="col-12 md:col-8">
+												<p:inputText id="nombre" disabled="true"
+													value="#{cobHabilitacionCajaController.cobHabilitacionCaja.bsUsuario.bsPersona.nombreCompleto}" />
+											</div>
+										</div>
+										<div class="field grid">
+											<p:outputLabel for="cajaLb" styleClass="col-12 md:col-4">Caja</p:outputLabel>
+											<div class="col-12 md:col-8">
+												<p:inputText id="cajaLb" disabled="true"
+													value="#{cobHabilitacionCajaController.cobHabilitacionCaja.cobCaja.codCaja}" />
+											</div>
+										</div>
+										<div class="field grid">
+											<p:outputLabel for="fechaAperturaLb"
+												styleClass="col-12 md:col-4">Fecha Apertura</p:outputLabel>
+											<div class="col-12 md:col-6">
+												<p:datePicker id="fechaAperturaLb"
+													disabled="#{not cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean}"
+													value="#{cobHabilitacionCajaController.cobHabilitacionCaja.fechaApertura}"
+													pattern="dd/MM/yyyy">
+												</p:datePicker>
+											</div>
+										</div>
+										<div class="field grid">
+											<p:outputLabel for="horaAperturaLb"
+												styleClass="col-12 md:col-4">Hora Apertura</p:outputLabel>
+											<div class="col-12 md:col-6">
+												<p:inputText id="horaAperturaLb" disabled="true"
+													value="#{cobHabilitacionCajaController.cobHabilitacionCaja.horaApertura}" />
+											</div>
+										</div>
+										<div class="field grid">
+											<p:outputLabel for="cerradoLb" styleClass="col-12 md:col-4">Cerrar?</p:outputLabel>
+											<div class="col-12 md:col-6">
+												<p:selectBooleanCheckbox id="cerradoLb"
+													value="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean}">
+													<p:ajax
+														update=":form:panelCierre form:fechaCierreLb form:fechaCierreLb :form:btnGuardar"
+														listener="#{cobHabilitacionCajaController.setFechaYHoraCierre}" />
+												</p:selectBooleanCheckbox>
+											</div>
+										</div>
+										<p:outputPanel id="panelCierre">
+											<div class="field grid">
+												<p:outputLabel for="fechaCierreLb"
+													rendered="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean}"
+													styleClass="col-12 md:col-4">Fecha Cierre</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:clock id="fechaCierreLb" disabled="true"
+														rendered="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean}"
+														value="#{cobHabilitacionCajaController.cobHabilitacionCaja.fechaCierre}"
+														pattern="dd/MM/yyyy">
+													</p:clock>
+												</div>
+											</div>
+											<div class="field grid ">
+												<p:outputLabel for="horaCierreLb"
+													rendered="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean}"
+													styleClass="col-12 md:col-4">Hora Cierre</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:clock id="horaCierreLb" disabled="true"
+														rendered="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean}"
+														value="#{cobHabilitacionCajaController.cobHabilitacionCaja.fechaCierre}"
+														pattern="HH:mm:ss">
+													</p:clock>
+												</div>
+											</div>
+										</p:outputPanel>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton id="btnGuardar"
+									value="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean ? 'Cerrar' : 'Abrir'}"
+									icon="pi pi-check"
+									actionListener="#{cobHabilitacionCajaController.guardar}"
+									update=":form:manage-habilitacion" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{cobHabilitacionCajaController.cleanFields}"
+									update=":form" onclick="PF('manageHabilitacionDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<!-- DIALOGOS -->
+						<p:dialog widgetVar="dlgNoTieneCaja" modal="true"
+							responsive="true" closable="false" width="400" showEffect="fade"
+							hideEffect="fade">
+							<div
+								class="flex flex-column align-items-center align-items-center">
+								<h4>¡Atención!</h4>
+								<i class="pi pi-info-circle ui-color-danger"
+									style="font-size: 5rem; color: #D32F2F;"></i>
+								<h5 class="mt-3">EL USUARIO NO TIENE UNA CAJA CREADA</h5>
+								<p class="mb-0">¡POR FAVOR CREA PRIMERO UNA CAJA PARA PODER
+									TENER</p>
+								<p class="mt-0">UNA HABILITACION!</p>
+
+
+							</div>
+
+							<f:facet name="footer">
+								<p:commandButton value="Crear Caja"
+									icon="pi pi-angle-double-right"
+									styleClass="ui-button-outlined ui-button-info"
+									actionListener="#{cobHabilitacionCajaController.redireccionarACajas}" />
+							</f:facet>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteHabilitacionDialog"
+							showEffect="fade" width="300"
+							message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{cobHabilitacionCajaController.delete}"
+								process="@this"
+								oncomplete="PF('deleteHabilitacionDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteHabilitacionDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

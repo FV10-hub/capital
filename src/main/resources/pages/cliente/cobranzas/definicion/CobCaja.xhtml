@@ -1,0 +1,118 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Cajas</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{cobCajaController.cleanFields}"
+									update=":form:manage-caja :form:headerLb" onclick="PF('manageCajasDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-caja" widgetVar="dtCaja" var="caja"
+							value="#{cobCajaController.lazyModel}" reflow="true"
+							selection="#{cobCajaController.cobCajaSelected}"
+							rowKey="#{caja.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Cajas</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtCaja').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Codigo" sortBy="#{caja.codCaja}"
+								filterBy="#{caja.codCaja}">
+								<h:outputText value="#{caja.codCaja}" />
+							</p:column>
+							<p:column headerText="Usuario" sortBy="#{caja.bsUsuario.codUsuario}"
+								filterBy="#{caja.bsUsuario.codUsuario}">
+								<h:outputText value="#{caja.bsUsuario.codUsuario}" />
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{caja.estado}"
+								filterBy="#{caja.estado}">
+								<h:outputText value="#{caja.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-pencil" update=":form:manage-caja :form:headerLb" process="@this" oncomplete="PF('manageCajasDialog').show()" 
+                                    styleClass="edit-button rounded-button ui-button-warning">
+                                    <f:setPropertyActionListener value="#{caja}" target="#{cobCajaController.cobCajaSelected}" />
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" oncomplete="PF('deleteModuloDialog').show()" >
+                                    <f:setPropertyActionListener value="#{caja}" target="#{cobCajaController.cobCajaSelected}" />
+                                </p:commandButton>
+                            </p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageCajasDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="headerLb"
+									value="#{cobCajaController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-caja" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label"
+											value="#{cobCajaController.cobCaja.codCaja}"/>
+									</div>
+									<div class="field">
+										<p:outputLabel for="usuarioLb">Nombre Usuario</p:outputLabel>
+										<p:inputText id="usuarioLb" disabled="true"
+											value="#{cobCajaController.cobCaja.bsUsuario.bsPersona.nombreCompleto}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="empresaLb">Nombre Empresa</p:outputLabel>
+										<p:inputText id="empresaLb" disabled="true"
+											value="#{cobCajaController.cobCaja.bsEmpresa.nombreFantasia}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="cajalb">Estado</p:outputLabel>
+										<p:selectOneMenu id="cajalb"
+											value="#{cobCajaController.cobCaja.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{cobCajaController.estadoList}"/>
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{cobCajaController.guardar}"
+									update=":form:manage-caja"/>
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{cobCajaController.cleanFields}"
+									update=":form"
+									onclick="PF('manageCajasDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+						<!-- confirms -->
+						 <p:confirmDialog widgetVar="deleteModuloDialog" showEffect="fade" width="300" message="Esta seguro que desea eliminar el registro?" header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check" actionListener="#{cobCajaController.delete}" process="@this" oncomplete="PF('deleteModuloDialog').hide()"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteModuloDialog').hide()" />
+                        </p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

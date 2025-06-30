@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Moneda</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsMonedaController.cleanFields}"
+									update=":form:manage-moneda :form:headerLb" onclick="PF('manageMonedaDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-moneda" widgetVar="dtMoneda" var="moneda"
+							value="#{bsMonedaController.lazyModel}" reflow="true"
+							selection="#{bsMonedaController.bsMonedaSelected}"
+							rowKey="#{moneda.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Monedas</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtMoneda').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<!--
+							<p:ajax event="rowSelect" listener="#{bsMonedaController.monedaRowSelect}" />
+							 <p:ajax event="rowToggle" listener="#{crudDemoView.onRowToggle}" />
+                            <p:ajax event="rowSelect" update=":form:delete-products-button" />
+                            <p:ajax event="rowUnselect" update=":form:delete-products-button" />
+                            <p:ajax event="rowSelectCheckbox" update=":form:delete-products-button" />
+                            <p:ajax event="rowUnselectCheckbox" update=":form:delete-products-button" />
+                            <p:ajax event="toggleSelect" update=":form:delete-products-button" />
+                             -->
+							<p:column headerText="Codigo" sortBy="#{moneda.codMoneda}"
+								filterBy="#{moneda.codMoneda}">
+								<h:outputText value="#{moneda.codMoneda}" />
+							</p:column>
+							<p:column headerText="Descripcion" sortBy="#{moneda.descripcion}"
+								filterBy="#{moneda.descripcion}">
+								<h:outputText value="#{moneda.descripcion}" />
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{moneda.estado}"
+								filterBy="#{moneda.estado}">
+								<h:outputText value="#{moneda.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-pencil" update=":form:manage-moneda :form:headerLb" process="@this" oncomplete="PF('manageMonedaDialog').show()" 
+                                    styleClass="edit-button rounded-button ui-button-warning">
+                                    <f:setPropertyActionListener value="#{moneda}" target="#{bsMonedaController.bsMonedaSelected}" />
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" oncomplete="PF('deleteMonedaDialog').show()" >
+                                    <f:setPropertyActionListener value="#{moneda}" target="#{bsMonedaController.bsMonedaSelected}" />
+                                </p:commandButton>
+                            </p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageMonedaDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="headerLb"
+									value="#{bsMonedaController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-moneda" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label"
+											value="#{bsMonedaController.bsMoneda.codMoneda}"/>
+									</div>
+									<div class="field">
+										<p:outputLabel for="nombre">Descripcion</p:outputLabel>
+										<p:inputText id="nombre"
+											value="#{bsMonedaController.bsMoneda.descripcion}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="decimal">Decimal</p:outputLabel>
+										<p:inputNumber id="decimal"
+											value="#{bsMonedaController.bsMoneda.decimales}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="monedalb">Estado</p:outputLabel>
+										<p:selectOneMenu id="monedalb"
+											value="#{bsMonedaController.bsMoneda.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsMonedaController.estadoList}"/>
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsMonedaController.guardar}"
+									update=":form:manage-moneda"/>
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsMonedaController.cleanFields}"
+									update=":form"
+									onclick="PF('manageMonedaDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+						<!-- confirms -->
+						 <p:confirmDialog widgetVar="deleteMonedaDialog" showEffect="fade" width="300" message="Esta seguro que desea eliminar el registro?" header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check" actionListener="#{bsMonedaController.delete}" process="@this" oncomplete="PF('deleteMonedaDialog').hide()"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteMonedaDialog').hide()" />
+                        </p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

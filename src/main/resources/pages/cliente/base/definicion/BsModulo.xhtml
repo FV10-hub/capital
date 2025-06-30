@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Modulos</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsModuloController.cleanFields}"
+									update=":form:manage-modulo :form:headerLb" onclick="PF('manageModuloDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-modulo" widgetVar="dtModulo" var="modulo"
+							value="#{bsModuloController.lazyModel}" reflow="true"
+							selection="#{bsModuloController.bsModuloSelected}"
+							rowKey="#{modulo.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Modulos</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtModulo').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<!--
+							<p:ajax event="rowSelect" listener="#{bsModuloController.moduloRowSelect}" />
+							 <p:ajax event="rowToggle" listener="#{crudDemoView.onRowToggle}" />
+                            <p:ajax event="rowSelect" update=":form:delete-products-button" />
+                            <p:ajax event="rowUnselect" update=":form:delete-products-button" />
+                            <p:ajax event="rowSelectCheckbox" update=":form:delete-products-button" />
+                            <p:ajax event="rowUnselectCheckbox" update=":form:delete-products-button" />
+                            <p:ajax event="toggleSelect" update=":form:delete-products-button" />
+                             -->
+							<p:column headerText="Codigo" sortBy="#{modulo.codigo}"
+								filterBy="#{modulo.codigo}">
+								<h:outputText value="#{modulo.codigo}" />
+							</p:column>
+							<p:column headerText="Nombre" sortBy="#{modulo.nombre}"
+								filterBy="#{modulo.nombre}">
+								<h:outputText value="#{modulo.nombre}" />
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{modulo.estado}"
+								filterBy="#{modulo.estado}">
+								<h:outputText value="#{modulo.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-pencil" update=":form:manage-modulo :form:headerLb" process="@this" oncomplete="PF('manageModuloDialog').show()" 
+                                    styleClass="edit-button rounded-button ui-button-warning">
+                                    <f:setPropertyActionListener value="#{modulo}" target="#{bsModuloController.bsModuloSelected}" />
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" oncomplete="PF('deleteModuloDialog').show()" >
+                                    <f:setPropertyActionListener value="#{modulo}" target="#{bsModuloController.bsModuloSelected}" />
+                                </p:commandButton>
+                            </p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageModuloDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="headerLb"
+									value="#{bsModuloController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-modulo" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label"
+											value="#{bsModuloController.bsModulo.codigo}"/>
+									</div>
+									<div class="field">
+										<p:outputLabel for="nombre">Nombre</p:outputLabel>
+										<p:inputText id="nombre"
+											value="#{bsModuloController.bsModulo.nombre}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="icono">Icono</p:outputLabel>
+										<p:inputText id="icono"
+											value="#{bsModuloController.bsModulo.icon}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="path">Path</p:outputLabel>
+										<p:inputText id="path"
+											value="#{bsModuloController.bsModulo.path}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="modulolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="modulolb"
+											value="#{bsModuloController.bsModulo.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsModuloController.estadoList}"/>
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsModuloController.guardar}"
+									update=":form:manage-modulo"/>
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsModuloController.cleanFields}"
+									update=":form"
+									onclick="PF('manageModuloDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+						<!-- confirms -->
+						 <p:confirmDialog widgetVar="deleteModuloDialog" showEffect="fade" width="300" message="Esta seguro que desea eliminar el registro?" header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check" actionListener="#{bsModuloController.delete}" process="@this" oncomplete="PF('deleteModuloDialog').hide()"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteModuloDialog').hide()" />
+                        </p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

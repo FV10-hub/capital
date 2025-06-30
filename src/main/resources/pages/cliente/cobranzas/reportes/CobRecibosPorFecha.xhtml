@@ -1,0 +1,148 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+	<h:head>
+
+	</h:head>
+	<ui:define name="title">Recibos por Fecha y Cliente</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12 md:col-6">
+					<div class="card ui-fluid">
+						<h5>Parametros</h5>
+						<div class="field grid">
+							<p:outputLabel for="clienteLb"
+								styleClass="col-12 mb-2 md:col-2 mb-md-0">Cliente</p:outputLabel>
+							<div class="col-12 md:col-10">
+								<p:inputText id="clienteLb" placeholder="Pulse F9 para buscar"
+									value="#{rptCobReciboPorFechaClienteController.cobClienteSelected.bsPersona.nombreCompleto}"
+									onkeydown="if (event.keyCode == 120) {
+										PF('dlgCliente').show()
+									}" />
+							</div>
+						</div>
+						<div class="field grid">
+							<p:outputLabel for="fecdesde"
+								styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Desde</p:outputLabel>
+							<div class="col-12 md:col-10">
+								<p:datePicker id="fecdesde" autocomplete="off"
+									value="#{rptCobReciboPorFechaClienteController.fecDesde}"
+									pattern="dd/MM/yyyy">
+								</p:datePicker>
+							</div>
+						</div>
+						<div class="field grid">
+							<p:outputLabel for="fechasta"
+								styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Hasta</p:outputLabel>
+							<div class="col-12 md:col-10">
+								<p:datePicker id="fechasta" autocomplete="off"
+									value="#{rptCobReciboPorFechaClienteController.fecHasta}"
+									pattern="dd/MM/yyyy">
+								</p:datePicker>
+							</div>
+						</div>
+					</div>
+
+					<div class="card">
+						<h5>Procesar</h5>
+						<div class="formgroup-inline flex align-items-center">
+
+							<div class="field col-4 md:col-2">
+								<p:outputLabel for="formato" value="Formato" />
+							</div>
+							<div class="field col-4 md:col-4">
+								<p:selectOneMenu id="formato"
+									value="#{rptCobReciboPorFechaClienteController.parametrosReporte.formato}">
+									<f:selectItem itemLabel="Selecciona un formato"
+										itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="PDF" itemValue="PDF" />
+									<f:selectItem itemLabel="XLS" itemValue="XLS" />
+								</p:selectOneMenu>
+							</div>
+							<div class="field col-4 md:col-4">
+								<p:commandButton ajax="false" value="Generar"
+									icon="pi pi-cloud-download"
+									actionListener="#{rptCobReciboPorFechaClienteController.downloadReport}"
+									styleClass="ui-button-info" />
+							</div>
+
+						</div>
+
+					</div>
+					<!-- DIALOGOS -->
+					<p:dialog widgetVar="dlgCliente" header="Buscar Clientes"
+						width="650" showEffect="fade" modal="true">
+						<p:dataTable widgetVar="wdlgCliente" var="cliente"
+							value="#{rptCobReciboPorFechaClienteController.lazyModelCliente}"
+							id="dt-cliente" paginator="true" rows="10"
+							paginatorPosition="bottom" emptyMessage="No hay Registros">
+							<p:column style="width:3rem;text-align: center">
+								<p:commandButton oncomplete="PF('dlgCliente').hide()"
+									icon="pi pi-check-circle" title="Seleccionar"
+									update=":form:clienteLb">
+									<f:setPropertyActionListener value="#{cliente}"
+										target="#{rptCobReciboPorFechaClienteController.cobClienteSelected}" />
+								</p:commandButton>
+							</p:column>
+							<p:column headerText="Nombre"
+								sortBy="#{cliente.bsPersona.nombreCompleto}"
+								filterBy="#{cliente.bsPersona.nombreCompleto}"
+								filterStyle="display:none; visibility:hidden;" filtarable="true"
+								filterMatchMode="contains">
+								<h:outputText value="#{cliente.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column headerText="Documento"
+								sortBy="#{cliente.bsPersona.documento}"
+								filterBy="#{cliente.bsPersona.documento}"
+								filterStyle="display:none; visibility:hidden;" filtarable="true"
+								filterMatchMode="contains">
+								<h:outputText value="#{cliente.bsPersona.documento}" />
+							</p:column>
+						</p:dataTable>
+					</p:dialog>
+					<!-- DIALOGOS -->
+				</div>
+			</div>
+			<script>
+				PrimeFaces.locales['es'] = {
+					closeText : 'Cerrar',
+					prevText : 'Anterior',
+					nextText : 'Siguiente',
+					monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril',
+							'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
+							'Octubre', 'Noviembre', 'Diciembre' ],
+					monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May',
+							'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+					dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+							'Jueves', 'Viernes', 'Sábado' ],
+					dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+							'Sab' ],
+					dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+					weekHeader : 'Semana',
+					firstDay : 1,
+					isRTL : false,
+					showMonthAfterYear : false,
+					yearSuffix : '',
+					timeOnlyTitle : 'Sólo hora',
+					timeText : 'Tiempo',
+					hourText : 'Hora',
+					minuteText : 'Minuto',
+					secondText : 'Segundo',
+					millisecondText : 'Milisegundo',
+					currentText : 'Fecha actual',
+					ampm : false,
+					month : 'Mes',
+					week : 'Semana',
+					day : 'Día',
+					allDayText : 'Todo el día',
+					today : 'Hoy',
+					clear : 'Claro'
+				};
+			</script>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

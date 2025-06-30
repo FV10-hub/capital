@@ -1,0 +1,192 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Menus</ui:define>
+	<ui:define name="content">
+		<h:form id="form" prependId="false">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsMenuController.cleanFields}"
+									update="manage-menu" onclick="PF('manageMenutDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-menu" widgetVar="dtMenu" var="menu"
+							value="#{bsMenuController.lazyModel}" reflow="true"
+							selection="#{bsMenuController.bsMenuSelected}"
+							rowKey="#{menu.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Menus</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtMenu').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<!--
+							<p:ajax event="rowSelect" listener="#{bsMenuController.menuRowSelect}" />
+							 <p:ajax event="rowToggle" listener="#{crudDemoView.onRowToggle}" />
+                            <p:ajax event="rowSelect" update=":form:delete-products-button" />
+                            <p:ajax event="rowUnselect" update=":form:delete-products-button" />
+                            <p:ajax event="rowSelectCheckbox" update=":form:delete-products-button" />
+                            <p:ajax event="rowUnselectCheckbox" update=":form:delete-products-button" />
+                            <p:ajax event="toggleSelect" update=":form:delete-products-button" />
+                             -->
+							<p:column headerText="Nombre Pantalla" sortBy="#{menu.label}"
+								filterBy="#{menu.label}">
+								<h:outputText value="#{menu.label}" />
+							</p:column>
+							<p:column headerText="Titulo" sortBy="#{menu.nombre}"
+								filterBy="#{menu.nombre}">
+								<h:outputText value="#{menu.nombre}" />
+							</p:column>
+							<p:column headerText="Modulo" sortBy="#{menu.bsModulo.nombre}"
+								filterBy="#{menu.bsModulo.nombre}">
+								<h:outputText value="#{menu.bsModulo.nombre}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update="form manage-menu lbHeader" process="@this"
+									oncomplete="PF('manageMenutDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{menu}"
+										target="#{bsMenuController.bsMenuSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteMenuDialog').show()">
+									<f:setPropertyActionListener value="#{menu}"
+										target="#{bsMenuController.bsMenuSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageMenutDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsMenuController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-menu" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Nombre Pantalla</p:outputLabel>
+										<p:inputText id="label"
+											value="#{bsMenuController.bsMenu.label}"/>
+									</div>
+									<div class="field">
+										<p:outputLabel for="nombre">Titulo en Menu</p:outputLabel>
+										<p:inputText id="nombre"
+											value="#{bsMenuController.bsMenu.nombre}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="modulolb">Modulo</p:outputLabel>
+										<p:selectOneMenu id="modulolb" required="true"
+											value="#{bsMenuController.bsMenu.bsModulo.id}">
+											<f:selectItem itemLabel="Seleccione un módulo"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsMenuController.lazyModelModulo}"
+												var="modulo" itemLabel="#{modulo.nombre}"
+												itemValue="#{modulo.id}" />
+											<p:ajax event="itemSelect"
+												listener="#{bsMenuController.onModuloChange}" />
+										</p:selectOneMenu>
+									</div>
+									<div class="field">
+										<p:outputLabel for="tipolb">Tipo Menu</p:outputLabel>
+										<p:selectOneMenu id="tipolb"
+											value="#{bsMenuController.tipoMenu}">
+											<f:selectItem itemLabel="Seleccione un tipo"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsMenuController.tipoList}" />
+											<p:ajax event="itemSelect" update="submenuIn" />
+										</p:selectOneMenu>
+									</div>
+									<div class="field">
+										<p:outputLabel for="tipoAlb">Tipo Menu Agrupador</p:outputLabel>
+										<p:selectOneMenu id="tipoAlb" required="true"
+											value="#{bsMenuController.bsMenu.tipoMenuAgrupador}">
+											<f:selectItem itemLabel="Seleccione un tipo de Agrupador"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsMenuController.tipoListAgrupador}" />
+										</p:selectOneMenu>
+									</div>
+									<div class="field">
+										<p:outputPanel  id="submenuIn">
+											<p:outputLabel rendered="#{!bsMenuController.isSubmenu}">SubMenu</p:outputLabel>
+											<p:inputText id="subMenuPadre"
+												rendered="#{!bsMenuController.isSubmenu}"
+												placeholder="Pulse F9 para buscar" update="dt-subMenus"
+												value="#{bsMenuController.bsMenu.subMenuPadre.nombre}"
+												onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgSubMenus').show()
+                                         }" />
+
+										</p:outputPanel >
+									</div>
+
+
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsMenuController.guardar}"
+									update="form, manage-menu" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsMenuController.cleanFields}"
+									update="form"
+									onclick="PF('manageMenutDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgSubMenus" width="650" showEffect="fade" modal="true"
+							header="Buscar menu">
+							<p:dataTable value="#{bsMenuController.subMenuList}"
+								id="dt-subMenus" var="subMenu"
+								selection="#{bsMenuController.bsMenuSelected}"
+								selectionMode="single" rows="10" rowKey="#{subMenu.id}"
+								rowsPerPageTemplate="5,10,15,20" paginator="true">
+								<p:ajax event="rowSelect"
+									listener="#{bsMenuController.onRowSelectSubMenu}" />
+								<p:column headerText="Codigo" sortBy="#{subMenu.label}"
+									filterBy="#{subMenu.label}">
+									<h:outputText value="#{subMenu.label}" />
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{subMenu.nombre}"
+									filterBy="#{subMenu.nombre}">
+									<h:outputText value="#{subMenu.nombre}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteMenuDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsMenuController.deleteMenu}" process="@this"
+								oncomplete="PF('deleteMenuDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteMenuDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

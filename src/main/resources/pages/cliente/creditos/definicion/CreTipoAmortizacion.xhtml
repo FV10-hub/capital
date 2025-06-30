@@ -1,0 +1,113 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Tipo de Amortizaciones</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{creTipoAmortizacionController.cleanFields}"
+									update=":form:manage-tipoAmort :form:headerLb" onclick="PF('manageTipoAmortizacionDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-tipoAmortizacion" widgetVar="dtTipoAmortizacion" var="tipoAmort"
+							value="#{creTipoAmortizacionController.lazyModel}" reflow="true"
+							selection="#{creTipoAmortizacionController.creTipoAmortizacionSelected}"
+							rowKey="#{tipoAmort.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Tipo de Amortizaciones</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtTipoAmortizacion').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Codigo" sortBy="#{tipoAmort.codTipo}"
+								filterBy="#{tipoAmort.codTipo}">
+								<h:outputText value="#{tipoAmort.codTipo}" />
+							</p:column>
+							<p:column headerText="Descripcion" sortBy="#{tipoAmort.descripcion}"
+								filterBy="#{tipoAmort.descripcion}">
+								<h:outputText value="#{tipoAmort.descripcion}" />
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{tipoAmort.estado}"
+								filterBy="#{tipoAmort.estado}">
+								<h:outputText value="#{tipoAmort.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-pencil" update=":form:manage-tipoAmort :form:headerLb" process="@this" oncomplete="PF('manageTipoAmortizacionDialog').show()" 
+                                    styleClass="edit-button rounded-button ui-button-warning">
+                                    <f:setPropertyActionListener value="#{tipoAmort}" target="#{creTipoAmortizacionController.creTipoAmortizacionSelected}" />
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" oncomplete="PF('deleteModuloDialog').show()" >
+                                    <f:setPropertyActionListener value="#{tipoAmort}" target="#{creTipoAmortizacionController.creTipoAmortizacionSelected}" />
+                                </p:commandButton>
+                            </p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageTipoAmortizacionDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="headerLb"
+									value="#{creTipoAmortizacionController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-tipoAmort" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label" autocomplete="off"
+											value="#{creTipoAmortizacionController.creTipoAmortizacion.codTipo}"/>
+									</div>
+									<div class="field">
+										<p:outputLabel for="descripcion">Descripcion</p:outputLabel>
+										<p:inputText id="descripcion"
+											value="#{creTipoAmortizacionController.creTipoAmortizacion.descripcion}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="tipoAmortlb">Estado</p:outputLabel>
+										<p:selectOneMenu id="tipoAmortlb"
+											value="#{creTipoAmortizacionController.creTipoAmortizacion.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{creTipoAmortizacionController.estadoList}"/>
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{creTipoAmortizacionController.guardar}"
+									update=":form:manage-tipoAmort"/>
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{creTipoAmortizacionController.cleanFields}"
+									update=":form"
+									onclick="PF('manageTipoAmortizacionDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+						<!-- confirms -->
+						 <p:confirmDialog widgetVar="deleteModuloDialog" showEffect="fade" width="300" message="Esta seguro que desea eliminar el registro?" header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check" actionListener="#{creTipoAmortizacionController.delete}" process="@this" oncomplete="PF('deleteModuloDialog').hide()"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteModuloDialog').hide()" />
+                        </p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,212 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+	<h:head>
+		<script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+		</script>
+	</h:head>
+	<ui:define name="title">Timbrado</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsTimbradoController.cleanFields}"
+									update="manage-timbrado"
+									onclick="PF('manageTimbradoDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-timbrado" widgetVar="dtTimbrado"
+							var="timbrado" value="#{bsTimbradoController.lazyModel}"
+							reflow="true"
+							selection="#{bsTimbradoController.bsTimbradoSelected}"
+							rowKey="#{timbrado.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Timbrado</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtTimbrado').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Establec.-Exped."
+								sortBy="#{timbrado.codEstablecimiento} - #{timbrado.codExpedicion}"
+								filterBy="#{timbrado.codEstablecimiento} - #{timbrado.codExpedicion}">
+								<h:outputText
+									value="#{timbrado.codEstablecimiento} - #{timbrado.codExpedicion}" />
+							</p:column>
+							<p:column headerText="Nro. Timbrado"
+								sortBy="#{timbrado.nroTimbrado}"
+								filterBy="#{timbrado.nroTimbrado}">
+								<h:outputText value="#{timbrado.nroTimbrado}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">Validez Desde</f:facet>
+								<h:outputText value="#{timbrado.fechaVigenciaDesde}"
+									converter="localDateConverter">
+								</h:outputText>
+							</p:column>
+							<p:column>
+								<f:facet name="header">Validez Hasta</f:facet>
+								<h:outputText value="#{timbrado.fechaVigenciaHasta}"
+									converter="localDateConverter">
+								</h:outputText>
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-timbrado :form:lbHeader" process="@this"
+									oncomplete="PF('manageTimbradoDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{timbrado}"
+										target="#{bsTimbradoController.bsTimbradoSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteTimbradoDialog').show()">
+									<f:setPropertyActionListener value="#{timbrado}"
+										target="#{bsTimbradoController.bsTimbradoSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageTimbradoDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsTimbradoController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-timbrado" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Nro. Timbrado</p:outputLabel>
+										<p:inputText id="label" autocomplete="off"
+											value="#{bsTimbradoController.bsTimbrado.nroTimbrado}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="establecimientoLb">Cod. Establecimiento</p:outputLabel>
+										<p:inputText id="establecimientoLb" autocomplete="off"
+											value="#{bsTimbradoController.bsTimbrado.codEstablecimiento}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="expedicionLb">Cod. Expedicion</p:outputLabel>
+										<p:inputText id="expedicionLb" autocomplete="off"
+											value="#{bsTimbradoController.bsTimbrado.codExpedicion}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="nrodesdeLb">Nro. Desde</p:outputLabel>
+										<p:inputNumber id="nrodesdeLb" autocomplete="off"
+											value="#{bsTimbradoController.bsTimbrado.nroDesde}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="nrohastaLb">Nro. Hasta</p:outputLabel>
+										<p:inputNumber id="nrohastaLb" autocomplete="off"
+											value="#{bsTimbradoController.bsTimbrado.nroHasta}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="vigenciaDesdeLb">Vigencia Desde</p:outputLabel>
+										<p:datePicker id="vigenciaDesdeLb"
+											value="#{bsTimbradoController.bsTimbrado.fechaVigenciaDesde}"
+											pattern="dd/MM/yyyy">
+										</p:datePicker>
+									</div>
+									<div class="field">
+										<p:outputLabel for="vigenciaHastaLb">Vigencia Hasta</p:outputLabel>
+										<p:datePicker id="vigenciaHastaLb"
+											value="#{bsTimbradoController.bsTimbrado.fechaVigenciaHasta}"
+											pattern="dd/MM/yyyy">
+										</p:datePicker>
+									</div>
+									<div class="field">
+										<p:outputLabel for="autoLb">Autoimpresor</p:outputLabel>
+										<p:toggleSwitch id="autoLb" onIcon="pi pi-check"
+											offIcon="pi pi-times"
+											value="#{bsTimbradoController.bsTimbrado.indAutoimpresorBoolean}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="estadolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="estadolb"
+											value="#{bsTimbradoController.bsTimbrado.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsTimbradoController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsTimbradoController.guardar}"
+									update=":form:manage-timbrado" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsTimbradoController.cleanFields}"
+									update=":form" onclick="PF('manageTimbradoDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteTimbradoDialog"
+							showEffect="fade" width="300"
+							message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsTimbradoController.delete}" process="@this"
+								oncomplete="PF('deleteTimbradoDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteTimbradoDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

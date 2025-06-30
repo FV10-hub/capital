@@ -1,0 +1,174 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:po="http://primefaces.org/pandora">
+
+	<po:menu widgetVar="PandoraMenuWidget">
+		<p:submenu id="m_homepage" label="Favoritos" icon="pi pi-fw pi-home">
+			<p:menuitem id="m_dashboard" value="Dashboard"
+				icon="pi pi-fw pi-home" outcome="/pages/commons/dashboard" />
+
+			<p:submenu id="m_components" label="Base" icon="pi pi-fw pi-star">
+				<p:menuitem id="m_formlayout" value="Form Layout"
+					icon="pi pi-fw pi-chevron-circle-right"
+					outcome="/pages/cliente/formlayout" />
+				<p:menuitem id="m_input" value="Input"
+					icon="pi pi-fw pi-check-square" outcome="/pages/cliente/input" />
+			</p:submenu>
+			<!-- CONFIGURACIONES -->
+			<p:submenu id="m_config" label="Configuraciones"
+				icon="pi pi-fw pi-cog">
+				<p:submenu id="m_sm1" label="Definiciones" icon="pi pi-fw pi-list">
+					<p:submenu id="m_sm11" label="Submenu 1.1"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk111" value="Roles"
+							icon="pi pi-fw pi-angle-right"
+							outcome="/pages/cliente/base/BsRol" />
+						<p:menuitem id="m_lnk112" value="Menus"
+							icon="pi pi-fw pi-angle-right"
+							outcome="/pages/cliente/base/BsMenu" />
+						<p:menuitem id="m_lnk113" value="Modulos"
+							icon="pi pi-fw pi-angle-right"
+							outcome="/pages/cliente/base/BsModulo" />
+						<p:menuitem id="m_lnk114" value="Personas"
+							icon="pi pi-fw pi-angle-right"
+							outcome="/pages/cliente/base/BsPersona" />
+						<p:menuitem id="m_lnk115" value="Usuarios"
+							icon="pi pi-fw pi-angle-right"
+							outcome="/pages/cliente/base/BsUsuario" />
+					</p:submenu>
+					<p:submenu id="m_sm12" label="Submenu 1.2"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk121" value="Link 1.2.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+				</p:submenu>
+				<p:submenu id="m_sm2" label="Movimientos" icon="pi pi-fw pi-box">
+					<p:submenu id="m_sm21" label="Submenu 2.1"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk211" value="Link 2.1.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk212" value="Link 2.1.2"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+					<p:submenu id="m_sm22" label="Submenu 2.2"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk221" value="Link 2.2.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+				</p:submenu>
+				<p:submenu id="m_sm3" label="Reportes" icon="pi pi-fw pi-print">
+					<p:submenu id="m_sm31" label="Submenu 2.1"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk311" value="Link 2.1.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk312" value="Link 2.1.2"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+					<p:submenu id="m_sm32" label="Submenu 2.2"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk321" value="Link 2.2.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+				</p:submenu>
+			</p:submenu>
+			<!-- COBRANZAS -->
+			<p:submenu id="m_cob" label="Cobranzas" icon="pi pi-fw pi-id-card">
+				<p:submenu id="m_sm4" label="Definiciones" icon="pi pi-fw pi-list">
+					<p:submenu id="m_sm41" label="Submenu 1.1"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk411" value="Link 1.1.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk412" value="Link 1.1.2"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk413" value="Link 1.1.3"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+					<p:submenu id="m_sm42" label="Submenu 1.2"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk421" value="Link 1.2.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+				</p:submenu>
+				<p:submenu id="m_sm5" label="Movimientos" icon="pi pi-fw pi-box">
+					<p:submenu id="m_sm51" label="Submenu 2.1"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk511" value="Link 2.1.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk512" value="Link 2.1.2"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+					<p:submenu id="m_sm52" label="Submenu 2.2"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk521" value="Link 2.2.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+				</p:submenu>
+				<p:submenu id="m_sm6" label="Reportes" icon="pi pi-fw pi-print">
+					<p:submenu id="m_sm61" label="Submenu 2.1"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk611" value="Link 2.1.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk612" value="Link 2.1.2"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+					<p:submenu id="m_sm62" label="Submenu 2.2"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk621" value="Link 2.2.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+				</p:submenu>
+			</p:submenu>
+			<!-- CREDITOS -->
+			<p:submenu id="m_cre" label="Creditos" icon="pi pi-fw pi-money-bill">
+				<p:submenu id="m_sm7" label="Definiciones" icon="pi pi-fw pi-list">
+					<p:submenu id="m_sm71" label="Submenu 1.1"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk711" value="Link 1.1.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk712" value="Link 1.1.2"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk713" value="Link 1.1.3"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+					<p:submenu id="m_sm72" label="Submenu 1.2"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk721" value="Link 1.2.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+				</p:submenu>
+				<p:submenu id="m_sm8" label="Movimientos" icon="pi pi-fw pi-box">
+					<p:submenu id="m_sm81" label="Submenu 2.1"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk811" value="Link 2.1.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk812" value="Link 2.1.2"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+					<p:submenu id="m_sm82" label="Submenu 2.2"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk821" value="Link 2.2.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+				</p:submenu>
+				<p:submenu id="m_sm9" label="Reportes" icon="pi pi-fw pi-print">
+					<p:submenu id="m_sm91" label="Submenu 2.1"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk911" value="Link 2.1.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+						<p:menuitem id="m_lnk912" value="Link 2.1.2"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+					<p:submenu id="m_sm92" label="Submenu 2.2"
+						icon="pi pi-fw pi-align-left">
+						<p:menuitem id="m_lnk921" value="Link 2.2.1"
+							icon="pi pi-fw pi-align-left" url="#" />
+					</p:submenu>
+				</p:submenu>
+			</p:submenu>
+		</p:submenu>
+	</po:menu>
+
+</ui:composition>

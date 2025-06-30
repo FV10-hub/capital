@@ -1,0 +1,389 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+	<h:head>
+		<script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+		</script>
+	</h:head>
+	<ui:define name="title">Ajustes de Inventario</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4"
+							rendered="#{not stoAjusteInventarioCabeceraController.esVisibleFormulario}">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{stoAjusteInventarioCabeceraController.setEsVisibleFormulario(true)}"
+									update=":form" styleClass="ui-button-success"
+									style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable
+							rendered="#{not stoAjusteInventarioCabeceraController.esVisibleFormulario}"
+							id="dt-ajustes" widgetVar="dtAjuste" var="ajuste"
+							value="#{stoAjusteInventarioCabeceraController.lazyModel}" reflow="true"
+							selection="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabeceraSelected}"
+							rowKey="#{ajuste.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Existencias</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtAjuste').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Tipo Operacion" sortBy="#{ajuste.tipoOperacion}"
+								filterBy="#{ajuste.tipoOperacion}">
+								<h:outputText value="#{ajuste.tipoOperacion}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">Fecha Operacion</f:facet>
+								<h:outputText value="#{ajuste.fechaOperacion}"
+									converter="localDateConverter">
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Nro. Operacion"
+								sortBy="#{ajuste.nroOperacion}"
+								filterBy="#{ajuste.nroOperacion}">
+								<h:outputText
+									value="#{ajuste.nroOperacion}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">Autorizado?</f:facet>
+								<p:toggleSwitch value="#{ajuste.indAutorizadoBoolean}"
+									disabled="true" />
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{ajuste.estado}"
+								filterBy="#{ajuste.estado}">
+								<h:outputText value="#{ajuste.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-eye" update=":form" process="@this"
+									title="Ver Registro"
+									styleClass="edit-button rounded-button ui-button-primary">
+									<f:setPropertyActionListener value="#{ajuste}"
+										target="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabeceraSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash"
+									oncomplete="PF('deleteFacturaDialog').show()">
+									<f:setPropertyActionListener value="#{ajuste}"
+										target="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabeceraSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<p:panel id="manage-ajuste"
+							rendered="#{stoAjusteInventarioCabeceraController.esVisibleFormulario}">
+							<p:toolbar styleClass="mb-4" id="toolbarBotones">
+								<p:toolbarGroup>
+									<p:commandButton value="Guardar" icon="pi pi-save"
+										id="btnGuardar"
+										disabled="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.stoAjusteInventarioDetalleList.size() == 0}"
+										actionListener="#{stoAjusteInventarioCabeceraController.guardar}"
+										update=":form" styleClass="ui-button-success"
+										style="margin-right: .5rem" />
+									<p:commandButton value="Cancelar"
+										icon="pi pi-arrow-circle-left"
+										actionListener="#{stoAjusteInventarioCabeceraController.cleanFields}"
+										update=":form" styleClass="ui-button-info"
+										style="margin-right: .5rem" />
+									<p:commandButton value="Eliminar" icon="pi pi-trash"
+										rendered="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.id != null}"
+										actionListener="#{stoAjusteInventarioCabeceraController.delete}"
+										update=":form" styleClass="ui-button-danger"
+										style="margin-right: .5rem" />
+
+								</p:toolbarGroup>
+							</p:toolbar>
+							<div class="col-12">
+								<div class="card ui-fluid">
+									<h5>Ajuste</h5>
+									<div class="ui-fluid formgrid grid">
+										<div class="field grid md:col-4 flex align-items-center">
+											<p:outputLabel for="fechaOpLb"
+												styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Operacion</p:outputLabel>
+											<div class="col-12 md:col-6">
+												<p:datePicker id="fechaOpLb" showIcon="true"
+														value="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.fechaOperacion}"
+														pattern="dd/MM/yyyy">
+													</p:datePicker>
+											</div>
+										</div>
+										<div class="field grid md:col-4">
+											<p:outputLabel for="obsLb"
+												styleClass="col-12 mb-2 md:col-4 mb-md-0">Observacion</p:outputLabel>
+											<div class="col-12 md:col-8">
+												<p:inputTextarea rows="3" id="obsLb"
+														value="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.observacion}" />
+											</div>
+										</div>
+										<div class="field grid md:col-4 flex align-items-center">
+											<p:outputLabel for="tipoLb"
+												styleClass="col-12 mb-2 md:col-4 mb-md-0">Tipo Ajuste</p:outputLabel>
+											<div class="col-12 md:col-8">
+												<p:selectOneMenu id="tipoLb"
+														value="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.tipoOperacion}">
+														<f:selectItem itemLabel="Seleccione un Tipo"
+															itemValue="#{null}" noSelectionOption="true" />
+														<f:selectItems value="#{stoAjusteInventarioCabeceraController.tipoAjusteList}" />
+													</p:selectOneMenu>
+											</div>
+										</div>
+										<p:divider align="left"><b>Datos de Confirmacion</b></p:divider>
+										<div class="col-12 md:col-6 flex flex-column">
+											<div class="field grid">
+												<p:outputLabel for="nroajusteLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Nro ajuste</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:inputText id="nroajusteLb" disabled="true"
+														placeholder="generacion aut."
+														value="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.nroOperacion}" />
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="indAutLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Autorizado?</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:toggleSwitch id="indAutLb" onIcon="pi pi-check"
+														offIcon="pi pi-times"
+														value="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.indAutorizadoBoolean}" />
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="estadoLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Estado</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:selectOneMenu id="estadoLb"
+														value="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.estado}">
+														<f:selectItem itemLabel="Seleccione un estado"
+															itemValue="#{null}" noSelectionOption="true" />
+														<f:selectItems value="#{stoAjusteInventarioCabeceraController.estadoList}" />
+													</p:selectOneMenu>
+												</div>
+											</div>
+										</div>
+										<div class="col-12 md:col-12 flex flex-row">
+											<div class="col-4 md:col-2">
+												<p:commandButton id="btnAddDetalle" value="Agregar Detalle"
+													icon="pi pi-sync"
+													disabled="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.indAutorizadoBoolean}"
+													onclick="PF('dlgAddDetalle').show()"
+													actionListener="#{stoAjusteInventarioCabeceraController.abrirDialogoAddDetalle}"
+													update=":form:manageDetalle :form:btnLimpiar :form:btnGuardar"
+													styleClass="ui-button-info" style="margin-right: .5rem" />
+											</div>
+											<div class="col-4 md:col-2">
+												<p:commandButton value="Limpiar Detalles" icon="pi pi-bolt"
+													id="btnLimpiar"
+													disabled="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.stoAjusteInventarioDetalleList.size() == 0}"
+													actionListener="#{stoAjusteInventarioCabeceraController.limpiarDetalle}"
+													process="@this" update=":form:dt-detalle :form:btnGuardar"
+													styleClass="ui-button-primary" style="margin-right: .5rem" />
+											</div>
+
+										</div>
+										<h5 class="col-12 md:col-12">Detalle de Cuotas</h5>
+										<div class="col-12 md:col-12">
+											<p:dataTable id="dt-detalle" widgetVar="dtDetalle"
+												var="detalle"
+												value="#{stoAjusteInventarioCabeceraController.stoAjusteInventarioCabecera.stoAjusteInventarioDetalleList}"
+												reflow="true" paginator="true" rows="12" scrollable="true"
+												scrollHeight="300" paginatorPosition="bottom"
+												emptyMessage="No hay Registros">
+
+												<p:column headerText="Nro Orden">
+													<h:outputText value="#{detalle.nroOrden}" />
+												</p:column>
+												<p:column headerText="Articulo">
+													<h:outputText value="#{detalle.stoArticulo.descripcion}" />
+												</p:column>
+												<p:column>
+													<f:facet name="header">Cantidad Inventario</f:facet>
+													<h:outputText value="#{detalle.cantidadFisica}" />
+												</p:column>
+												<p:column exportable="false" headerText="Acciones">
+													<p:commandButton icon="pi pi-pencil"
+														update=":form:manageDetalle :form:lbHeader"
+														process="@this" oncomplete="PF('dlgAddDetalle').show()"
+														styleClass="edit-button rounded-button ui-button-warning">
+														<f:setPropertyActionListener value="#{detalle}"
+															target="#{stoAjusteInventarioCabeceraController.detalle}" />
+													</p:commandButton>
+													<p:commandButton class="ui-button-danger rounded-button"
+														icon="pi pi-trash" process="@this"
+														oncomplete="PF('deleteDetalleDialog').show()">
+														<f:setPropertyActionListener value="#{detalle}"
+															target="#{stoAjusteInventarioCabeceraController.detalle}" />
+													</p:commandButton>
+												</p:column>
+											</p:dataTable>
+										</div>
+									</div>
+								</div>
+							</div>
+						</p:panel>
+
+						<!-- DIALOGOS -->
+						<p:dialog showEffect="fade" modal="true" widgetVar="dlgAddDetalle"
+							responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{stoAjusteInventarioCabeceraController.detalle.id == null ? 'Nuevo' : 'Editar'} Detalle" />
+							</f:facet>
+							<p:outputPanel id="manageDetalle" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="articuloLb">Articulo</p:outputLabel>
+										<p:inputText id="articuloLb"
+											placeholder="Pulse F9 para buscar"
+											value="#{stoAjusteInventarioCabeceraController.detalle.stoArticulo.descripcion}"
+											onkeydown="if (event.keyCode == 120) {
+										 PF('dlgArticulo').show()
+									 }" />
+									</div>
+									<div class="field col-12 md:col-6">
+										<p:outputLabel for="cantidadActualLb">Cantidad Actual</p:outputLabel>
+										<p:spinner id="cantidadActualLb"
+											value="#{stoAjusteInventarioCabeceraController.detalle.cantidadSistema}">
+										</p:spinner>
+									</div>
+									<div class="field  col-12 md:col-6">
+										<p:outputLabel for="cantidadLb">Cantidad Fisica</p:outputLabel>
+										<p:spinner id="cantidadLb"
+											value="#{stoAjusteInventarioCabeceraController.detalle.cantidadFisica}">
+										</p:spinner>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Agregar" icon="pi pi-check"
+									actionListener="#{stoAjusteInventarioCabeceraController.cargaDetalle}"
+									update=":form:dt-detalle"
+									oncomplete="PF('dlgAddDetalle').hide()" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{stoAjusteInventarioCabeceraController.setDetalle(null)}"
+									update=":form:dt-detalle" onclick="PF('dlgAddDetalle').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgArticulo" header="Buscar Articulo"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="dtArticulo" var="articulo"
+								value="#{stoAjusteInventarioCabeceraController.lazyModelArticulos}"
+								id="dt-articulo" paginator="true" rows="10"
+								paginatorPosition="bottom" emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtArticulo').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgArticulo').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:articuloLb :form:cantidadActualLb :form:cantidadLb">
+										<f:setPropertyActionListener value="#{articulo}"
+											target="#{stoAjusteInventarioCabeceraController.stoArticuloSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Codigo" sortBy="#{articulo.codArticulo}"
+									filterBy="#{articulo.codArticulo}">
+									<h:outputText value="#{articulo.codArticulo}" />
+								</p:column>
+								<p:column headerText="Descripcion"
+									sortBy="#{articulo.descripcion}"
+									filterBy="#{articulo.descripcion}">
+									<h:outputText value="#{articulo.descripcion}" />
+								</p:column>
+								<p:column headerText="Precio Unitario"
+									sortBy="#{articulo.precioUnitario}"
+									filterBy="#{articulo.precioUnitario}">
+									<h:outputText value="#{articulo.precioUnitario}">
+										<f:convertNumber pattern="###,###,###.##" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Modulo" sortBy="#{articulo.bsIva.codIva}"
+									filterBy="#{articulo.bsIva.codIva}">
+									<h:outputText value="#{articulo.bsIva.codIva}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+						<!-- DIALOGOS -->
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteDetalleDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el detalle?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{stoAjusteInventarioCabeceraController.eliminaDetalle}"
+								process="@this" oncomplete="PF('deleteDetalleDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteDetalleDialog').hide()" />
+						</p:confirmDialog>
+
+
+						<p:confirmDialog widgetVar="deleteFacturaDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{stoAjusteInventarioCabeceraController.delete}" process="@this"
+								oncomplete="PF('deleteFacturaDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteFacturaDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

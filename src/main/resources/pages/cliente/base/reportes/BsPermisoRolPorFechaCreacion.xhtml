@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+	<h:head>
+		<script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+		</script>
+	</h:head>
+	<ui:define name="title">Reportes de Permisos por Rol</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12 md:col-6">
+					<div class="card ui-fluid">
+						<h5>Parametros</h5>
+						<div class="field grid">
+							<p:outputLabel for="fecdesde"
+								styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Desde</p:outputLabel>
+							<div class="col-12 md:col-10">
+								<p:datePicker id="fecdesde" autocomplete="off"
+									value="#{rptBsPermisoRolController.fecDesde}"
+									pattern="dd/MM/yyyy">
+								</p:datePicker>
+							</div>
+						</div>
+						<div class="field grid">
+							<p:outputLabel for="fechasta"
+								styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Hasta</p:outputLabel>
+							<div class="col-12 md:col-10">
+								<p:datePicker id="fechasta" autocomplete="off"
+									value="#{rptBsPermisoRolController.fecHasta}"
+									pattern="dd/MM/yyyy">
+								</p:datePicker>
+							</div>
+						</div>
+					</div>
+
+					<div class="card">
+						<h5>Procesar</h5>
+						<div class="formgroup-inline flex align-items-center">
+
+							<div class="field col-4 md:col-2">
+								<p:outputLabel for="formato" value="Formato" />
+							</div>
+							<div class="field col-4 md:col-4">
+								<p:selectOneMenu id="formato"
+									value="#{rptBsPermisoRolController.parametrosReporte.formato}">
+									<f:selectItem itemLabel="Selecciona un formato"
+										itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="PDF" itemValue="PDF" />
+									<f:selectItem itemLabel="XLS" itemValue="XLS" />
+								</p:selectOneMenu>
+							</div>
+							<div class="field col-4 md:col-4">
+								<p:commandButton 
+								ajax="false"
+								value="Generar" 
+								icon="pi pi-cloud-download"
+									actionListener="#{rptBsPermisoRolController.downloadReport}"
+									styleClass="ui-button-info" />
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

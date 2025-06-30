@@ -1,0 +1,150 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Articulos</ui:define>
+	<ui:define name="content">
+		<h:form id="form" prependId="false">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{stoArticuloController.cleanFields}"
+									update="manage-articulo"
+									onclick="PF('manageArticuloDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-articulo" widgetVar="dtArticulo"
+							var="articulo" value="#{stoArticuloController.lazyModel}"
+							reflow="true"
+							selection="#{stoArticuloController.stoArticuloSelected}"
+							rowKey="#{articulo.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Articulos</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtArticulo').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Codigo" sortBy="#{articulo.codArticulo}"
+								filterBy="#{articulo.codArticulo}">
+								<h:outputText value="#{articulo.codArticulo}" />
+							</p:column>
+							<p:column headerText="Descripcion"
+								sortBy="#{articulo.descripcion}"
+								filterBy="#{articulo.descripcion}">
+								<h:outputText value="#{articulo.descripcion}" />
+							</p:column>
+							<p:column headerText="Precio Unitario"
+								sortBy="#{articulo.precioUnitario}"
+								filterBy="#{articulo.precioUnitario}">
+								<h:outputText value="#{articulo.precioUnitario}">
+									<f:convertNumber pattern="###,###,###.##" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Modulo" sortBy="#{articulo.bsIva.codIva}"
+								filterBy="#{articulo.bsIva.codIva}">
+								<h:outputText value="#{articulo.bsIva.codIva}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update="form manage-articulo lbHeader" process="@this"
+									oncomplete="PF('manageArticuloDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{articulo}"
+										target="#{stoArticuloController.stoArticuloSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteArticuloDialog').show()">
+									<f:setPropertyActionListener value="#{articulo}"
+										target="#{stoArticuloController.stoArticuloSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageArticuloDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{stoArticuloController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-articulo" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="codArticulo">Codigo</p:outputLabel>
+										<p:inputText id="codArticulo"
+											value="#{stoArticuloController.stoArticulo.codArticulo}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="descripcion">Nombre</p:outputLabel>
+										<p:inputText id="descripcion"
+											value="#{stoArticuloController.stoArticulo.descripcion}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="precio">Precio Unitario</p:outputLabel>
+										<p:inputNumber id="precio" decimalSeparator="."
+											thousandSeparator=","
+											value="#{stoArticuloController.stoArticulo.precioUnitario}" />
+									</div>
+									<div class="field flex flex-column">
+										<p:outputLabel for="inv">Es Inventariable?</p:outputLabel>
+										<p:selectBooleanCheckbox id="inv"
+											value="#{stoArticuloController.stoArticulo.indInventariableAux}" />
+									</div>
+
+									<div class="field">
+										<p:outputLabel for="ivalb">Impuesto</p:outputLabel>
+										<p:selectOneMenu id="ivalb" required="true"
+											value="#{stoArticuloController.stoArticulo.bsIva.id}">
+											<f:selectItem itemLabel="Seleccione un Impuesto"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{stoArticuloController.lazyIvaList}"
+												var="iva" itemLabel="#{iva.descripcion}"
+												itemValue="#{iva.id}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{stoArticuloController.guardar}"
+									update="form, manage-articulo" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{stoArticuloController.cleanFields}"
+									update="form" onclick="PF('manageArticuloDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteArticuloDialog"
+							showEffect="fade" width="300"
+							message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{stoArticuloController.delete}" process="@this"
+								oncomplete="PF('deleteArticuloDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteArticuloDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

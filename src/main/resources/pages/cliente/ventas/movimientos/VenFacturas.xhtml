@@ -1,0 +1,1017 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+	<h:head>
+	</h:head>
+	<ui:define name="title">Facturas Venta</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<script type="text/javascript">
+				window.onload = function() {
+					// Esperar hasta que se complete la carga dinámica del botón
+					const observer = new MutationObserver(function(mutations) {
+						mutations.forEach(function(mutation) {
+							// Verificar si el botón está ahora en el DOM
+							const boton = document
+									.getElementById('form:btnImprimirReporte');
+							if (boton) {
+								console.log('Botón encontrado:', boton);
+								boton.addEventListener('click', function() {
+									console.log('PASOO');
+									setTimeout(function() {
+										PF('imprimirDialog').hide();
+										PrimeFaces.current().ajax().update(
+												':form:messages',
+												':form:dt-facturas');
+									}, 2000);
+								});
+
+								observer.disconnect(); // Detener la observación después de encontrar el botón
+							}
+						});
+					});
+					observer.observe(document.body, {
+						childList : true,
+						subtree : true
+					});
+
+				};
+			</script>
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4"
+							rendered="#{not venFacturasController.esVisibleFormulario}">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus" id="btnNuevo"
+									actionListener="#{venFacturasController.setEsVisibleFormulario(true)}"
+									update=":form" styleClass="ui-button-success"
+									style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable
+							rendered="#{not venFacturasController.esVisibleFormulario}"
+							id="dt-facturas" widgetVar="dtfactura" var="factura"
+							value="#{venFacturasController.lazyModel}" reflow="true"
+							selection="#{venFacturasController.venFacturaCabeceraSelected}"
+							rowKey="#{factura.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Facturas</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtfactura').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Cliente"
+								sortBy="#{factura.cobCliente.bsPersona.nombreCompleto}"
+								filterBy="#{factura.cobCliente.bsPersona.nombreCompleto}">
+								<h:outputText
+									value="#{factura.cobCliente.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column headerText="Vendedor"
+								sortBy="#{factura.venVendedor.bsPersona.nombreCompleto}"
+								filterBy="#{factura.venVendedor.bsPersona.nombreCompleto}">
+								<h:outputText
+									value="#{factura.venVendedor.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">Fecha factura</f:facet>
+								<h:outputText value="#{factura.fechaFactura}"
+									converter="localDateConverter">
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Nro. Factura"
+								sortBy="#{factura.nroFacturaCompleto}"
+								filterBy="#{factura.nroFacturaCompleto}">
+								<h:outputText value="#{factura.nroFacturaCompleto}" />
+							</p:column>
+							<p:column headerText="Monto Factura"
+								sortBy="#{factura.montoTotalFactura}">
+								<h:outputText value="#{factura.montoTotalFactura}">
+									<f:convertNumber currencySymbol="Gs." pattern="###,###,###" />
+								</h:outputText>
+							</p:column>
+							<p:column>
+								<f:facet name="header">Impreso?</f:facet>
+								<p:toggleSwitch value="#{factura.indImpresoBoolean}"
+									disabled="true" />
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{factura.estado}"
+								filterBy="#{factura.estado}">
+								<h:outputText value="#{factura.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-eye" update=":form" process="@this"
+									title="Ver Registro"
+									styleClass="edit-button rounded-button ui-button-primary">
+									<f:setPropertyActionListener value="#{factura}"
+										target="#{venFacturasController.venFacturaCabeceraSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash"
+									oncomplete="PF('deleteFacturaDialog').show()">
+									<f:setPropertyActionListener value="#{factura}"
+										target="#{venFacturasController.venFacturaCabeceraSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<p:panel id="manage-factura"
+							rendered="#{venFacturasController.esVisibleFormulario}">
+							<p:toolbar styleClass="mb-4" id="toolbarBotones">
+								<p:toolbarGroup>
+									<p:commandButton value="Guardar" icon="pi pi-save"
+										id="btnGuardar"
+										disabled="#{venFacturasController.venFacturaCabecera.venFacturaDetalleList.size() == 0 || venFacturasController.venFacturaCabecera.bsTalonario.id == null || venFacturasController.estaCobrado}"
+										actionListener="#{venFacturasController.guardar}"
+										update=":form" styleClass="ui-button-success"
+										style="margin-right: .5rem" />
+									<p:commandButton value="Cancelar" id="btnCancelar"
+										icon="pi pi-arrow-circle-left"
+										actionListener="#{venFacturasController.cleanFields}"
+										update=":form" styleClass="ui-button-info"
+										style="margin-right: .5rem" />
+									<p:commandButton
+										value="#{venFacturasController.estaCobrado ? 'Cobrado' : 'Cobrar'}"
+										id="btnCobrar"
+										disabled="#{venFacturasController.venFacturaCabecera.venCondicionVenta.codCondicion != 'CON'}"
+										icon="pi pi-money-bill"
+										rendered="#{venFacturasController.venFacturaCabecera.id != null}"
+										update=":form:manageCobroValor"
+										onclick="PF('dlgCobros').show()"
+										styleClass="ui-button-primary" style="margin-right: .5rem" />
+									<p:commandButton
+										value="#{venFacturasController.venFacturaCabecera.indImpresoBoolean ? 'Impreso' : 'Imprimir'}"
+										id="btnImprimir" onclick="PF('imprimirDialog').show()"
+										disabled="#{venFacturasController.venFacturaCabecera.indImpresoBoolean}"
+										icon="pi pi-file-pdf" styleClass="ui-button-warning"
+										style="margin-right: .5rem" />
+									<p:commandButton value="Eliminar" icon="pi pi-trash"
+										disabled="#{venFacturasController.estaCobrado || venFacturasController.venFacturaCabecera.indImpresoBoolean}"
+										rendered="#{venFacturasController.venFacturaCabecera.id != null}"
+										actionListener="#{venFacturasController.delete}"
+										update=":form" styleClass="ui-button-danger"
+										style="margin-right: .5rem" />
+
+								</p:toolbarGroup>
+							</p:toolbar>
+							<div class="col-12">
+								<div class="card ui-fluid">
+									<h5>Facturas</h5>
+									<div class="ui-fluid formgrid grid">
+										<div class="field grid md:col-4 flex align-items-center">
+											<p:outputLabel for="nroDesembolsoLb"
+												styleClass="col-12 mb-2 md:col-6 mb-md-0">Comprobante Asociado(opcional)</p:outputLabel>
+											<div class="col-12 md:col-6">
+												<p:inputText id="nroDesembolsoLb"
+													placeholder="Pulse F9 para buscar"
+													value="#{venFacturasController.venFacturaCabecera.idComprobate}"
+													onkeydown="if (event.keyCode == 120) {
+						                                             PF('dlgDesembolso').show()
+						                                         }">
+													<f:convertNumber currencySymbol="Gs." pattern="###,###,###" />
+												</p:inputText>
+											</div>
+										</div>
+										<div class="field grid md:col-4">
+											<p:outputLabel for="clienteLb"
+												styleClass="col-12 mb-2 md:col-4 mb-md-0">Cliente</p:outputLabel>
+											<div class="col-12 md:col-8">
+												<p:inputText id="clienteLb"
+													placeholder="Pulse F9 para buscar"
+													value="#{venFacturasController.venFacturaCabecera.cobCliente.bsPersona.nombreCompleto}"
+													onkeydown="if (event.keyCode == 120) {
+														PF('dlgCliente').show()
+													}" />
+											</div>
+										</div>
+										<div class="field grid md:col-4">
+											<p:outputLabel for="vendedorLb"
+												styleClass="col-12 mb-2 md:col-4 mb-md-0">Vendedor</p:outputLabel>
+											<div class="col-12 md:col-8">
+												<p:inputText id="vendedorLb"
+													placeholder="Pulse F9 para buscar"
+													value="#{venFacturasController.venFacturaCabecera.venVendedor.bsPersona.nombreCompleto}"
+													onkeydown="if (event.keyCode == 120) {
+														PF('dlgVendedor').show()
+													}" />
+											</div>
+										</div>
+										<p:divider />
+										<div
+											class="col-12 md:col-12 flex align-items-center justify-content-evenly flex-wrap">
+											<div class="field grid">
+												<p:outputLabel for="fechaSolLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Factura</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:datePicker id="fechaSolLb" showIcon="true"
+														value="#{venFacturasController.venFacturaCabecera.fechaFactura}"
+														pattern="dd/MM/yyyy">
+													</p:datePicker>
+												</div>
+											</div>
+											<div class="field grid  md:col-4">
+												<p:outputLabel for="obsLb"
+													styleClass="col-12 mb-2 md:col-4 mb-md-0">Observacion</p:outputLabel>
+												<div class="col-12 md:col-8">
+													<p:inputTextarea rows="3" id="obsLb"
+														value="#{venFacturasController.venFacturaCabecera.observacion}" />
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="impresoLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Impreso?</p:outputLabel>
+												<div class="col-12 md:col-4">
+													<p:toggleSwitch id="impresoLb" onIcon="pi pi-check"
+														offIcon="pi pi-times" disabled="true"
+														value="#{venFacturasController.venFacturaCabecera.indImpresoBoolean}" />
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="tipoFacLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Tipo Factura</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:inputText id="tipoFacLb" disabled="true"
+														value="#{venFacturasController.venFacturaCabecera.tipoFactura}" />
+												</div>
+											</div>
+										</div>
+										<p:divider />
+										<div class="col-12 md:col-6 flex flex-column">
+											<div class="field grid">
+												<p:outputLabel for="nrofacturaLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Nro factura</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:inputText id="nrofacturaLb" disabled="true"
+														placeholder="generacion aut."
+														value="#{venFacturasController.venFacturaCabecera.nroFacturaCompleto}" />
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="talonarioLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Talonario</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:inputText id="talonarioLb"
+														placeholder="Pulse F9 para buscar"
+														value="#{venFacturasController.venFacturaCabecera.bsTalonario.bsTipoComprobante.descripcion}"
+														onkeydown="if (event.keyCode == 120) {
+						                                             PF('dlgTalonario').show()
+						                                         }">
+														<p:ajax event="change" update=":form:btnGuardar" />
+													</p:inputText>
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="condicionLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Condicion Venta</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:inputText id="condicionLb"
+														placeholder="Pulse F9 para buscar"
+														value="#{venFacturasController.venFacturaCabecera.venCondicionVenta.descripcion}"
+														onkeydown="if (event.keyCode == 120) {
+						                                             PF('dlgConVenta').show()
+						                                         }">
+														<p:ajax event="change" update=":form:btnGuardar" />
+													</p:inputText>
+												</div>
+											</div>
+											<div class="field grid">
+												<p:outputLabel for="estadoLb"
+													styleClass="col-12 mb-2 md:col-6 mb-md-0">Estado</p:outputLabel>
+												<div class="col-12 md:col-6">
+													<p:selectOneMenu id="estadoLb"
+														value="#{venFacturasController.venFacturaCabecera.estado}">
+														<f:selectItem itemLabel="Seleccione un estado"
+															itemValue="#{null}" noSelectionOption="true" />
+														<f:selectItems value="#{venFacturasController.estadoList}" />
+													</p:selectOneMenu>
+												</div>
+											</div>
+										</div>
+										<div class="col-12 md:col-12 flex flex-row">
+											<div class="col-4 md:col-2">
+												<p:commandButton id="btnAddDetalle" value="Agregar Detalle"
+													icon="pi pi-sync"
+													disabled="#{venFacturasController.venFacturaCabecera.idComprobate != null}"
+													onclick="PF('dlgAddDetalle').show()"
+													actionListener="#{venFacturasController.abrirDialogoAddDetalle}"
+													update=":form:manageDetalle :form:btnLimpiar :form:btnGuardar"
+													styleClass="ui-button-info" style="margin-right: .5rem" />
+											</div>
+											<div class="col-4 md:col-2">
+												<p:commandButton value="Limpiar Detalles" icon="pi pi-bolt"
+													id="btnLimpiar"
+													disabled="#{venFacturasController.venFacturaCabecera.venFacturaDetalleList.size() == 0}"
+													actionListener="#{venFacturasController.limpiarDetalle}"
+													process="@this" update=":form:dt-detalle :form:btnGuardar"
+													styleClass="ui-button-primary" style="margin-right: .5rem" />
+											</div>
+
+										</div>
+										<h5 class="col-12 md:col-12">Detalle de Cuotas</h5>
+										<div class="col-12 md:col-12">
+											<p:dataTable id="dt-detalle" widgetVar="dtDetalle"
+												var="detalle"
+												value="#{venFacturasController.venFacturaCabecera.venFacturaDetalleList}"
+												reflow="true" paginator="true" rows="12" scrollable="true"
+												scrollHeight="300" paginatorPosition="bottom"
+												emptyMessage="No hay Registros">
+
+												<p:column headerText="Nro Orden">
+													<h:outputText value="#{detalle.nroOrden}" />
+												</p:column>
+												<p:column headerText="Articulo">
+													<h:outputText value="#{detalle.stoArticulo.descripcion}" />
+												</p:column>
+												<p:column>
+													<f:facet name="header">Cantidad</f:facet>
+													<f:facet name="footer">
+														<h5>Totales:</h5>
+													</f:facet>
+													<h:outputText value="#{detalle.cantidad}" />
+												</p:column>
+												<p:column headerText="Gravada">
+													<f:facet name="footer">
+														<h:outputText
+															value="#{venFacturasController.venFacturaCabecera.montoTotalGravada}">
+															<f:convertNumber pattern="###,###,###" />
+														</h:outputText>
+													</f:facet>
+													<h:outputText value="#{detalle.montoGravado}">
+														<f:convertNumber pattern="###,###,###" />
+													</h:outputText>
+												</p:column>
+												<p:column headerText="Monto Exenta">
+													<f:facet name="footer">
+														<h:outputText
+															value="#{venFacturasController.venFacturaCabecera.montoTotalExenta}">
+															<f:convertNumber pattern="###,###,###" />
+														</h:outputText>
+													</f:facet>
+													<h:outputText value="#{detalle.montoExento}">
+														<f:convertNumber pattern="###,###,###" />
+													</h:outputText>
+												</p:column>
+												<p:column headerText="IVA" style="width: 10%;">
+													<f:facet name="footer">
+														<h:outputText
+															value="#{venFacturasController.venFacturaCabecera.montoTotalIva}">
+															<f:convertNumber pattern="###,###,###" />
+														</h:outputText>
+													</f:facet>
+													<h:outputText value="#{detalle.montoIva}">
+														<f:convertNumber pattern="###,###,###" />
+													</h:outputText>
+												</p:column>
+												<p:column headerText="Total Linea" style="width: 10%;">
+													<f:facet name="footer">
+														<h:outputText
+															value="#{venFacturasController.venFacturaCabecera.montoTotalFactura}">
+															<f:convertNumber pattern="###,###,###" />
+														</h:outputText>
+													</f:facet>
+													<h:outputText value="#{detalle.montoLinea}">
+														<f:convertNumber pattern="###,###,###" />
+													</h:outputText>
+												</p:column>
+												<p:column exportable="false" headerText="Acciones">
+													<p:commandButton icon="pi pi-pencil"
+														update=":form:manageDetalle :form:lbHeader"
+														process="@this" oncomplete="PF('dlgAddDetalle').show()"
+														styleClass="edit-button rounded-button ui-button-warning">
+														<f:setPropertyActionListener value="#{detalle}"
+															target="#{venFacturasController.detalle}" />
+													</p:commandButton>
+													<p:commandButton class="ui-button-danger rounded-button"
+														icon="pi pi-trash" process="@this"
+														oncomplete="PF('deleteDetalleDialog').show()">
+														<f:setPropertyActionListener value="#{detalle}"
+															target="#{venFacturasController.detalle}" />
+													</p:commandButton>
+												</p:column>
+											</p:dataTable>
+										</div>
+									</div>
+								</div>
+							</div>
+						</p:panel>
+
+						<!-- DIALOGOS -->
+						<p:dialog showEffect="fade" modal="true" widgetVar="dlgAddDetalle"
+							responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{venFacturasController.detalle.id == null ? 'Nuevo' : 'Editar'} Detalle" />
+							</f:facet>
+							<p:outputPanel id="manageDetalle" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="articuloLb">Articulo</p:outputLabel>
+										<p:inputText id="articuloLb"
+											placeholder="Pulse F9 para buscar"
+											value="#{venFacturasController.detalle.stoArticulo.descripcion}"
+											onkeydown="if (event.keyCode == 120) {
+										 PF('dlgArticulo').show()
+									 }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="codIvaLb">Impuesto</p:outputLabel>
+										<p:inputText id="codIvaLb" disabled="true"
+											value="#{venFacturasController.detalle.codIva}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="cantidadLb">Cantidad</p:outputLabel>
+										<p:spinner id="cantidadLb"
+											value="#{venFacturasController.detalle.cantidad}">
+											<p:ajax
+												listener="#{venFacturasController.calculaTotalLineaDetalle}"
+												event="change" update=":form:totalineaLb" />
+										</p:spinner>
+									</div>
+									<div class="field">
+										<p:outputLabel for="precioLb">Precio Unitario</p:outputLabel>
+										<p:inputNumber id="precioLb"
+											value="#{venFacturasController.detalle.precioUnitario}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="totalineaLb">Total Linea</p:outputLabel>
+										<p:inputNumber id="totalineaLb"
+											value="#{venFacturasController.detalle.montoLinea}" />
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{venFacturasController.agregarDetalle}"
+									update=":form:dt-detalle"
+									oncomplete="PF('dlgAddDetalle').hide()" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{venFacturasController.setDetalle(null)}"
+									update=":form:dt-detalle" onclick="PF('dlgAddDetalle').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+
+						<p:dialog widgetVar="dlgDesembolso" header="Buscar Desembolso"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="dtDesembolso" var="desembolso"
+								value="#{venFacturasController.lazyModelDesembolso}"
+								id="dt-desembolso" paginator="true" rows="10"
+								paginatorPosition="bottom" emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtDesembolso').filter()"
+												placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width: 3rem; text-align: center">
+									<p:commandButton oncomplete="PF('dlgDesembolso').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:nroDesembolsoLb :form:clienteLb :form:vendedorLb :form:tipoFacLb :form:dt-detalle :form:btnGuardar :form:btnAddDetalle">
+										<f:setPropertyActionListener value="#{desembolso}"
+											target="#{venFacturasController.creDesembolsoCabecera}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nro. Desembolso"
+									sortBy="#{desembolso.nroDesembolso}"
+									filterBy="#{desembolso.nroDesembolso}">
+									<h:outputText value="#{desembolso.nroDesembolso}">
+										<f:convertNumber pattern="###,###,###" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Cliente"
+									sortBy="#{desembolso.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}"
+									filterBy="#{desembolso.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}">
+									<h:outputText
+										value="#{desembolso.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Vendedor"
+									sortBy="#{desembolso.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}"
+									filterBy="#{desembolso.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}">
+									<h:outputText
+										value="#{desembolso.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">Fecha desembolso</f:facet>
+									<h:outputText value="#{desembolso.fechaDesembolso}"
+										converter="localDateConverter">
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Monto Credito"
+									sortBy="#{desembolso.montoTotalCapital}">
+									<h:outputText value="#{desembolso.montoTotalCapital}">
+										<f:convertNumber currencySymbol="Gs." pattern="###,###,###" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgCliente" header="Buscar Clientes"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="dtCliente" var="cliente"
+								value="#{venFacturasController.lazyModelCliente}"
+								id="dt-cliente" paginator="true" rows="10"
+								paginatorPosition="bottom" emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtCliente').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgCliente').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:clienteLb">
+										<f:setPropertyActionListener value="#{cliente}"
+											target="#{venFacturasController.venFacturaCabecera.cobCliente}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre"
+									sortBy="#{cliente.bsPersona.nombreCompleto}"
+									filterBy="#{cliente.bsPersona.nombreCompleto}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{cliente.bsPersona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento"
+									sortBy="#{cliente.bsPersona.documento}"
+									filterBy="#{cliente.bsPersona.documento}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{cliente.bsPersona.documento}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgVendedor" header="Buscar Vendedor"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable id="dt-vendedor" widgetVar="dtVenVendedor"
+								var="vendedor"
+								value="#{venFacturasController.lazyModelVenVendedor}"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtVenVendedor').filter()"
+												placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgVendedor').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:vendedorLb">
+										<f:setPropertyActionListener value="#{vendedor}"
+											target="#{venFacturasController.venFacturaCabecera.venVendedor}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre"
+									sortBy="#{vendedor.bsPersona.nombreCompleto}"
+									filterBy="#{vendedor.bsPersona.nombreCompleto}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{vendedor.bsPersona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento"
+									sortBy="#{vendedor.bsPersona.documento}"
+									filterBy="#{vendedor.bsPersona.documento}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{vendedor.bsPersona.documento}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgTalonario" header="Buscar Talonario"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="dtTalonario" var="talonario"
+								value="#{venFacturasController.lazyModelTalonario}"
+								id="dt-talonario" paginator="true" rows="10"
+								paginatorPosition="bottom" emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtTalonario').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgTalonario').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:talonarioLb :form:btnGuardar">
+										<f:setPropertyActionListener value="#{talonario}"
+											target="#{venFacturasController.bsTalonarioSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Timbrado"
+									sortBy="#{talonario.bsTimbrado.nroTimbrado}"
+									filterBy="#{talonario.bsTimbrado.nroTimbrado}">
+									<h:outputText value="#{talonario.bsTimbrado.nroTimbrado}" />
+								</p:column>
+								<p:column headerText="Establecimiento"
+									sortBy="#{talonario.bsTimbrado.codEstablecimiento}"
+									filterBy="#{talonario.bsTimbrado.codEstablecimiento}">
+									<h:outputText
+										value="#{talonario.bsTimbrado.codEstablecimiento}" />
+								</p:column>
+								<p:column headerText="Expedicion"
+									sortBy="#{talonario.bsTimbrado.codExpedicion}"
+									filterBy="#{talonario.bsTimbrado.codExpedicion}">
+									<h:outputText value="#{talonario.bsTimbrado.codExpedicion}" />
+								</p:column>
+								<p:column headerText="Comprobante"
+									sortBy="#{talonario.bsTipoComprobante.descripcion}"
+									filterBy="#{talonario.bsTipoComprobante.descripcion}">
+									<h:outputText
+										value="#{talonario.bsTipoComprobante.descripcion}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgArticulo" header="Buscar Articulo"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="dtArticulo" var="articulo"
+								value="#{venFacturasController.lazyModelArticulos}"
+								id="dt-articulo" paginator="true" rows="10"
+								paginatorPosition="bottom" emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtArticulo').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgArticulo').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:articuloLb :form:codIvaLb :form:cantidadLb :form:precioLb :form:totalineaLb">
+										<f:setPropertyActionListener value="#{articulo}"
+											target="#{venFacturasController.stoArticuloSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Codigo" sortBy="#{articulo.codArticulo}"
+									filterBy="#{articulo.codArticulo}">
+									<h:outputText value="#{articulo.codArticulo}" />
+								</p:column>
+								<p:column headerText="Descripcion"
+									sortBy="#{articulo.descripcion}"
+									filterBy="#{articulo.descripcion}">
+									<h:outputText value="#{articulo.descripcion}" />
+								</p:column>
+								<p:column headerText="Precio Unitario"
+									sortBy="#{articulo.precioUnitario}"
+									filterBy="#{articulo.precioUnitario}">
+									<h:outputText value="#{articulo.precioUnitario}">
+										<f:convertNumber pattern="###,###,###.##" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Modulo" sortBy="#{articulo.bsIva.codIva}"
+									filterBy="#{articulo.bsIva.codIva}">
+									<h:outputText value="#{articulo.bsIva.codIva}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgConVenta" header="Buscar Condicion Venta"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable id="dt-condicion" widgetVar="dtVenCondicion"
+								var="condicion"
+								value="#{venFacturasController.lazyModelVenCondicionVenta}"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtVenCondicion').filter()"
+												placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgConVenta').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:condicionLb :form:btnCobrar">
+										<f:setPropertyActionListener value="#{condicion}"
+											target="#{venFacturasController.venFacturaCabecera.venCondicionVenta}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Codigo" sortBy="#{condicion.codCondicion}"
+									filterBy="#{condicion.codCondicion}">
+									<h:outputText value="#{condicion.codCondicion}" />
+								</p:column>
+								<p:column headerText="Descripcion"
+									sortBy="#{condicion.descripcion}"
+									filterBy="#{condicion.descripcion}">
+									<h:outputText value="#{condicion.descripcion}" />
+								</p:column>
+								<p:column headerText="Plazo" sortBy="#{condicion.plazo}"
+									filterBy="#{condicion.plazo}">
+									<h:outputText value="#{condicion.plazo}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog showEffect="fade" modal="true" widgetVar="dlgCobros"
+							responsive="true" width="800">
+							<f:facet name="header">
+								<div class="field flex justify-content-start align-items-center">
+									<p:commandButton value="Agregar Valor" icon="pi pi-plus"
+										disabled="#{venFacturasController.estaCobrado}"
+										class="ui-button-success" onclick="PF('dlgAddCobro').show()"
+										update=":form:manageCobroValor" />
+									<p:commandButton value="Guardar" icon="pi pi-check"
+										class="ui-button-primary ml-1"
+										onclick="PF('dlgCobros').hide()" update=":form:dt-cobros" />
+									<p:commandButton value="Limpiar Valores" icon="pi pi-times"
+										disabled="#{venFacturasController.estaCobrado}"
+										actionListener="#{venFacturasController.limpiarCobroDetalle}"
+										update=":form:dt-cobros :form:montoSaldoCobroLb"
+										class="ui-button-secondary ml-1" />
+
+								</div>
+								<div
+									class="ui-fluid formgrid grid flex flex-rowalign-items-center">
+									<div class="field grid">
+										<h5 class="ml-2 text-sm">Total a Cobrar:</h5>
+										<h:outputText class="ml-2 text-sm"
+											value="#{venFacturasController.venFacturaCabecera.montoTotalFactura}">
+											<f:convertNumber pattern="###,###,###" />
+										</h:outputText>
+									</div>
+									<div class="field grid ml-3">
+										<h5 class="text-sm">Saldo a Cobrar:</h5>
+										<h:outputText class="ml-2 text-sm" id="montoSaldoCobroLb"
+											value="#{venFacturasController.getResultadoResta()}">
+											<f:convertNumber pattern="###,###,###.##" />
+										</h:outputText>
+									</div>
+								</div>
+							</f:facet>
+							<p:dataTable id="dt-cobros" widgetVar="dtCobroValores"
+								var="cobros" value="#{venFacturasController.cobrosValoresList}"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtCobroValores').filter()"
+												placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column headerText="Nro. Orden" sortBy="#{cobros.nroOrden}"
+									filterBy="#{cobros.nroOrden}">
+									<h:outputText value="#{cobros.nroOrden}" />
+								</p:column>
+								<p:column headerText="Nro. Valor" sortBy="#{cobros.nroValor}">
+									<h:outputText value="#{cobros.nroValor}">
+										<f:convertNumber pattern="###,###,###" />
+									</h:outputText>
+								</p:column>
+								<p:column>
+									<f:facet name="header">Fecha Valor</f:facet>
+									<h:outputText value="#{cobros.fechaValor}"
+										converter="localDateConverter">
+									</h:outputText>
+								</p:column>
+								<p:column>
+									<f:facet name="header">Fecha Vencimiento Valor</f:facet>
+									<f:facet name="footer">
+										<h5>Totales:</h5>
+									</f:facet>
+									<h:outputText value="#{cobros.fechaVencimiento}"
+										converter="localDateConverter">
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Monto Valor">
+									<f:facet name="footer">
+										<h:outputText value="#{venFacturasController.montoTotalCobro}">
+											<f:convertNumber pattern="###,###,###" />
+										</h:outputText>
+									</f:facet>
+									<h:outputText value="#{cobros.montoValor}">
+										<f:convertNumber pattern="###,###,###" />
+									</h:outputText>
+								</p:column>
+
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog showEffect="fade" modal="true" widgetVar="dlgAddCobro"
+							responsive="true">
+							<p:outputPanel id="manageCobroValor" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="tipoValorLb">Tipo Valor</p:outputLabel>
+										<p:inputText id="tipoValorLb"
+											placeholder="Pulse F9 para buscar"
+											value="#{venFacturasController.cobCobrosValoresSelected.bsTipoValor.descripcion}"
+											onkeydown="if (event.keyCode == 120) {
+												PF('dlgTipoValor').show()
+											}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="nroValorLb">Nro Valor</p:outputLabel>
+										<p:inputText id="nroValorLb"
+											value="#{venFacturasController.cobCobrosValoresSelected.nroValor}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="montoValorLb">Monto Valor</p:outputLabel>
+										<p:inputNumber id="montoValorLb"
+											value="#{venFacturasController.cobCobrosValoresSelected.montoValor}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="fechaValorLb">Fecha Valor</p:outputLabel>
+										<p:datePicker id="fechaValorLb" showIcon="true"
+											value="#{venFacturasController.cobCobrosValoresSelected.fechaValor}"
+											pattern="dd/MM/yyyy">
+										</p:datePicker>
+									</div>
+									<div class="field">
+										<p:outputLabel for="fechaVencimientoLb">Fecha Vencimiento</p:outputLabel>
+										<p:datePicker id="fechaVencimientoLb" showIcon="true"
+											value="#{venFacturasController.cobCobrosValoresSelected.fechaVencimiento}"
+											pattern="dd/MM/yyyy">
+										</p:datePicker>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+							<f:facet name="footer">
+								<p:commandButton value="Agregar" icon="pi pi-check"
+									actionListener="#{venFacturasController.addCobroDetalle}"
+									update=":form:dt-cobros :form:montoSaldoCobroLb"
+									oncomplete="PF('dlgAddCobro').hide()" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{venFacturasController.setCobCobrosValoresSelected(null)}"
+									update=":form:dt-cobros" onclick="PF('dlgAddCobro').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgTipoValor" header="Buscar Tipo Valor"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable id="dt-tipoValor" widgetVar="dtTipoValor"
+								var="tipoValor"
+								value="#{venFacturasController.lazyModelTipoValor}"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtTipoValor').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgTipoValor').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:tipoValorLb">
+										<f:setPropertyActionListener value="#{tipoValor}"
+											target="#{venFacturasController.cobCobrosValoresSelected.bsTipoValor}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Modulo"
+									sortBy="#{tipoValor.bsModulo.nombre}"
+									filterBy="#{tipoValor.bsModulo.nombre}">
+									<h:outputText value="#{tipoValor.bsModulo.nombre}" />
+								</p:column>
+								<p:column headerText="Codigo" sortBy="#{tipoValor.codTipo}"
+									filterBy="#{tipoValor.codTipo}">
+									<h:outputText value="#{tipoValor.codTipo}" />
+								</p:column>
+								<p:column headerText="Descripcion"
+									sortBy="#{tipoValor.descripcion}"
+									filterBy="#{tipoValor.descripcion}">
+									<h:outputText value="#{tipoValor.descripcion}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgNoTieneHabilitacion" modal="true"
+							responsive="true" closable="false" width="400" showEffect="fade"
+							hideEffect="fade">
+							<div
+								class="flex flex-column align-items-center align-items-center">
+								<h4>¡Atención!</h4>
+								<i class="pi pi-info-circle ui-color-danger"
+									style="font-size: 5rem; color: #D32F2F;"></i>
+								<h5 class="mt-3">EL USUARIO NO HABILITACION</h5>
+								<p class="mb-0">¡POR FAVOR CREA UNA UNA HABILITACION PARA
+									ESTA OPERACION!</p>
+							</div>
+
+							<f:facet name="footer">
+								<p:commandButton value="Habilitar Caja"
+									icon="pi pi-angle-double-right"
+									styleClass="ui-button-outlined ui-button-info"
+									actionListener="#{venFacturasController.redireccionarAHabilitaciones}" />
+							</f:facet>
+						</p:dialog>
+
+						<!-- DIALOGOS -->
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteDetalleDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el detalle?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{venFacturasController.eliminaDetalle}"
+								process="@this" oncomplete="PF('deleteDetalleDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteDetalleDialog').hide()" />
+						</p:confirmDialog>
+
+
+						<p:confirmDialog widgetVar="deleteFacturaDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{venFacturasController.delete}" process="@this"
+								oncomplete="PF('deleteFacturaDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteFacturaDialog').hide()" />
+						</p:confirmDialog>
+
+						<p:confirmDialog widgetVar="imprimirDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea Imprimir?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check" ajax="false"
+								id="btnImprimirReporte" onclick="handleImprimirButtonClick();"
+								actionListener="#{venFacturasController.imprimir}">
+							</p:commandButton>
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('imprimirDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+			<script>
+				function handleImprimirButtonClick() {
+					setTimeout(function() {
+						PF('imprimirDialog').hide();
+						window.location.reload();
+					}, 4000);
+				}
+				PrimeFaces.locales['es'] = {
+						closeText : 'Cerrar',
+						prevText : 'Anterior',
+						nextText : 'Siguiente',
+						monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+								'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+								'Noviembre', 'Diciembre' ],
+						monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+								'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+						dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+								'Jueves', 'Viernes', 'Sábado' ],
+						dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+								'Sab' ],
+						dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+						weekHeader : 'Semana',
+						firstDay : 1,
+						isRTL : false,
+						showMonthAfterYear : false,
+						yearSuffix : '',
+						timeOnlyTitle : 'Sólo hora',
+						timeText : 'Tiempo',
+						hourText : 'Hora',
+						minuteText : 'Minuto',
+						secondText : 'Segundo',
+						millisecondText : 'Milisegundo',
+						currentText : 'Fecha actual',
+						ampm : false,
+						month : 'Mes',
+						week : 'Semana',
+						day : 'Día',
+						allDayText : 'Todo el día',
+						today : 'Hoy',
+						clear : 'Claro'
+					};
+			</script>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

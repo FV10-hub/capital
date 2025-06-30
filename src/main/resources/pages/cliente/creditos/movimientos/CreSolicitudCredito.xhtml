@@ -1,0 +1,395 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+	<h:head>
+		<script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+		</script>
+	</h:head>
+	<ui:define name="title">Solicitudes de Creditos</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{creSolicitudCreditoController.cleanFields}"
+									update=":form:manage-solicitud :form:headerLb"
+									onclick="PF('manageSolicitudDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-solicitud" widgetVar="dtSolicitud"
+							var="solicitud"
+							value="#{creSolicitudCreditoController.lazyModel}" reflow="true"
+							selection="#{creSolicitudCreditoController.creSolicitudCreditoSelected}"
+							rowKey="#{solicitud.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Solicitudes
+										de Creditos</span> <span class="filter-container ui-input-icon-left">
+										<i class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtSolicitud').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Cliente"
+								sortBy="#{solicitud.cobCliente.bsPersona.nombreCompleto}"
+								filterBy="#{solicitud.cobCliente.bsPersona.nombreCompleto}">
+								<h:outputText
+									value="#{solicitud.cobCliente.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column headerText="Vendedor"
+								sortBy="#{solicitud.venVendedor.bsPersona.nombreCompleto}"
+								filterBy="#{solicitud.venVendedor.bsPersona.nombreCompleto}">
+								<h:outputText
+									value="#{solicitud.venVendedor.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">Fecha Solicitud</f:facet>
+								<h:outputText value="#{solicitud.fechaSolicitud}"
+									converter="localDateConverter">
+								</h:outputText>
+							</p:column>
+							<p:column>
+								<f:facet name="header">Primer Vencimiento</f:facet>
+								<h:outputText value="#{solicitud.primerVencimiento}"
+									converter="localDateConverter">
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Monto Solicitado"
+								sortBy="#{solicitud.montoSolicitado}">
+								<h:outputText value="#{solicitud.montoSolicitado}">
+									<f:convertNumber currencySymbol="Gs." pattern="###,###,###" />
+								</h:outputText>
+							</p:column>
+							<p:column>
+								<f:facet name="header">Autorizado?</f:facet>
+								<p:toggleSwitch value="#{solicitud.indAutorizadoBoolean}"
+									disabled="true" />
+							</p:column>
+
+							<p:column headerText="Estado" sortBy="#{solicitud.estado}"
+								filterBy="#{solicitud.estado}">
+								<h:outputText value="#{solicitud.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-solicitud :form:headerLb" process="@this"
+									oncomplete="PF('manageSolicitudDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{solicitud}"
+										target="#{creSolicitudCreditoController.creSolicitudCreditoSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteModuloDialog').show()">
+									<f:setPropertyActionListener value="#{solicitud}"
+										target="#{creSolicitudCreditoController.creSolicitudCreditoSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true" width="850"
+							widgetVar="manageSolicitudDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="headerLb"
+									value="#{creSolicitudCreditoController.esNuegoRegistro ? 'Nueva' : 'Editar'} Solicitud de Credito" />
+							</f:facet>
+							<p:outputPanel id="manage-solicitud">
+								<div class="col-12">
+									<div class="card ui-fluid">
+										<div class="ui-fluid formgrid grid">
+											<div class="col-12 md:col-12">
+												<div class="field grid">
+													<p:outputLabel for="clientelb"
+														styleClass="col-12 mb-2 md:col-4 mb-md-0">Cliente</p:outputLabel>
+													<div class="col-12 md:col-8">
+														<p:inputText id="clientelb"
+															placeholder="Pulse F9 para buscar"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}"
+															onkeydown="if (event.keyCode == 120) {
+						                                             PF('dlgCliente').show()
+						                                         }" />
+													</div>
+												</div>
+												<div class="field grid">
+													<p:outputLabel for="vendedorlb"
+														styleClass="col-12 mb-2 md:col-4 mb-md-0">Vendedor</p:outputLabel>
+													<div class="col-12 md:col-8">
+														<p:inputText id="vendedorlb"
+															placeholder="Pulse F9 para buscar"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}"
+															onkeydown="if (event.keyCode == 120) {
+						                                             PF('dlgVendedor').show()
+						                                         }" />
+													</div>
+												</div>
+											</div>
+											<div class="col-12 md:col-12">
+												<div class="field grid">
+													<p:outputLabel for="vendedorlb"
+														styleClass="col-12 mb-2 md:col-4 mb-md-0">Motivo del Prestamo</p:outputLabel>
+													<div class="col-12 md:col-8">
+														<p:inputText id="motivolb"
+															class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary"
+															placeholder="Pulse F9 para buscar"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.creMotivoPrestamo.descripcion}"
+															onkeydown="if (event.keyCode == 120) {
+						                                             PF('dlgMotivo').show()
+						                                         }" />
+													</div>
+												</div>
+											</div>
+											<p:divider />
+											<div
+												class="col-12 md:col-12 flex justify-content-between flex-wrap">
+												<div class="field grid">
+													<p:outputLabel for="fechaSolLb"
+														styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Solicitud</p:outputLabel>
+													<div class="col-12 md:col-6">
+														<p:datePicker id="fechaSolLb"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.fechaSolicitud}"
+															pattern="dd/MM/yyyy">
+														</p:datePicker>
+													</div>
+												</div>
+												<div class="field grid">
+													<p:outputLabel for="fechaPrimLb"
+														styleClass="col-12 mb-2 md:col-6 mb-md-0">Primer Vencimiento</p:outputLabel>
+													<div class="col-12 md:col-6">
+														<p:datePicker id="fechaPrimLb"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.primerVencimiento}"
+															pattern="dd/MM/yyyy">
+														</p:datePicker>
+													</div>
+												</div>
+
+											</div>
+											<p:divider />
+											<div
+												class="col-12 md:col-12 flex justify-content-between flex-wrap">
+												<div class="field grid">
+													<p:outputLabel for="montoSolLb"
+														styleClass="col-12 mb-2 md:col-6 mb-md-0">Monto Solicitado</p:outputLabel>
+													<div class="col-12 md:col-6">
+														<p:inputNumber id="montoSolLb"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.montoSolicitado}">
+															<!-- Agrega un p:ajax para escuchar el evento keyup y actualizar el campo Monto Aprobado -->
+															<p:ajax listener="#{creSolicitudCreditoController.seteaMismoValor}" event="keyup" update=":form:montoAproLb" />
+														</p:inputNumber>
+													</div>
+												</div>
+												<div class="field grid">
+													<p:outputLabel for="montoAproLb"
+														styleClass="col-12 mb-2 md:col-6 mb-md-0">Monto Aprobado</p:outputLabel>
+													<div class="col-12 md:col-6">
+														<p:inputNumber id="montoAproLb"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.montoAprobado}" />
+													</div>
+												</div>
+												<div class="field grid">
+													<p:outputLabel for="aprobadoLb"
+														styleClass="col-12 mb-2 md:col-6 pr-6">Aprobado?</p:outputLabel>
+													<div class="col-12 md:col-6">
+														<p:toggleSwitch id="aprobadoLb" onIcon="pi pi-check"
+															offIcon="pi pi-times"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.indAutorizadoBoolean}" />
+													</div>
+												</div>
+											</div>
+											<p:divider />
+
+											<div class="col-6 md:col-6">
+												<div class="field grid">
+													<p:outputLabel for="plazoLb"
+														styleClass="col-12 mb-2 md:col-4 mb-md-0">Plazo</p:outputLabel>
+													<div class="col-12 md:col-3">
+														<p:spinner id="plazoLb"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.plazo}" />
+													</div>
+												</div>
+											</div>
+											<div class="col-6 md:col-6">
+												<div class="field grid">
+													<p:outputLabel for="estadoLb"
+														styleClass="col-12 mb-2 md:col-4 mb-md-0">Estado</p:outputLabel>
+													<div class="col-12 md:col-2">
+														<p:selectOneMenu id="estadoLb"
+															value="#{creSolicitudCreditoController.creSolicitudCredito.estado}">
+															<f:selectItem itemLabel="Seleccione un estado"
+																itemValue="#{null}" noSelectionOption="true" />
+															<f:selectItems
+																value="#{creSolicitudCreditoController.estadoList}" />
+														</p:selectOneMenu>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton 
+								disabled="#{creSolicitudCreditoController.creSolicitudCredito.indAutorizado eq 'S'}"
+								value="Guardar" icon="pi pi-check"
+									actionListener="#{creSolicitudCreditoController.guardar}"
+									update=":form:manage-solicitud" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{creSolicitudCreditoController.cleanFields}"
+									update=":form" onclick="PF('manageSolicitudDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<!-- DIALOGOS -->
+						<p:dialog widgetVar="dlgCliente" header="Buscar Clientes"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgCliente" var="cliente"
+								value="#{creSolicitudCreditoController.lazyModelCliente}"
+								id="dt-cliente" paginator="true" rows="10"
+								paginatorPosition="bottom" emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgCliente').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:clientelb">
+										<f:setPropertyActionListener value="#{cliente}"
+											target="#{creSolicitudCreditoController.cobClienteSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre"
+									sortBy="#{cliente.bsPersona.nombreCompleto}"
+									filterBy="#{cliente.bsPersona.nombreCompleto}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{cliente.bsPersona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento"
+									sortBy="#{cliente.bsPersona.documento}"
+									filterBy="#{cliente.bsPersona.documento}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{cliente.bsPersona.documento}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgVendedor" header="Buscar Vendedor"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable id="dt-vendedor" widgetVar="dtVenVendedor"
+								var="vendedor"
+								value="#{creSolicitudCreditoController.lazyModelVenVendedor}"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgVendedor').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:vendedorlb">
+										<f:setPropertyActionListener value="#{vendedor}"
+											target="#{creSolicitudCreditoController.venVendedorSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre"
+									sortBy="#{vendedor.bsPersona.nombreCompleto}"
+									filterBy="#{vendedor.bsPersona.nombreCompleto}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{vendedor.bsPersona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento"
+									sortBy="#{vendedor.bsPersona.documento}"
+									filterBy="#{vendedor.bsPersona.documento}"
+									filterStyle="display:none; visibility:hidden;"
+									filtarable="true" filterMatchMode="contains">
+									<h:outputText value="#{vendedor.bsPersona.documento}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgMotivo" header="Buscar Motivo Prestamo"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable id="dt-motivo" widgetVar="dtMotivo" var="motivo"
+								value="#{creSolicitudCreditoController.lazyModelCreMotivoPrestamo}"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgMotivo').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:motivolb">
+										<f:setPropertyActionListener value="#{motivo}"
+											target="#{creSolicitudCreditoController.creMotivoPrestamoSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Codigo" sortBy="#{motivo.codMotivo}"
+									filterBy="#{motivo.codMotivo}">
+									<h:outputText value="#{motivo.codMotivo}" />
+								</p:column>
+								<p:column headerText="Descripcion"
+									sortBy="#{motivo.descripcion}" filterBy="#{motivo.descripcion}">
+									<h:outputText value="#{motivo.descripcion}" />
+								</p:column>
+							</p:dataTable>
+
+						</p:dialog>
+						<!-- DIALOGOS -->
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteModuloDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{creSolicitudCreditoController.delete}"
+								process="@this" oncomplete="PF('deleteModuloDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteModuloDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

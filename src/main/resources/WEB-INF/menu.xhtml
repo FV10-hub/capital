@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<div class="menu-wrapper">
+	<p:growl id="growl" showDetail="true" sticky="false"/>
+		<div class="layout-menu-container">
+			<h:form id="menuform">
+				<div class="layout-profile">
+					<a class="layout-profile-button" href="#"> <span
+						class="profile-image-icons"> <p:graphicImage
+								name="images/menu/avatar.png" library="pandora-layout" /> <span
+							class="icons"> <i class="pi pi-fw pi-comment"><span></span></i>
+								<i class="pi pi-fw pi-bell" /> <p:commandButton
+									id="btnCerrarSesion"
+									style="color: #d8dadc !important; background-color: #252729 !important; border-color: transparent;"
+									icon="pi pi-fw pi-sign-out"
+									action="#{sessionClosed.cerrarSesion()}" /> <p:tooltip
+									for="btnCerrarSesion" position="top" value="Cerrar Sesion" />
+
+						</span>
+					</span> <span class="profile-info-button"> <span
+							class="layout-profile-userinfo"> <span
+								class="layout-profile-name"> <p:outputLabel
+										value="#{sessionBean.usuarioLogueado.bsPersona.getNombreCompleto()}" />
+							</span> <span class="layout-profile-role">Director</span>
+						</span> <i class="layout-profile-icon pi pi-angle-down" />
+					</span>
+					</a>
+					<ul class="layout-profile-menu">
+						<li class="info">
+							<div class="profile-info">
+								<div class="layout-profile-userinfo">
+									<span class="layout-profile-name">Fernando Vazquez</span> <span
+										class="layout-profile-role">Director</span>
+								</div>
+								<div class="icons">
+									<i class="pi pi-fw fa-comment" /> <i
+										class="pi pi-fw fa-bell-o" /> <i class="pi pi-fw fa-sign-out" />
+								</div>
+							</div>
+						</li>
+						<li><a href="#"> <i class="pi pi-fw pi-user" /> <span>
+									<p:commandButton 
+									class="enlace-boton-type"
+									value="Perfil"
+										action="#{sessionBean.goToBsUsuario}">
+									</p:commandButton>
+							</span></a></li>
+						<li><a href="#"> <i class="pi pi-fw pi-cog" /> <span>
+									<p:commandButton 
+									class="enlace-boton-type"
+									value="Cambiar Contraseña" type="button"
+										update="manage-pass" onclick="PF('dlgCambiarPassword').show()">
+									</p:commandButton>
+							</span>
+						</a></li>
+						<!-- 
+						<li><a href="#"> <i class="pi pi-fw pi-envelope" /> <span>Messages</span>
+						</a></li>
+						<li><a href="#"> <i class="pi pi-fw pi-bell" /> <span>Notifications</span>
+						</a></li>
+						-->
+					</ul>
+				</div>
+				<p:dialog header="Cambiar contraseña" widgetVar="dlgCambiarPassword"
+					minHeight="40" width="350" showEffect="fade">
+					<p:outputPanel id="manage-pass" class="ui-fluid">
+						<p:outputPanel>
+							<div class="field">
+								<p:outputLabel for="label">Nueva Contraseña</p:outputLabel>
+								<p:password id="label" value="#{sessionBean.newPassword}" />
+							</div>
+						</p:outputPanel>
+					</p:outputPanel>
+					<f:facet name="footer">
+						<p:commandButton class="ui-button-primary rounded-button"
+							value="Guardar" icon="pi pi-check"
+							oncomplete="PF('confirmarDialog').show()">
+						</p:commandButton>
+					</f:facet>
+				</p:dialog>
+				<!-- confirms -->
+				<p:confirmDialog global="true" widgetVar="confirmarDialog" showEffect="fade" modal="false"
+					width="300" message="Esta seguro que desea cambiar la contraseña?"
+					header="Confirmacion" >
+					<p:commandButton value="Si" icon="pi pi-check" update=":growl"
+						actionListener="#{sessionBean.updatePasswordUserLogged()}"
+						oncomplete="PF('confirmarDialog').hide()" />
+					<p:commandButton value="No" type="button" update=":menuform"
+						styleClass="ui-button-secondary" icon="pi pi-times"
+						onclick="PF('confirmarDialog').hide()" />
+				</p:confirmDialog>
+				
+				<ui:include src="./groupedMenu.xhtml" />
+
+				
+			</h:form>
+			
+		</div>
+	</div>
+
+</ui:composition>

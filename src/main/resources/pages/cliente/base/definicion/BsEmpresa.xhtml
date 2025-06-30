@@ -1,0 +1,151 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Empresas</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsEmpresaController.cleanFields}"
+									update="manage-empresa"
+									onclick="PF('manageEmpresaDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-empresa" widgetVar="dtEmpresa" var="empresa"
+							value="#{bsEmpresaController.lazyModel}" reflow="true"
+							selection="#{bsEmpresaController.bsEmpresaSelected}"
+							rowKey="#{empresa.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Empresas</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtEmpresa').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Nombre Fantasia" sortBy="#{empresa.nombreFantasia}"
+								filterBy="#{empresa.nombreFantasia}">
+								<h:outputText value="#{empresa.nombreFantasia}" />
+							</p:column>
+							<p:column headerText="Nombre"
+								sortBy="#{empresa.bsPersona.nombre}"
+								filterBy="#{empresa.bsPersona.nombre}">
+								<h:outputText value="#{empresa.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-empresa :form:lbHeader" process="@this"
+									oncomplete="PF('manageEmpresaDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{empresa}"
+										target="#{bsEmpresaController.bsEmpresaSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteEmpresaDialog').show()">
+									<f:setPropertyActionListener value="#{empresa}"
+										target="#{bsEmpresaController.bsEmpresaSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageEmpresaDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsEmpresaController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-empresa" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Nombre Fantasia</p:outputLabel>
+										<p:inputText id="label"
+											value="#{bsEmpresaController.bsEmpresa.nombreFantasia}"/>
+									</div>
+									<div class="field">
+										<p:outputLabel for="direccion">Direccion</p:outputLabel>
+										<p:inputText id="direccion"
+											value="#{bsEmpresaController.bsEmpresa.direcEmpresa}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="personalb">Representante Legal</p:outputLabel>
+										<p:inputText id="personalb" placeholder="Pulse F9 para buscar"
+											value="#{bsEmpresaController.bsEmpresa.bsPersona.nombreCompleto}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgPersona').show()
+                                         }" />
+									</div>
+
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsEmpresaController.guardar}"
+									update=":form:manage-empresa" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsEmpresaController.cleanFields}"
+									update=":form"
+									onclick="PF('manageEmpresaDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgPersona" header="Buscar Persona"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgPersona" var="persona"
+								value="#{bsEmpresaController.lazyPersonaList}"
+								id="dt-persona" paginator="true" rows="10"
+								paginatorPosition="bottom" emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton 
+										oncomplete="PF('dlgPersona').hide()"
+										icon="pi pi-check-circle"
+										title="Seleccionar"
+										update=":form:personalb" >
+										<f:setPropertyActionListener value="#{persona}"
+											target="#{bsEmpresaController.personaSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
+									filterBy="#{persona.nombreCompleto}">
+									<h:outputText value="#{persona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento" sortBy="#{persona.documento}"
+									filterBy="#{persona.documento}">
+									<h:outputText value="#{persona.documento}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+						
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteEmpresaDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsEmpresaController.delete}" process="@this"
+								oncomplete="PF('deleteEmpresaDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteEmpresaDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

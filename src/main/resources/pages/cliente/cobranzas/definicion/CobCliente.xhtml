@@ -1,0 +1,168 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Clientes</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{cobClienteController.cleanFields}"
+									update="manage-cliente"
+									onclick="PF('manageClienteDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-cliente" widgetVar="dtCobCliente"
+							var="cliente" value="#{cobClienteController.lazyModel}"
+							reflow="true"
+							selection="#{cobClienteController.cobClienteSelected}"
+							rowKey="#{cliente.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Clientes</span> <span class="filter-container ui-input-icon-left">
+										<i class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtCobCliente').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Codigo" sortBy="#{cliente.codCliente}"
+								filterBy="#{cliente.codCliente}">
+								<h:outputText value="#{cliente.codCliente}" />
+							</p:column>
+							<p:column headerText="Nombre"
+								sortBy="#{cliente.bsPersona.nombreCompleto}"
+								filterBy="#{cliente.bsPersona.nombreCompleto}" 
+								filterStyle="display:none; visibility:hidden;"
+								filtarable="true"
+								filterMatchMode="contains">
+								<h:outputText value="#{cliente.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column headerText="Documento"
+								sortBy="#{cliente.bsPersona.documento}"
+								filterBy="#{cliente.bsPersona.documento}" 
+								filterStyle="display:none; visibility:hidden;"
+								filtarable="true"
+								filterMatchMode="contains">
+								<h:outputText value="#{cliente.bsPersona.documento}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-cliente :form:lbHeader" process="@this"
+									oncomplete="PF('manageClienteDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{cliente}"
+										target="#{cobClienteController.cobClienteSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteClienteDialog').show()">
+									<f:setPropertyActionListener value="#{cliente}"
+										target="#{cobClienteController.cobClienteSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageClienteDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{cobClienteController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-cliente" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label"
+											value="#{cobClienteController.cobCliente.codCliente}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="personalb">Persona</p:outputLabel>
+										<p:inputText id="personalb" placeholder="Pulse F9 para buscar"
+											value="#{cobClienteController.cobCliente.bsPersona.nombreCompleto}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgPersona').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="documentolb">Documento</p:outputLabel>
+										<p:inputText id="documentolb"
+											value="#{cobClienteController.cobCliente.bsPersona.documento}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="estadolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="estadolb"
+											value="#{cobClienteController.cobCliente.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{cobClienteController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{cobClienteController.guardar}"
+									update=":form :form:manage-cliente" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{cobClienteController.cleanFields}"
+									update=":form" onclick="PF('manageClienteDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgPersona" header="Buscar Persona"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgPersona" var="persona"
+								value="#{cobClienteController.lazyPersonaList}" id="dt-persona"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgPersona').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:personalb :form:documentolb">
+										<f:setPropertyActionListener value="#{persona}"
+											target="#{cobClienteController.bsPersonaSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
+									filterBy="#{persona.nombreCompleto}">
+									<h:outputText value="#{persona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento" sortBy="#{persona.documento}"
+									filterBy="#{persona.documento}">
+									<h:outputText value="#{persona.documento}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteClienteDialog"
+							showEffect="fade" width="300"
+							message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{cobClienteController.delete}" process="@this"
+								oncomplete="PF('deleteClienteDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteClienteDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

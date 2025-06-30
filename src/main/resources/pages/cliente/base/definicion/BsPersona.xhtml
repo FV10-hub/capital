@@ -1,0 +1,202 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+	<h:head>
+		<script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+		</script>
+	</h:head>
+	<ui:define name="title">Personas</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsPersonaController.cleanFields}"
+									update=":form:manage-persona"
+									onclick="PF('managePersonaDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-persona" widgetVar="dtPersona" var="persona"
+							value="#{bsPersonaController.lazyModel}" reflow="true"
+							selection="#{bsPersonaController.bsPersonaSelected}"
+							rowKey="#{persona.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Personas</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtPersona').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Nombre" sortBy="#{persona.nombre}"
+								filterBy="#{persona.nombre}">
+								<h:outputText value="#{persona.nombre}" />
+							</p:column>
+							<p:column headerText="Primer Apellido"
+								sortBy="#{persona.primerApellido}"
+								filterBy="#{persona.primerApellido}">
+								<h:outputText value="#{persona.primerApellido}" />
+							</p:column>
+							<p:column headerText="Segundo Apellido"
+								sortBy="#{persona.segundoApellido}"
+								filterBy="#{persona.segundoApellido}">
+								<h:outputText value="#{persona.segundoApellido}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">Fecha Nacimiento</f:facet>
+								<h:outputText value="#{persona.fecNacimiento}"
+									converter="localDateConverter">
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{persona.estado}"
+								filterBy="#{persona.estado}">
+								<h:outputText value="#{persona.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-persona :form:lbHeader" process="@this"
+									oncomplete="PF('managePersonaDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{persona}"
+										target="#{bsPersonaController.bsPersonaSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deletePersonaDialog').show()">
+									<f:setPropertyActionListener value="#{persona}"
+										target="#{bsPersonaController.bsPersonaSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="managePersonaDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsPersonaController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-persona" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="nombre">Nombre</p:outputLabel>
+										<p:inputText id="nombre"
+											value="#{bsPersonaController.bsPersona.nombre}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="primerApellido">Primer Apellido</p:outputLabel>
+										<p:inputText id="primerApellido"
+											value="#{bsPersonaController.bsPersona.primerApellido}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="segundoApellido">Segundo Apellido</p:outputLabel>
+										<p:inputText id="segundoApellido"
+											value="#{bsPersonaController.bsPersona.segundoApellido}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="documento">Documento</p:outputLabel>
+										<p:inputText id="documento"
+											value="#{bsPersonaController.bsPersona.documento}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="email">Email</p:outputLabel>
+										<p:inputText id="email"
+											value="#{bsPersonaController.bsPersona.email}"
+											required="true" requiredMessage="El email es requerido"
+											validatorMessage="El formato del email es incorrecto">
+											<f:validateRegex
+												pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+										</p:inputText>
+									</div>
+									<div class="field">
+										<p:outputLabel for="fehcaNacimiento">Fehca Nacimiento</p:outputLabel>
+										<p:datePicker id="fehcaNacimiento"
+											value="#{bsPersonaController.bsPersona.fecNacimiento}"
+											pattern="dd/MM/yyyy">
+										</p:datePicker>
+									</div>
+
+									<div class="field">
+										<p:outputLabel for="personalb">Estado</p:outputLabel>
+										<p:selectOneMenu id="personalb"
+											value="#{bsPersonaController.bsPersona.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsPersonaController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsPersonaController.guardar}"
+									update=":form:manage-persona" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsPersonaController.cleanFields}"
+									update=":form" onclick="PF('managePersonaDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deletePersonaDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsPersonaController.delete}" process="@this"
+								oncomplete="PF('deletePersonaDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deletePersonaDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

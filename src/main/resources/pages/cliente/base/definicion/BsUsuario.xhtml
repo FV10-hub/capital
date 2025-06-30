@@ -1,0 +1,230 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Usuarios</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsUsuarioController.cleanFields}"
+									update="manage-usuario"
+									onclick="PF('manageUsuarioDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-usuario" widgetVar="dtUsuario" var="usuario"
+							value="#{bsUsuarioController.lazyModel}" reflow="true"
+							selection="#{bsUsuarioController.bsUsuarioSelected}"
+							rowKey="#{usuario.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							filteredValue="#{bsUsuarioController.listafiltrada}"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Usuarios</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter" widgetVar="dtUsuarioGlobalFilter"
+											onkeyup="PF('dtUsuario').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Codigo" sortBy="#{usuario.codUsuario}" filterStyle="display:none; visibility:hidden;"
+							filtarable="true"
+								filterBy="#{usuario.codUsuario}" filterMatchMode="contains">
+								<h:outputText value="#{usuario.codUsuario}" />
+							</p:column>
+							<p:column headerText="Nombre"
+								sortBy="#{usuario.bsPersona.nombreCompleto}"
+								filterBy="#{usuario.bsPersona.nombreCompleto}" 
+								filterStyle="display:none; visibility:hidden;"
+								filtarable="true"
+								filterMatchMode="contains">
+								<h:outputText value="#{usuario.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column headerText="Rol" sortBy="#{usuario.rol.nombre}" filterStyle="display:none; visibility:hidden;"
+							filtarable="true"
+								filterBy="#{usuario.rol.nombre}" filterMatchMode="contains">
+								<h:outputText value="#{usuario.rol.nombre}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-usuario :form:lbHeader" process="@this"
+									oncomplete="PF('manageUsuarioDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{usuario}"
+										target="#{bsUsuarioController.bsUsuarioSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteMenuDialog').show()">
+									<f:setPropertyActionListener value="#{usuario}"
+										target="#{bsUsuarioController.bsUsuarioSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageUsuarioDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsUsuarioController.esNuegoRegistro ? 'Nuevo' : 'Editarc'}" />
+							</f:facet>
+							<p:outputPanel id="manage-usuario" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label"
+											value="#{bsUsuarioController.bsUsuario.codUsuario}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="pass">Contraseña</p:outputLabel>
+										<p:password id="pass"
+											value="#{bsUsuarioController.bsUsuario.password}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="personalb">Persona</p:outputLabel>
+										<p:inputText id="personalb" placeholder="Pulse F9 para buscar"
+											value="#{bsUsuarioController.bsUsuario.bsPersona.nombreCompleto}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgPersona').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="rollb">Rol</p:outputLabel>
+										<p:inputText id="rollb" placeholder="Pulse F9 para buscar"
+											update="dt-rol"
+											value="#{bsUsuarioController.bsUsuario.rol.nombre}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgRol').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="empresalb">Empresa</p:outputLabel>
+										<p:inputText id="empresalb" placeholder="Pulse F9 para buscar"
+											value="#{bsUsuarioController.bsUsuario.bsEmpresa.nombreFantasia}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgEmpresa').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="estadolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="estadolb"
+											value="#{bsUsuarioController.bsUsuario.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsUsuarioController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsUsuarioController.guardar}"
+									update=":form:manage-usuario" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsUsuarioController.cleanFields}"
+									update=":form" onclick="PF('manageUsuarioDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgPersona" header="Buscar Persona"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgPersona" var="persona"
+								value="#{bsUsuarioController.lazyPersonaList}" id="dt-persona"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgPersona').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:personalb">
+										<f:setPropertyActionListener value="#{persona}"
+											target="#{bsUsuarioController.bsPersonaSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
+									filterBy="#{persona.nombreCompleto}">
+									<h:outputText value="#{persona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento" sortBy="#{persona.documento}"
+									filterBy="#{persona.documento}">
+									<h:outputText value="#{persona.documento}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+						<p:dialog widgetVar="dlgRol" header="Buscar Rol" width="650"
+							showEffect="fade" modal="true">
+							<p:dataTable value="#{bsUsuarioController.lazyRolList}" var="rol"
+								id="dt-rol" rows="10" rowsPerPageTemplate="5,10,15,20"
+								paginator="true">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgRol').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:rollb">
+										<f:setPropertyActionListener value="#{rol}"
+											target="#{bsUsuarioController.bsRolSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{rol.nombre}"
+									filterBy="#{rol.nombre}">
+									<h:outputText value="#{rol.nombre}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgEmpresa" header="Buscar Empresa"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgEmpresa" var="empresa"
+								value="#{bsUsuarioController.lazyEmpresaList}" id="dt-empresa"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgEmpresa').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:empresalb">
+										<f:setPropertyActionListener value="#{empresa}"
+											target="#{bsUsuarioController.bsEmpresaSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre Fantasia"
+									sortBy="#{empresa.nombreFantasia}"
+									filterBy="#{empresa.nombreFantasia}">
+									<h:outputText value="#{empresa.nombreFantasia}" />
+								</p:column>
+								<p:column headerText="Nombre"
+									sortBy="#{empresa.bsPersona.nombre}"
+									filterBy="#{empresa.bsPersona.nombre}">
+									<h:outputText value="#{empresa.bsPersona.nombreCompleto}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteMenuDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsUsuarioController.delete}" process="@this"
+								oncomplete="PF('deleteMenuDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteMenuDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

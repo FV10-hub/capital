@@ -1,0 +1,194 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Parametros</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsParametroController.cleanFields}"
+									update="manage-parametro"
+									onclick="PF('manageParametroDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-parametro" widgetVar="dtParametro"
+							var="parametro" value="#{bsParametroController.lazyModel}"
+							reflow="true"
+							selection="#{bsParametroController.bsParametroSelected}"
+							rowKey="#{parametro.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Parametros</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtParametro').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Modulo"
+								sortBy="#{parametro.bsModulo.nombre}"
+								filterBy="#{parametro.bsModulo.nombre}">
+								<h:outputText value="#{parametro.bsModulo.nombre}" />
+							</p:column>
+							<p:column headerText="Parametro" sortBy="#{parametro.parametro}"
+								filterBy="#{parametro.parametro}">
+								<h:outputText value="#{parametro.parametro}" />
+							</p:column>
+							<p:column headerText="Descripcion"
+								sortBy="#{parametro.descripcion}"
+								filterBy="#{parametro.descripcion}">
+								<h:outputText value="#{parametro.descripcion}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-parametro :form:lbHeader" process="@this"
+									oncomplete="PF('manageParametroDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{parametro}"
+										target="#{bsParametroController.bsParametroSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteParametroDialog').show()">
+									<f:setPropertyActionListener value="#{parametro}"
+										target="#{bsParametroController.bsParametroSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageParametroDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsParametroController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-parametro" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Parametro</p:outputLabel>
+										<p:inputText id="label"
+											value="#{bsParametroController.bsParametro.parametro}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="direccion">Descripcion</p:outputLabel>
+										<p:inputText id="direccion"
+											value="#{bsParametroController.bsParametro.descripcion}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="valor">Valor</p:outputLabel>
+										<p:inputText id="valor"
+											value="#{bsParametroController.bsParametro.valor}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="modulolb">Modulo</p:outputLabel>
+										<p:inputText id="modulolb" placeholder="Pulse F9 para buscar"
+											value="#{bsParametroController.bsParametro.bsModulo.nombre}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgModulo').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="empresalb">Empresa</p:outputLabel>
+										<p:inputText id="empresalb" placeholder="Pulse F9 para buscar"
+											value="#{bsParametroController.bsParametro.bsEmpresa.nombreFantasia}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgEmpresa').show()
+                                         }" />
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsParametroController.guardar}"
+									update=":form:manage-parametro" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsParametroController.cleanFields}"
+									update=":form" onclick="PF('manageParametroDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgModulo" header="Buscar Modulo" width="650"
+							showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgModulo" var="modulo"
+								value="#{bsParametroController.lazyModuloList}" id="dt-modulo"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgModulo').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:modulolb">
+										<f:setPropertyActionListener value="#{modulo}"
+											target="#{bsParametroController.bsModuloSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Codigo" sortBy="#{modulo.codigo}"
+									filterBy="#{modulo.codigo}">
+									<h:outputText value="#{modulo.codigo}" />
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{modulo.nombre}"
+									filterBy="#{modulo.nombre}">
+									<h:outputText value="#{modulo.nombre}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgEmpresa" header="Buscar Empresa"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgEmpresa" var="empresa"
+								value="#{bsParametroController.lazyEmpresaList}" id="dt-empresa"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgEmpresa').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:empresalb">
+										<f:setPropertyActionListener value="#{empresa}"
+											target="#{bsParametroController.bsEmpresaSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre Fantasia"
+									sortBy="#{empresa.nombreFantasia}"
+									filterBy="#{empresa.nombreFantasia}">
+									<h:outputText value="#{empresa.nombreFantasia}" />
+								</p:column>
+								<p:column headerText="Nombre"
+									sortBy="#{empresa.bsPersona.nombre}"
+									filterBy="#{empresa.bsPersona.nombre}">
+									<h:outputText value="#{empresa.bsPersona.nombreCompleto}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteParametroDialog"
+							showEffect="fade" width="300"
+							message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsParametroController.delete}" process="@this"
+								oncomplete="PF('deleteParametroDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteParametroDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

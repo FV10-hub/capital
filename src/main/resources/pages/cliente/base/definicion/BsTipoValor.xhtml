@@ -1,0 +1,168 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Tipo de Valor</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsTipoValorController.cleanFields}"
+									update="manage-tipoValor"
+									onclick="PF('manageTipoValorDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-tipovalor" widgetVar="dtTipoValor"
+							var="tipoValor" value="#{bsTipoValorController.lazyModel}"
+							reflow="true"
+							selection="#{bsTipoValorController.bsTipoValorSelected}"
+							rowKey="#{tipoValor.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Tipo de
+										Valor</span> <span class="filter-container ui-input-icon-left">
+										<i class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtTipoValor').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Modulo"
+								sortBy="#{tipoValor.bsModulo.nombre}"
+								filterBy="#{tipoValor.bsModulo.nombre}">
+								<h:outputText value="#{tipoValor.bsModulo.nombre}" />
+							</p:column>
+							<p:column headerText="Codigo" sortBy="#{tipoValor.codTipo}"
+								filterBy="#{tipoValor.codTipo}">
+								<h:outputText value="#{tipoValor.codTipo}" />
+							</p:column>
+							<p:column headerText="Descripcion"
+								sortBy="#{tipoValor.descripcion}"
+								filterBy="#{tipoValor.descripcion}">
+								<h:outputText value="#{tipoValor.descripcion}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-tipoValor :form:lbHeader" process="@this"
+									oncomplete="PF('manageTipoValorDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{tipoValor}"
+										target="#{bsTipoValorController.bsTipoValorSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteParametroDialog').show()">
+									<f:setPropertyActionListener value="#{tipoValor}"
+										target="#{bsTipoValorController.bsTipoValorSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageTipoValorDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsTipoValorController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-tipoValor" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label"
+											value="#{bsTipoValorController.bsTipoValor.codTipo}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="direccion">Descripcion</p:outputLabel>
+										<p:inputText id="direccion"
+											value="#{bsTipoValorController.bsTipoValor.descripcion}" />
+									</div>
+									<div class="field flex flex-column">
+										<p:outputLabel for="usadinero">Usa Dinero?</p:outputLabel>
+										<p:toggleSwitch id="usadinero"
+											value="#{bsTipoValorController.bsTipoValor.usaDineroAux}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="modulolb">Modulo</p:outputLabel>
+										<p:inputText id="modulolb" placeholder="Pulse F9 para buscar"
+											value="#{bsTipoValorController.bsTipoValor.bsModulo.nombre}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgModulo').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="estadolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="estadolb"
+											value="#{bsTipoValorController.bsTipoValor.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{bsTipoValorController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsTipoValorController.guardar}"
+									update=":form:manage-tipoValor" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsTipoValorController.cleanFields}"
+									update=":form" onclick="PF('manageTipoValorDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgModulo" header="Buscar Modulo" width="650"
+							showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgModulo" var="modulo"
+								value="#{bsTipoValorController.lazyModuloList}" id="dt-modulo"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgModulo').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:modulolb">
+										<f:setPropertyActionListener value="#{modulo}"
+											target="#{bsTipoValorController.bsModuloSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Codigo" sortBy="#{modulo.codigo}"
+									filterBy="#{modulo.codigo}">
+									<h:outputText value="#{modulo.codigo}" />
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{modulo.nombre}"
+									filterBy="#{modulo.nombre}">
+									<h:outputText value="#{modulo.nombre}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteParametroDialog"
+							showEffect="fade" width="300"
+							message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsTipoValorController.delete}" process="@this"
+								oncomplete="PF('deleteParametroDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteParametroDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

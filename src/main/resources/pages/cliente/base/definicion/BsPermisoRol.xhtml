@@ -1,0 +1,194 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Permisos</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{bsPermisoRolController.cleanFields}"
+									update=":form:manage-permiso"
+									onclick="PF('managePermisoDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-permiso" widgetVar="dtPermiso" var="permiso"
+							value="#{bsPermisoRolController.lazyModel}" reflow="true"
+							selection="#{bsPermisoRolController.bsPermisoRolSelected}"
+							rowKey="#{permiso.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Permisos por
+										Usuario</span> <span class="filter-container ui-input-icon-left">
+										<i class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtPermiso').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Detalle" sortBy="#{permiso.descripcion}"
+								filterBy="#{permiso.descripcion}">
+								<h:outputText value="#{permiso.descripcion}" />
+							</p:column>
+							<p:column headerText="Menu" sortBy="#{permiso.bsMenu.nombre}"
+								filterBy="#{permiso.bsMenu.nombre}">
+								<h:outputText value="#{permiso.bsMenu.nombre}" />
+							</p:column>
+							<p:column headerText="Rol" sortBy="#{permiso.rol.nombre}"
+								filterBy="#{permiso.rol.nombre}">
+								<h:outputText value="#{permiso.rol.nombre}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-permiso :form:lbHeader :form:lbHeader1" process="@this"
+									oncomplete="PF('managePermisoDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{permiso}"
+										target="#{bsPermisoRolController.bsPermisoRolSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteMenuDialog').show()">
+									<f:setPropertyActionListener value="#{permiso}"
+										target="#{bsPermisoRolController.bsPermisoRolSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="managePermisoDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{bsPermisoRolController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							<p:outputLabel id="lbHeader1"
+									value="#{bsPermisoRolController.bsPermisoRol.id}" />
+							</f:facet>
+							<p:outputPanel id="manage-permiso" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Descripcion</p:outputLabel>
+										<p:inputText id="label"
+											value="#{bsPermisoRolController.bsPermisoRol.descripcion}"/>
+									</div>
+									<div class="field">
+										<p:outputLabel for="menulb">Menu</p:outputLabel>
+										<p:inputText id="menulb" placeholder="Pulse F9 para buscar"
+											value="#{bsPermisoRolController.bsPermisoRol.bsMenu.nombre}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgMenu').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="rollb">Rol</p:outputLabel>
+										<p:inputText id="rollb" placeholder="Pulse F9 para buscar"
+											update="dt-rol"
+											value="#{bsPermisoRolController.bsPermisoRol.rol.nombre}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgRol').show()
+                                         }" />
+									</div>
+
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{bsPermisoRolController.guardar}"
+									update=":form:manage-permiso" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{bsPermisoRolController.cleanFields}"
+									update=":form"
+									onclick="PF('managePermisoDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgMenu" header="Buscar Menu" width="650"
+							showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgMenu" var="menu"
+								value="#{bsPermisoRolController.lazyMenuList}" id="dt-menu"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="customers-table-header">
+										<span style="font-weight: bold">Filtrar</span> <span
+											class="ui-input-icon-left filter-container"> <i
+											class="pi pi-search" /> <p:inputText id="globalFilter"
+												onkeyup="PF('dlgMenu').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgMenu').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:menulb">
+										<f:setPropertyActionListener value="#{menu}"
+											target="#{bsPermisoRolController.bsPermisoRol.bsMenu}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{menu.nombre}"
+									filterBy="#{menu.nombre}">
+									<h:outputText value="#{menu.nombre}" />
+								</p:column>
+								<p:column headerText="Tipo Menu" sortBy="#{menu.tipoMenu}"
+									filterBy="#{menu.tipoMenu}">
+									<h:outputText value="#{menu.tipoMenu}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+						<p:dialog widgetVar="dlgRol" header="Buscar Rol" width="650"
+							showEffect="fade" modal="true">
+							<p:dataTable value="#{bsPermisoRolController.lazyRolList}"
+								var="rol" id="dt-rol" rows="10" rowsPerPageTemplate="5,10,15,20"
+								paginator="true">
+								<f:facet name="header">
+									<div class="customers-table-header">
+										<span style="font-weight: bold">Filtrar</span> <span
+											class="ui-input-icon-left filter-container"> <i
+											class="pi pi-search" /> <p:inputText id="globalFilter1"
+												onkeyup="PF('dlgRol').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgRol').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:rollb">
+										<f:setPropertyActionListener value="#{rol}"
+											target="#{bsPermisoRolController.bsPermisoRol.rol}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{rol.nombre}"
+									filterBy="#{rol.nombre}">
+									<h:outputText value="#{rol.nombre}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteMenuDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{bsPermisoRolController.delete}"
+								process="@this" oncomplete="PF('deleteMenuDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteMenuDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,113 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Motivos de Prestamos</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{creMotivoPrestamoController.cleanFields}"
+									update=":form:manage-motivo :form:headerLb" onclick="PF('manageMotidoPrestamoDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-motivo" widgetVar="dtMotivo" var="motivo"
+							value="#{creMotivoPrestamoController.lazyModel}" reflow="true"
+							selection="#{creMotivoPrestamoController.creMotivoPrestamoSelected}"
+							rowKey="#{motivo.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Motivos Prestamos</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtMotivo').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Codigo" sortBy="#{motivo.codMotivo}"
+								filterBy="#{motivo.codMotivo}">
+								<h:outputText value="#{motivo.codMotivo}" />
+							</p:column>
+							<p:column headerText="Descripcion" sortBy="#{motivo.descripcion}"
+								filterBy="#{motivo.descripcion}">
+								<h:outputText value="#{motivo.descripcion}" />
+							</p:column>
+							<p:column headerText="Estado" sortBy="#{motivo.estado}"
+								filterBy="#{motivo.estado}">
+								<h:outputText value="#{motivo.estado}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-pencil" update=":form:manage-motivo :form:headerLb" process="@this" oncomplete="PF('manageMotidoPrestamoDialog').show()" 
+                                    styleClass="edit-button rounded-button ui-button-warning">
+                                    <f:setPropertyActionListener value="#{motivo}" target="#{creMotivoPrestamoController.creMotivoPrestamoSelected}" />
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" oncomplete="PF('deleteModuloDialog').show()" >
+                                    <f:setPropertyActionListener value="#{motivo}" target="#{creMotivoPrestamoController.creMotivoPrestamoSelected}" />
+                                </p:commandButton>
+                            </p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageMotidoPrestamoDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="headerLb"
+									value="#{creMotivoPrestamoController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-motivo" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label" autocomplete="off"
+											value="#{creMotivoPrestamoController.creMotivoPrestamo.codMotivo}"/>
+									</div>
+									<div class="field">
+										<p:outputLabel for="descripcion">Descripcion</p:outputLabel>
+										<p:inputText id="descripcion" autocomplete="off"
+											value="#{creMotivoPrestamoController.creMotivoPrestamo.descripcion}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="motivolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="motivolb"
+											value="#{creMotivoPrestamoController.creMotivoPrestamo.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{creMotivoPrestamoController.estadoList}"/>
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{creMotivoPrestamoController.guardar}"
+									update=":form:manage-motivo"/>
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{creMotivoPrestamoController.cleanFields}"
+									update=":form"
+									onclick="PF('manageMotidoPrestamoDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+						<!-- confirms -->
+						 <p:confirmDialog widgetVar="deleteModuloDialog" showEffect="fade" width="300" message="Esta seguro que desea eliminar el registro?" header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check" actionListener="#{creMotivoPrestamoController.delete}" process="@this" oncomplete="PF('deleteModuloDialog').hide()"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteModuloDialog').hide()" />
+                        </p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

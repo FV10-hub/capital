@@ -1,0 +1,137 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Condiciones de Venta</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{venCondicionVentaController.cleanFields}"
+									update="manage-condicion"
+									onclick="PF('manageCondicionDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-condicion" widgetVar="dtVenCondicionVenta"
+							var="condicion" value="#{venCondicionVentaController.lazyModel}"
+							reflow="true"
+							selection="#{venCondicionVentaController.venCondicionVentaSelected}"
+							rowKey="#{condicion.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Condiciones de Venta</span> <span class="filter-container ui-input-icon-left">
+										<i class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtVenCondicionVenta').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Codigo" sortBy="#{condicion.codCondicion}"
+								filterBy="#{condicion.codCondicion}">
+								<h:outputText value="#{condicion.codCondicion}" />
+							</p:column>
+							<p:column headerText="Descripcion" sortBy="#{condicion.descripcion}"
+								filterBy="#{condicion.descripcion}">
+								<h:outputText value="#{condicion.descripcion}" />
+							</p:column>
+							<p:column headerText="Plazo" sortBy="#{condicion.plazo}"
+								filterBy="#{condicion.plazo}">
+								<h:outputText value="#{condicion.plazo}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-condicion :form:lbHeader" process="@this"
+									oncomplete="PF('manageCondicionDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{condicion}"
+										target="#{venCondicionVentaController.venCondicionVentaSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteCondicionDialog').show()">
+									<f:setPropertyActionListener value="#{condicion}"
+										target="#{venCondicionVentaController.venCondicionVentaSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageCondicionDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{venCondicionVentaController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-condicion" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label"
+											value="#{venCondicionVentaController.venCondicionVenta.codCondicion}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="descripcion">Descripcion</p:outputLabel>
+										<p:inputText id="descripcion"
+											value="#{venCondicionVentaController.venCondicionVenta.descripcion}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="plazo">Plazo</p:outputLabel>
+										<p:inputNumber id="plazo"
+											value="#{venCondicionVentaController.venCondicionVenta.plazo}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="intervalo">Intervalo</p:outputLabel>
+										<p:inputNumber id="intervalo"
+											value="#{venCondicionVentaController.venCondicionVenta.intervalo}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="estadolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="estadolb"
+											value="#{venCondicionVentaController.venCondicionVenta.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{venCondicionVentaController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{venCondicionVentaController.guardar}"
+									update=":form :form:manage-condicion" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{venCondicionVentaController.cleanFields}"
+									update=":form" onclick="PF('manageCondicionDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteCondicionDialog"
+							showEffect="fade" width="300"
+							message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{venCondicionVentaController.delete}" process="@this"
+								oncomplete="PF('deleteCondicionDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteCondicionDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

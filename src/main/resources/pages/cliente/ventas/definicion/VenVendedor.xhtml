@@ -1,0 +1,168 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Vededores</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{venVendedorController.cleanFields}"
+									update="manage-vendedor"
+									onclick="PF('manageVendedorDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-vendedor" widgetVar="dtVenVendedor"
+							var="vendedor" value="#{venVendedorController.lazyModel}"
+							reflow="true"
+							selection="#{venVendedorController.venVendedorSelected}"
+							rowKey="#{vendedor.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Vededores</span> <span class="filter-container ui-input-icon-left">
+										<i class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtVenVendedor').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Codigo" sortBy="#{vendedor.codVendedor}"
+								filterBy="#{vendedor.codVendedor}">
+								<h:outputText value="#{vendedor.codVendedor}" />
+							</p:column>
+							<p:column headerText="Nombre"
+								sortBy="#{vendedor.bsPersona.nombreCompleto}"
+								filterBy="#{vendedor.bsPersona.nombreCompleto}" 
+								filterStyle="display:none; visibility:hidden;"
+								filtarable="true"
+								filterMatchMode="contains">
+								<h:outputText value="#{vendedor.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column headerText="Documento"
+								sortBy="#{vendedor.bsPersona.documento}"
+								filterBy="#{vendedor.bsPersona.documento}" 
+								filterStyle="display:none; visibility:hidden;"
+								filtarable="true"
+								filterMatchMode="contains">
+								<h:outputText value="#{vendedor.bsPersona.documento}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-vendedor :form:lbHeader" process="@this"
+									oncomplete="PF('manageVendedorDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{vendedor}"
+										target="#{venVendedorController.venVendedorSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteVendedorDialog').show()">
+									<f:setPropertyActionListener value="#{vendedor}"
+										target="#{venVendedorController.venVendedorSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageVendedorDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{venVendedorController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-vendedor" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Codigo</p:outputLabel>
+										<p:inputText id="label"
+											value="#{venVendedorController.venVendedor.codVendedor}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="personalb">Persona</p:outputLabel>
+										<p:inputText id="personalb" placeholder="Pulse F9 para buscar"
+											value="#{venVendedorController.venVendedor.bsPersona.nombreCompleto}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgPersona').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="documentolb">Documento</p:outputLabel>
+										<p:inputText id="documentolb" disabled="true"
+											value="#{venVendedorController.venVendedor.bsPersona.documento}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="estadolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="estadolb"
+											value="#{venVendedorController.venVendedor.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{venVendedorController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{venVendedorController.guardar}"
+									update=":form :form:manage-vendedor" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{venVendedorController.cleanFields}"
+									update=":form" onclick="PF('manageVendedorDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgPersona" header="Buscar Persona"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="wdlgPersona" var="persona"
+								value="#{venVendedorController.lazyPersonaList}" id="dt-persona"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgPersona').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:personalb :form:documentolb">
+										<f:setPropertyActionListener value="#{persona}"
+											target="#{venVendedorController.bsPersonaSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
+									filterBy="#{persona.nombreCompleto}">
+									<h:outputText value="#{persona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento" sortBy="#{persona.documento}"
+									filterBy="#{persona.documento}">
+									<h:outputText value="#{persona.documento}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteVendedorDialog"
+							showEffect="fade" width="300"
+							message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{venVendedorController.delete}" process="@this"
+								oncomplete="PF('deleteVendedorDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteVendedorDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

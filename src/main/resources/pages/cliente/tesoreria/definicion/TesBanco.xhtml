@@ -1,0 +1,225 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Bancos</ui:define>
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="grid crud-demo">
+				<div class="col-12">
+					<div class="card">
+						<p:growl id="messages" showDetail="true" />
+						<p:toolbar styleClass="mb-4">
+							<p:toolbarGroup>
+								<p:commandButton value="Nuevo" icon="pi pi-plus"
+									actionListener="#{tesBancoController.cleanFields}"
+									update="manage-banco"
+									onclick="PF('manageTesoreriaDialog').show()"
+									styleClass="ui-button-success" style="margin-right: .5rem" />
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:dataTable id="dt-banco" widgetVar="dtTesBanco" var="banco"
+							value="#{tesBancoController.lazyModel}" reflow="true"
+							selection="#{tesBancoController.tesBancoSelected}"
+							rowKey="#{banco.id}" paginator="true" rows="10"
+							rowSelectMode="add" paginatorPosition="bottom"
+							emptyMessage="No hay Registros">
+							<f:facet name="header">
+								<div class="products-table-header">
+									<span style="font-weight: bold">Administrar Bancos</span> <span
+										class="filter-container ui-input-icon-left"> <i
+										class="pi pi-search"></i> <p:inputText id="globalFilter"
+											onkeyup="PF('dtTesBanco').filter()" placeholder="Buscar..." />
+									</span>
+								</div>
+							</f:facet>
+							<p:column headerText="Nro. Cuenta" sortBy="#{banco.codBnaco}"
+								filterBy="#{banco.codBnaco}">
+								<h:outputText value="#{banco.codBnaco}" />
+							</p:column>
+							<p:column headerText="Nombre"
+								sortBy="#{banco.bsPersona.nombreCompleto}"
+								filterBy="#{banco.bsPersona.nombreCompleto}"
+								filterStyle="display:none; visibility:hidden;" filtarable="true"
+								filterMatchMode="contains">
+								<h:outputText value="#{banco.bsPersona.nombreCompleto}" />
+							</p:column>
+							<p:column headerText="Documento"
+								sortBy="#{banco.bsPersona.documento}"
+								filterBy="#{banco.bsPersona.documento}"
+								filterStyle="display:none; visibility:hidden;" filtarable="true"
+								filterMatchMode="contains">
+								<h:outputText value="#{banco.bsPersona.documento}" />
+							</p:column>
+							<p:column headerText="Moneda" sortBy="#{banco.bsMoneda.codMoneda}"
+								filterBy="#{banco.bsMoneda.codMoneda}">
+								<h:outputText value="#{banco.bsMoneda.codMoneda}" />
+							</p:column>
+							<p:column exportable="false" headerText="Acciones">
+								<p:commandButton icon="pi pi-pencil"
+									update=":form:manage-banco :form:lbHeader" process="@this"
+									oncomplete="PF('manageTesoreriaDialog').show()"
+									styleClass="edit-button rounded-button ui-button-warning">
+									<f:setPropertyActionListener value="#{banco}"
+										target="#{tesBancoController.tesBancoSelected}" />
+								</p:commandButton>
+								<p:commandButton class="ui-button-danger rounded-button"
+									icon="pi pi-trash" process="@this"
+									oncomplete="PF('deleteBancoDialog').show()">
+									<f:setPropertyActionListener value="#{banco}"
+										target="#{tesBancoController.tesBancoSelected}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+
+						<!-- Dialogos -->
+						<p:dialog showEffect="fade" modal="true"
+							widgetVar="manageTesoreriaDialog" responsive="true">
+							<f:facet name="header">
+								<p:outputLabel id="lbHeader"
+									value="#{tesBancoController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
+							</f:facet>
+							<p:outputPanel id="manage-banco" class="ui-fluid">
+								<p:outputPanel>
+									<div class="field">
+										<p:outputLabel for="label">Nro. Cuenta</p:outputLabel>
+										<p:inputText id="label" autocomplete="off"
+											value="#{tesBancoController.tesBanco.codBnaco}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="personalb">Persona</p:outputLabel>
+										<p:inputText id="personalb" placeholder="Pulse F9 para buscar"
+											autocomplete="off"
+											value="#{tesBancoController.tesBanco.bsPersona.nombreCompleto}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgPersona').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="documentolb">Documento</p:outputLabel>
+										<p:inputText id="documentolb"
+											value="#{tesBancoController.tesBanco.bsPersona.documento}" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="monedalb">Moneda</p:outputLabel>
+										<p:inputText id="monedalb" placeholder="Pulse F9 para buscar"
+											value="#{tesBancoController.tesBanco.bsMoneda.codMoneda}"
+											onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgMonedas').show()
+                                         }" />
+									</div>
+									<div class="field">
+										<p:outputLabel for="saldoLb">Saldo de la Cuenta</p:outputLabel>
+										<p:inputNumber id="saldoLb"
+											value="#{tesBancoController.tesBanco.saldoCuenta}" />
+									</div>
+
+									<div class="field">
+										<p:outputLabel for="estadolb">Estado</p:outputLabel>
+										<p:selectOneMenu id="estadolb"
+											value="#{tesBancoController.tesBanco.estado}">
+											<f:selectItem itemLabel="Seleccione un estado"
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{tesBancoController.estadoList}" />
+										</p:selectOneMenu>
+									</div>
+								</p:outputPanel>
+							</p:outputPanel>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" icon="pi pi-check"
+									actionListener="#{tesBancoController.guardar}"
+									update=":form :form:manage-banco" />
+								<p:commandButton value="Cancelar" icon="pi pi-times"
+									actionListener="#{tesBancoController.cleanFields}"
+									update=":form" onclick="PF('manageTesoreriaDialog').hide()"
+									class="ui-button-secondary" />
+							</f:facet>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgPersona" header="Buscar Persona"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="dtPersona" var="persona"
+								value="#{tesBancoController.lazyPersonaList}" id="dt-persona"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtPersona').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgPersona').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:personalb :form:documentolb">
+										<f:setPropertyActionListener value="#{persona}"
+											target="#{tesBancoController.bsPersonaSelected}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
+									filterBy="#{persona.nombreCompleto}">
+									<h:outputText value="#{persona.nombreCompleto}" />
+								</p:column>
+								<p:column headerText="Documento" sortBy="#{persona.documento}"
+									filterBy="#{persona.documento}">
+									<h:outputText value="#{persona.documento}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog widgetVar="dlgMonedas" header="Buscar Monedas"
+							width="650" showEffect="fade" modal="true">
+							<p:dataTable widgetVar="dtMonedas" var="moneda"
+								value="#{tesBancoController.lazyMonedaList}" id="dt-moneda"
+								paginator="true" rows="10" paginatorPosition="bottom"
+								emptyMessage="No hay Registros">
+								<f:facet name="header">
+									<div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+											class="pi pi-search"></i> <p:inputText id="globalFilter"
+												onkeyup="PF('dtMonedas').filter()" placeholder="Buscar..." />
+										</span>
+									</div>
+								</f:facet>
+								<p:column style="width:3rem;text-align: center">
+									<p:commandButton oncomplete="PF('dlgMonedas').hide()"
+										icon="pi pi-check-circle" title="Seleccionar"
+										update=":form:monedalb">
+										<f:setPropertyActionListener value="#{moneda}"
+											target="#{tesBancoController.tesBanco.bsMoneda}" />
+									</p:commandButton>
+								</p:column>
+								<p:column headerText="Codigo" sortBy="#{moneda.codMoneda}"
+									filterBy="#{moneda.codMoneda}">
+									<h:outputText value="#{moneda.codMoneda}" />
+								</p:column>
+								<p:column headerText="Descripcion"
+									sortBy="#{moneda.descripcion}" filterBy="#{moneda.descripcion}">
+									<h:outputText value="#{moneda.descripcion}" />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<!-- confirms -->
+						<p:confirmDialog widgetVar="deleteBancoDialog" showEffect="fade"
+							width="300" message="Esta seguro que desea eliminar el registro?"
+							header="Confirmacion" severity="warn">
+							<p:commandButton value="Si" icon="pi pi-check"
+								actionListener="#{tesBancoController.delete}" process="@this"
+								oncomplete="PF('deleteBancoDialog').hide()" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-button-secondary" icon="pi pi-times"
+								onclick="PF('deleteBancoDialog').hide()" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
