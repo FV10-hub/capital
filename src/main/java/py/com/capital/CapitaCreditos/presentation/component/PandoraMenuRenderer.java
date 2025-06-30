@@ -1,18 +1,10 @@
 /*
-   Copyright 2009-2022 PrimeTek.
-
-   Licensed under PrimeFaces Commercial License, Version 1.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-   Licensed under PrimeFaces Commercial License, Version 1.0 (the "License");
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
+   Adapted version for Jakarta Faces & PrimeFaces ≥13.
+   Changes:
+   - javax.faces.* → jakarta.faces.*
+   - ComponentTraversalUtils.closestForm(context, component) → closestForm(component)
+   - Ensure imports updated.
+*/
 package py.com.capital.CapitaCreditos.presentation.component;
 
 import java.io.IOException;
@@ -21,17 +13,18 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import jakarta.faces.FacesException;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.context.ResponseWriter;
+
 import org.primefaces.component.api.AjaxSource;
 import org.primefaces.component.api.UIOutcomeTarget;
 import org.primefaces.component.menu.AbstractMenu;
 import org.primefaces.component.menu.BaseMenuRenderer;
 import org.primefaces.component.menuitem.UIMenuItem;
 import org.primefaces.component.submenu.UISubmenu;
-import org.primefaces.expression.SearchExpressionFacade;
 import org.primefaces.model.menu.MenuElement;
 import org.primefaces.model.menu.MenuItem;
 import org.primefaces.model.menu.Separator;
@@ -50,33 +43,33 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
         String styleClass = menu.getStyleClass();
         String defaultStyleClass = "layout-menu";
         styleClass = styleClass == null ? defaultStyleClass : defaultStyleClass + " " + styleClass;
-        
-        writer.startElement("ul", menu);  
+
+        writer.startElement("ul", menu);
         writer.writeAttribute("id", menu.getClientId(context), "id");
         writer.writeAttribute("class", styleClass, "styleClass");
-        
+
         if(style != null) {
             writer.writeAttribute("style", style, "style");
         }
-        
+
         if(menu.getElementsCount() > 0) {
             encodeElements(context, menu, menu.getElements(),true);
         }
-        
+
         writer.endElement("ul");
     }
-    
+
     protected void encodeElements(FacesContext context, AbstractMenu menu, List<MenuElement> elements, boolean root) throws IOException {
         int size = elements.size();
-        
+
         for (int i = 0; i < size; i++) {
             encodeElement(context, menu, elements.get(i),root);
         }
     }
-    
+
     protected void encodeElement(FacesContext context, AbstractMenu menu, MenuElement element, boolean root) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
-        
+
         if(element.isRendered()) {
             if(element instanceof MenuItem) {
                 MenuItem menuItem = (MenuItem) element;
@@ -87,7 +80,7 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
                 writer.startElement("li", null);
                 writer.writeAttribute("id", menuItemClientId, null);
                 writer.writeAttribute("role", "menuitem", null);
-                
+
                 if(containerStyle != null) writer.writeAttribute("style", containerStyle, null);
                 if(containerStyleClass != null) writer.writeAttribute("class", containerStyleClass, null);
 
@@ -101,11 +94,11 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
                 String style = submenu.getStyle();
                 String styleClass = submenu.getStyleClass();
                 String className = root ? (styleClass != null) ? styleClass + " layout-root-menuitem" : "layout-root-menuitem" : styleClass;
-                
+
                 writer.startElement("li", null);
                 writer.writeAttribute("id", submenuClientId, null);
                 writer.writeAttribute("role", "menuitem", null);
-                
+
                 if(style != null) writer.writeAttribute("style", style, null);
                 if(className != null) writer.writeAttribute("class", className, null);
 
@@ -118,7 +111,7 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
             }
         }
     }
-    
+
     protected void encodeSubmenu(FacesContext context, AbstractMenu menu, Submenu submenu, boolean root) throws IOException{
 		ResponseWriter writer = context.getResponseWriter();
         String icon = submenu.getIcon();
@@ -128,13 +121,13 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
         if (root) {
             writer.startElement("div", null);
 
-            if(label != null) {          
+            if(label != null) {
                 writer.startElement("span", null);
                 writer.writeAttribute("class", "layout-menuitem-text", null);
                 writer.writeText(label, null);
-                writer.endElement("span");  
+                writer.endElement("span");
             }
-               
+
             writer.endElement("div");
         }
 
@@ -143,25 +136,25 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
 
         encodeItemIcon(context, icon);
 
-        if(label != null) {          
+        if(label != null) {
             writer.startElement("span", null);
             writer.writeAttribute("class", "layout-menuitem-text", null);
             writer.writeText(label, null);
-            writer.endElement("span");  
-            
+            writer.endElement("span");
+
             encodeToggleIcon(context, submenu, childrenElementsCount);
-            
+
             if(submenu instanceof UISubmenu) {
                 encodeBadge(context, ((UISubmenu) submenu).getAttributes().get("badge"));
             }
         }
-               
+
         writer.endElement("a");
-        
+
         if(label != null) {
             encodeTooltip(context, label);
         }
-        
+
         //submenus and menuitems
         if(childrenElementsCount > 0) {
             writer.startElement("ul", null);
@@ -170,30 +163,30 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
 			writer.endElement("ul");
         }
 	}
-    
+
     protected void encodeItemIcon(FacesContext context, String icon) throws IOException {
         if(icon != null) {
             ResponseWriter writer = context.getResponseWriter();
 
             writer.startElement("i", null);
-            if(icon.contains("fa ")) 
+            if(icon.contains("fa "))
                 icon += " fa-fw";
 
             writer.writeAttribute("class", icon + " layout-menuitem-icon", null);
             writer.endElement("i");
         }
     }
-    
+
     protected void encodeToggleIcon(FacesContext context, Submenu submenu, int childrenElementsCount) throws IOException {
         if(childrenElementsCount > 0) {
             ResponseWriter writer = context.getResponseWriter();
-            
+
             writer.startElement("i", null);
             writer.writeAttribute("class", "layout-submenu-toggler pi pi-fw pi-angle-down", null);
             writer.endElement("i");
         }
     }
-    
+
     protected void encodeBadge(FacesContext context, Object value) throws IOException {
         if(value != null) {
             ResponseWriter writer = context.getResponseWriter();
@@ -218,10 +211,10 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
         if(style != null) {
             writer.writeAttribute("style", style, null);
         }
-        
+
         writer.endElement("li");
     }
-    
+
     @Override
     protected void encodeMenuItem(FacesContext context, AbstractMenu menu, MenuItem menuitem) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
@@ -244,7 +237,7 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
             String onclick = menuitem.getOnclick();
 
             //GET
-            if(menuitem.getUrl() != null || menuitem.getOutcome() != null) {                
+            if(menuitem.getUrl() != null || menuitem.getOutcome() != null) {
                 String targetURL = getTargetURL(context, (UIOutcomeTarget) menuitem);
                 writer.writeAttribute("href", targetURL, null);
 
@@ -256,7 +249,7 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
             else {
                 writer.writeAttribute("href", "#", null);
 
-                UIComponent form = ComponentTraversalUtils.closestForm(context, menu);
+                UIComponent form = ComponentTraversalUtils.closestForm(menu);
                 if(form == null) {
                     throw new FacesException("MenuItem must be inside a form element");
                 }
@@ -273,7 +266,7 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
                     params.put(menuClientId + "_menuid", idParams);
 
                     command = menuitem.isAjax() ? createAjaxRequest(context, menu, (AjaxSource) menuitem, form, params) : buildNonAjaxRequest(context, menu, form, menuClientId, params, true);
-                } 
+                }
                 else {
                     command = menuitem.isAjax() ? createAjaxRequest(context, (AjaxSource) menuitem, form) : buildNonAjaxRequest(context, ((UIComponent) menuitem), form, ((UIComponent) menuitem).getClientId(context), true);
                 }
@@ -289,18 +282,18 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
         encodeMenuItemContent(context, menu, menuitem);
 
         writer.endElement("a");
-        
+
         if(value != null) {
             encodeTooltip(context, value);
         }
 	}
-    
+
     @Override
     protected void encodeMenuItemContent(FacesContext context, AbstractMenu menu, MenuItem menuitem) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
         String icon = menuitem.getIcon();
         Object value = menuitem.getValue();
-                
+
         if(menuitem instanceof UIMenuItem) {
             encodeBadge(context, ((UIMenuItem) menuitem).getAttributes().get("badge"));
         }
@@ -314,10 +307,10 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
             writer.endElement("span");
         }
     }
-    
+
     protected void encodeTooltip(FacesContext context, Object value) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
-        
+
         writer.startElement("div", null);
             writer.writeAttribute("class", "layout-menu-tooltip", null);
             writer.startElement("div", null);
@@ -335,18 +328,18 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
         PandoraMenu menu = (PandoraMenu) abstractMenu;
         String clientId = menu.getClientId(context);
         WidgetBuilder wb = getWidgetBuilder(context);
-        wb.init("Pandora", menu.resolveWidgetVar(), clientId).finish();
+        wb.initWithWindowLoad("Pandora", menu.resolveWidgetVar(), clientId).finish();
     }
-    
+
     protected String createAjaxRequest(FacesContext context, AjaxSource source, UIComponent form) {
         UIComponent component = (UIComponent) source;
         String clientId = component.getClientId(context);
-        
+
         AjaxRequestBuilder builder = getAjaxRequestBuilder();
 
         builder.init()
                 .source(clientId)
-                .form(SearchExpressionFacade.resolveClientId(context, component, source.getForm()))
+                .form(source.getForm())
                 .process(component, source.getProcess())
                 .update(component, source.getUpdate())
                 .async(source.isAsync())
@@ -370,10 +363,10 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
 
         return builder.build();
     }
-    
+
     protected String createAjaxRequest(FacesContext context, AbstractMenu menu, AjaxSource source, UIComponent form,
             Map<String, List<String>> params) {
-        
+
         String clientId = menu.getClientId(context);
 
         AjaxRequestBuilder builder = getAjaxRequestBuilder();
@@ -403,7 +396,7 @@ public class PandoraMenuRenderer extends BaseMenuRenderer {
 
         return builder.build();
     }
-    
+
     protected AjaxRequestBuilder getAjaxRequestBuilder() {
         Class rootContext;
         Object requestContextInstance;
