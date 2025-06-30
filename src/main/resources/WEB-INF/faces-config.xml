@@ -13,15 +13,15 @@
    </application>
    
    <component>
-        <component-type>py.com.capitalsys.capitalsysweb.component</component-type>
-        <component-class>py.com.capitalsys.capitalsysweb.component.PandoraMenu</component-class>
+        <component-type>py.com.capital.CapitaCreditos.component</component-type>
+        <component-class>py.com.capital.CapitaCreditos.component.PandoraMenu</component-class>
     </component>
     
     <render-kit>
         <renderer>
-            <component-family>py.com.capitalsys.capitalsysweb.component</component-family>
-            <renderer-type>py.com.capitalsys.capitalsysweb.component.PandoraMenuRenderer</renderer-type>
-            <renderer-class>py.com.capitalsys.capitalsysweb.component.PandoraMenuRenderer</renderer-class>
+            <component-family>py.com.capital.CapitaCreditos.component</component-family>
+            <renderer-type>py.com.capital.CapitaCreditos.component.PandoraMenuRenderer</renderer-type>
+            <renderer-class>py.com.capital.CapitaCreditos.component.PandoraMenuRenderer</renderer-class>
         </renderer>
     </render-kit>
    

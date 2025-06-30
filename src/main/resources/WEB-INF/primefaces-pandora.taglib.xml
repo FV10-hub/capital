@@ -10,8 +10,8 @@
         <description><![CDATA[Menu is a navigation component for Pandora Layout.]]></description>
 		<tag-name>menu</tag-name>
 		<component>
-			<component-type>py.com.capitalsys.capitalsysweb.component</component-type>
-			<renderer-type>py.com.capitalsys.capitalsysweb.component.PandoraMenuRenderer</renderer-type>
+			<component-type>py.com.capital.CapitaCreditos.component</component-type>
+			<renderer-type>py.com.capital.CapitaCreditos.component.PandoraMenuRenderer</renderer-type>
 		</component>
 		<attribute>
 			<description><![CDATA[Unique identifier of the component in a namingContainer.]]></description>
@@ -29,7 +29,7 @@
 			<description><![CDATA[An el expression referring to a server side UIComponent instance in a backing bean.]]></description>
 			<name>binding</name>
 			<required>false</required>
-			<type>javax.faces.component.UIComponent</type>
+			<type>jakarta.faces.component.UIComponent</type>
 		</attribute>
 		<attribute>
 			<description><![CDATA[Name of the client side widget.]]></description>
