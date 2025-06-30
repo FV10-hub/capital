@@ -2,8 +2,8 @@ package py.com.capital.CapitaCreditos.repositories.creditos;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import py.com.capital.CapitaCreditos.entities.creditos.CreDesembolsoCabecera;
 
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import java.util.List;
 /*
 * 4 ene. 2024 - Elitebook
 */
-public interface CreDesembolsoRepository extends PagingAndSortingRepository<CreDesembolsoCabecera, Long> {
+public interface CreDesembolsoRepository extends JpaRepository<CreDesembolsoCabecera, Long> {
 
 	@Query("SELECT m FROM CreDesembolsoCabecera m")
 	Page<CreDesembolsoCabecera> buscarTodos(Pageable pageable);

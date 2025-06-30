@@ -2,8 +2,8 @@ package py.com.capital.CapitaCreditos.repositories.cobranzas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobReciboCabecera;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 /*
 * 9 ene. 2024 - Elitebook
 */
-public interface CobRecibosRepository extends PagingAndSortingRepository<CobReciboCabecera, Long> {
+public interface CobRecibosRepository extends JpaRepository<CobReciboCabecera, Long> {
 	@Query("SELECT m FROM CobReciboCabecera m")
 	Page<CobReciboCabecera> buscarTodos(Pageable pageable);
 

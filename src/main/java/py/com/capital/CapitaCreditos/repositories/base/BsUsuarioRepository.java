@@ -1,13 +1,13 @@
 package py.com.capital.CapitaCreditos.repositories.base;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import py.com.capital.CapitaCreditos.entities.MenuDto;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 
 import java.util.List;
 
-public interface BsUsuarioRepository extends PagingAndSortingRepository<BsUsuario, Long> {
+public interface BsUsuarioRepository extends JpaRepository<BsUsuario, Long> {
 
 	@Query("SELECT p FROM BsUsuario p WHERE p.codUsuario = ?1 AND p.password = ?2")
 	BsUsuario findByUsuarioAndPassword(String codUsuario, String password);

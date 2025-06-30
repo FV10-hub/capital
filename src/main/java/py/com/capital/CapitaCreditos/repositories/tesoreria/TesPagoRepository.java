@@ -2,13 +2,13 @@ package py.com.capital.CapitaCreditos.repositories.tesoreria;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoCabecera;
 
 import java.util.List;
 
-public interface TesPagoRepository extends PagingAndSortingRepository<TesPagoCabecera, Long> {
+public interface TesPagoRepository extends JpaRepository<TesPagoCabecera, Long> {
 	
 	@Query("SELECT m FROM TesPagoCabecera m")
 	Page<TesPagoCabecera> buscarTodos(Pageable pageable);

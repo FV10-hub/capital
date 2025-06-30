@@ -2,8 +2,8 @@ package py.com.capital.CapitaCreditos.repositories.creditos;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import py.com.capital.CapitaCreditos.entities.creditos.CreSolicitudCredito;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 /*
 * 26 dic. 2023 - Elitebook
 */
-public interface CreSolicitudCreditoRepository extends PagingAndSortingRepository<CreSolicitudCredito, Long> {
+public interface CreSolicitudCreditoRepository extends JpaRepository<CreSolicitudCredito, Long> {
 	
 	@Query("SELECT m FROM CreSolicitudCredito m")
 	Page<CreSolicitudCredito> buscarTodos(Pageable pageable);

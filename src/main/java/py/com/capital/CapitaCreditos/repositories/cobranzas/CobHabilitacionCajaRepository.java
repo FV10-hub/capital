@@ -2,8 +2,8 @@ package py.com.capital.CapitaCreditos.repositories.cobranzas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobHabilitacionCaja;
 
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import java.util.List;
 /*
 * 28 dic. 2023 - Elitebook
 */
-public interface CobHabilitacionCajaRepository extends PagingAndSortingRepository<CobHabilitacionCaja, Long> {
+public interface CobHabilitacionCajaRepository extends JpaRepository<CobHabilitacionCaja, Long> {
 	@Query("SELECT m FROM CobHabilitacionCaja m")
 	Page<CobHabilitacionCaja> buscarTodos(Pageable pageable);
 

@@ -2,8 +2,8 @@ package py.com.capital.CapitaCreditos.repositories.cobranzas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCobrosValores;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 /*
 * 17 ene. 2024 - Elitebook
 */
-public interface CobCobrosValoresRepository extends PagingAndSortingRepository<CobCobrosValores, Long>{
+public interface CobCobrosValoresRepository extends JpaRepository<CobCobrosValores, Long>{
 	
 	@Query("SELECT m FROM CobCobrosValores m")
 	Page<CobCobrosValores> buscarTodos(Pageable pageable);

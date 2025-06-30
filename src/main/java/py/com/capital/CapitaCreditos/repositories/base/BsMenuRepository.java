@@ -5,8 +5,8 @@ package py.com.capital.CapitaCreditos.repositories.base;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import py.com.capital.CapitaCreditos.entities.base.BsMenu;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * 
  */
-public interface BsMenuRepository extends PagingAndSortingRepository<BsMenu, Long> {
+public interface BsMenuRepository extends JpaRepository<BsMenu, Long> {
 	
 	@Query("SELECT m FROM BsMenu m JOIN m.bsModulo l")
 	Page<BsMenu> buscarTodos(Pageable pageable);

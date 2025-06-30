@@ -2,8 +2,8 @@ package py.com.capital.CapitaCreditos.repositories.cobranzas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobSaldo;
 
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import java.util.List;
 /*
 * 12 ene. 2024 - Elitebook
 */
-public interface CobSaldoRepository extends PagingAndSortingRepository<CobSaldo, Long>{
+public interface CobSaldoRepository extends JpaRepository<CobSaldo, Long>{
 	
 	@Query("SELECT m FROM CobSaldo m")
 	Page<CobSaldo> buscarTodos(Pageable pageable);
