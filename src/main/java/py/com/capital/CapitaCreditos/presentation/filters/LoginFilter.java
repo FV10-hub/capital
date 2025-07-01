@@ -5,6 +5,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 
@@ -16,6 +18,7 @@ import java.util.Objects;
 * Clase que implementa el filtro para verificar la sesion del usuario.
 */
 //anotacion para configurar pero siempre debe ir implementado la interfaz filter
+@Component
 @WebFilter
 public class LoginFilter implements Filter {
 

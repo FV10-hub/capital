@@ -15,12 +15,10 @@
  */
 package py.com.capital.CapitaCreditos.presentation.component;
 
-import javax.faces.component.UIComponent;
+import javax.faces.component.*;
+
 import org.primefaces.component.menu.AbstractMenu;
 import javax.faces.context.FacesContext;
-import javax.faces.component.UINamingContainer;
-import javax.faces.component.UIOutput;
-import javax.faces.component.UIViewRoot;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.ComponentSystemEventListener;
@@ -29,7 +27,7 @@ import javax.faces.event.PostAddToViewEvent;
 import org.primefaces.component.api.Widget;
 
 
-
+@FacesComponent(PandoraMenu.COMPONENT_TYPE)
 @ListenerFor(sourceClass = PandoraMenu.class, systemEventClass = PostAddToViewEvent.class)
 public class PandoraMenu extends AbstractMenu implements Widget, ComponentSystemEventListener {
 

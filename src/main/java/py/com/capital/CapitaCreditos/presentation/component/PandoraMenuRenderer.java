@@ -25,6 +25,7 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.faces.render.FacesRenderer;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -32,6 +33,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@FacesRenderer(
+        componentFamily = "py.com.capital.CapitaCreditos.presentation.component", // <-- AGREGA ESTO
+        rendererType = "py.com.capital.CapitaCreditos.presentation.component.PandoraMenuRenderer" // <-- Y ESTO
+)
 public class PandoraMenuRenderer extends BaseMenuRenderer {
 
     @Override

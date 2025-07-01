@@ -5,11 +5,11 @@ services:
     container_name: postgres-15-dev
     restart: always
     ports:
-      - "5433:5432"
+      - "5436:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: manager
-      POSTGRES_DB: sistema
+      POSTGRES_DB: capitalsys
     volumes:
       - ./postgres:/var/lib/postgresql/data
 

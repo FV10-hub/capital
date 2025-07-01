@@ -34,8 +34,8 @@ public class BsMenuItem extends Common implements Serializable {
 	@Column(name = "id_menu_item")
 	private Long idMenuItem;
 
-	@JoinColumn(name = "id_bs_menu", referencedColumnName = "id")
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "id_bs_menu", referencedColumnName = "id", nullable = true)
 	private BsMenu bsMenu;
 
 	@JoinColumn(name = "id_bs_modulo", referencedColumnName = "id")
