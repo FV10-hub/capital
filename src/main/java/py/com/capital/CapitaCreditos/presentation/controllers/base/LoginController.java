@@ -1,17 +1,19 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.base;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 import py.com.capital.CapitaCreditos.presentation.session.MenuBean;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.services.LoginService;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
@@ -19,7 +21,7 @@ import java.util.Objects;
 /**
  * Este controlador se va encargar de manejar el flujo de inicio de sesion
  **/
-@Component
+@Named
 @ViewScoped
 public class LoginController implements Serializable {
 	
@@ -63,7 +65,7 @@ public class LoginController implements Serializable {
 				LOGGER.warn("WARN");
 				LOGGER.info("INFO");
 				LOGGER.error("error");
-				CommonUtils.redireccionar("/pages/commons/dashboard.xhtml");
+				CommonUtils.redireccionar("/faces/pages/commons/dashboard.xhtml");
 			} catch (IOException e) {
 				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
 						"Formato incorrecto en cual se ingresa a la pantalla deseada.");
@@ -74,32 +76,33 @@ public class LoginController implements Serializable {
 		}
 
 	}
-	
-	public void loginEncrypt() {
-	    try {
-	        BsUsuario usuarioConsultado = this.loginServiceImpl.findByUsuario(this.username.toLowerCase());
 
-	        if (usuarioConsultado != null && usuarioConsultado.checkPassword(this.password)) {
-	            this.sessionBean.setUsuarioLogueado(usuarioConsultado);
-	            this.menuBean.setUsuarioLogueado(usuarioConsultado);
-	            
-	            try {
-	                CommonUtils.redireccionar("/pages/commons/dashboard.xhtml");
-	            } catch (IOException e) {
-	                LOGGER.error("Error al redirigir a la página de inicio", e);
-	                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
-	                        "Formato incorrecto al intentar redirigir a la pantalla deseada.");
-	            }
-	        } else {
-	            LOGGER.warn("Intento de inicio de sesión fallido para el usuario: {}", this.username);
-	            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡UPS!",
-	                    "El usuario y/o contraseña son incorrectos");
-	        }
-	    } catch (Exception e) {
-	        LOGGER.error("Error al intentar encontrar al usuario", e);
-	        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
-	                "Error al intentar encontrar al usuario. Por favor, inténtelo de nuevo.");
-	    }
+	public void loginEncrypt() { // <-- Vuelve a ser void
+		try {
+			BsUsuario usuarioConsultado = this.loginServiceImpl.findByUsuario(this.username.toLowerCase());
+
+			if (usuarioConsultado != null && usuarioConsultado.checkPassword(this.password)) {
+				this.sessionBean.setUsuarioLogueado(usuarioConsultado);
+				this.menuBean.setUsuarioLogueado(usuarioConsultado);
+
+				// CONSTRUIMOS LA URL DE REDIRECCIÓN
+				String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+				String url = contextPath + "/faces/pages/commons/dashboard.xhtml";
+				System.out.println("EL URL EN LOGIN ES :::::::: "+url);
+
+				// ORDENAMOS AL NAVEGADOR QUE REDIRIJA
+				PrimeFaces.current().executeScript("window.location.href = '" + url + "';");
+
+			} else {
+				LOGGER.warn("Intento de inicio de sesión fallido para el usuario: {}", this.username);
+				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡UPS!",
+						"El usuario y/o contraseña son incorrectos");
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error al intentar encontrar al usuario", e);
+			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
+					"Error al intentar encontrar al usuario. Por favor, inténtelo de nuevo.");
+		}
 	}
 
 

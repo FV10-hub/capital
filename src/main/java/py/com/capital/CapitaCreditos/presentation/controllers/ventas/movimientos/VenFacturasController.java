@@ -1,8 +1,5 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.ventas.movimientos;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +8,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 import py.com.capital.CapitaCreditos.entities.base.*;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCliente;
@@ -40,6 +36,10 @@ import py.com.capital.CapitaCreditos.services.ventas.VenCondicionVentaService;
 import py.com.capital.CapitaCreditos.services.ventas.VenFacturasService;
 import py.com.capital.CapitaCreditos.services.ventas.VenVendedorService;
 
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 /*
 * 4 ene. 2024 - Elitebook
 */
-@Component
+@Named
 @ViewScoped
 public class VenFacturasController {
 
@@ -679,7 +679,7 @@ public class VenFacturasController {
 	public void redireccionarAHabilitaciones() {
 		try {
 			PrimeFaces.current().executeScript("PF('dlgNoTieneHabilitacion').hide()");
-			CommonUtils.redireccionar("/pages/cliente/cobranzas/definicion/CobHabilitacionCaja.xhtml");
+			CommonUtils.redireccionar("/faces/pages/cliente/cobranzas/definicion/CobHabilitacionCaja.xhtml");
 		} catch (IOException e) {
 			e.printStackTrace();
 			LOGGER.error("Ocurrio un error al Guardar", System.err);

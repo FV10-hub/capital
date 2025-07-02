@@ -1,15 +1,11 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.stock.movimientos;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsIva;
 import py.com.capital.CapitaCreditos.entities.stock.StoAjusteInventarioCabecera;
@@ -23,12 +19,16 @@ import py.com.capital.CapitaCreditos.presentation.utils.GenericLazyDataModel;
 import py.com.capital.CapitaCreditos.services.stock.StoAjusteInventarioCabeceraService;
 import py.com.capital.CapitaCreditos.services.stock.StoArticuloService;
 
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+@Named
 @ViewScoped
 public class StoAjusteInventarioCabeceraController {
 

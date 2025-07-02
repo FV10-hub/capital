@@ -13,6 +13,7 @@ import py.com.capital.CapitaCreditos.services.base.BsUsuarioService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.SessionScoped;
+import javax.inject.Named;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -20,7 +21,7 @@ import java.util.Objects;
  * @author DevPredator
  * Clase que mantendra la informacion en la sesion del usuario.
  */
-@Component
+@Named
 @SessionScoped
 public class SessionBean {
 	/**

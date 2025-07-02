@@ -1,8 +1,5 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.cobranzas.movimientos;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +8,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 import py.com.capital.CapitaCreditos.entities.base.*;
 import py.com.capital.CapitaCreditos.entities.cobranzas.*;
@@ -23,6 +19,10 @@ import py.com.capital.CapitaCreditos.services.base.BsParametroService;
 import py.com.capital.CapitaCreditos.services.base.BsTipoValorService;
 import py.com.capital.CapitaCreditos.services.cobranzas.*;
 
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /*
 * 4 ene. 2024 - Elitebook
 */
-@Component
+@Named
 @ViewScoped
 public class CobRecibosController {
 

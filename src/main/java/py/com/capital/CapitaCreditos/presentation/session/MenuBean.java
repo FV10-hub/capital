@@ -63,7 +63,6 @@ public class MenuBean {
 	private void destroy(){
 		this.model = null;
 		this.subMenuModulo = null;
-		System.out.println("SE DESTRUYO EL MENU");
 	}
 
 	private void ListarMenu(BsUsuario user) {
@@ -82,7 +81,7 @@ public class MenuBean {
 		var mainSubMenu = DefaultSubMenu.builder().label("MENU PRINCIPAL").id(MENU_ID_BASE + "main")
 				.icon("pi pi-fw pi-sitemap").build();
 		DefaultMenuItem dashboard = DefaultMenuItem.builder().id("main1").icon("pi pi-fw pi-home").value("DASHBOARD")
-				.outcome("/pages/commons/dashboard.xhtml")
+				.outcome("/faces/pages/commons/dashboard.xhtml")
 				// .command("#{menuView.update}")
 				// .update("messages")
 				.build();

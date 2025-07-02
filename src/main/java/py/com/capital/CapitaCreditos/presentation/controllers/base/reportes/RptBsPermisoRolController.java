@@ -1,10 +1,7 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.base.reportes;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.ApplicationConstant;
@@ -12,6 +9,9 @@ import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.presentation.utils.GenerarReporte;
 import py.com.capital.CapitaCreditos.presentation.utils.Modulos;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +20,7 @@ import java.util.Objects;
 /*
 * 15 dic. 2023 - Elitebook
 */
-@Component
+@Named
 @ViewScoped
 public class RptBsPermisoRolController {
 

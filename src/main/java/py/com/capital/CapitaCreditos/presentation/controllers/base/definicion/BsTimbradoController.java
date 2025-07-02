@@ -1,14 +1,10 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.base.definicion;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsTimbrado;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
@@ -17,6 +13,10 @@ import py.com.capital.CapitaCreditos.presentation.utils.Estado;
 import py.com.capital.CapitaCreditos.presentation.utils.GenericLazyDataModel;
 import py.com.capital.CapitaCreditos.services.base.BsTimbradoService;
 
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +24,7 @@ import java.util.Objects;
 /*
 * 02 ene 2024 - Elitebook
 */
-@Component
+@Named
 @ViewScoped
 public class BsTimbradoController {
 

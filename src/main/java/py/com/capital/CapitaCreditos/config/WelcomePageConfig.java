@@ -11,7 +11,7 @@ public class WelcomePageConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         //en vez del  <welcome-file-list> webxml
         // Redirige la ruta raíz ("/") a tu página de login
-        registry.addViewController("/").setViewName("forward:/pages/login.xhtml");
+        registry.addViewController("/").setViewName("forward:/faces/pages/login.xhtml");
 
     }
 }

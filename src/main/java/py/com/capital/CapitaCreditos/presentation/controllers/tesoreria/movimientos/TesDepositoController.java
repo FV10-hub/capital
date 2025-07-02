@@ -1,8 +1,5 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.tesoreria.movimientos;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +10,6 @@ import org.primefaces.event.ToggleSelectEvent;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.base.BsTipoValor;
@@ -30,6 +26,10 @@ import py.com.capital.CapitaCreditos.services.cobranzas.CobCobrosValoresService;
 import py.com.capital.CapitaCreditos.services.tesoreria.TesBancoService;
 import py.com.capital.CapitaCreditos.services.tesoreria.TesDepositoService;
 
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Component
+@Named
 @ViewScoped
 public class TesDepositoController {
 

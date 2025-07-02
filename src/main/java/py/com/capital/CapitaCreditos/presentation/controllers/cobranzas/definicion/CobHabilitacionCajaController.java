@@ -1,15 +1,11 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.cobranzas.definicion;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCaja;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobHabilitacionCaja;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
@@ -19,6 +15,10 @@ import py.com.capital.CapitaCreditos.presentation.utils.GenericLazyDataModel;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobCajaService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobHabilitacionCajaService;
 
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +28,7 @@ import java.util.Objects;
 /*
 * 28 dic. 2023 - Elitebook
 */
-@Component
+@Named
 @ViewScoped
 public class CobHabilitacionCajaController {
 	/**

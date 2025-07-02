@@ -10,8 +10,8 @@
         <description><![CDATA[Menu is a navigation component for Pandora Layout.]]></description>
 		<tag-name>menu</tag-name>
 		<component>
-			<component-type>py.com.capital.CapitaCreditos.component</component-type>
-			<renderer-type>py.com.capital.CapitaCreditos.component.PandoraMenuRenderer</renderer-type>
+			<component-type>py.com.capital.CapitaCreditos.presentation.component.PandoraMenu</component-type>
+			<renderer-type>py.com.capital.CapitaCreditos.presentation.component.PandoraMenuRenderer</renderer-type>
 		</component>
 		<attribute>
 			<description><![CDATA[Unique identifier of the component in a namingContainer.]]></description>

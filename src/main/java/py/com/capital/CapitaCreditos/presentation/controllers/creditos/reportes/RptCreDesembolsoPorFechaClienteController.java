@@ -1,12 +1,8 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.creditos.reportes;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
@@ -15,6 +11,10 @@ import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.*;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobClienteService;
 
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +24,7 @@ import java.util.Objects;
 /*
 * 15 dic. 2023 - Elitebook
 */
-@Component
+@Named
 @ViewScoped
 public class RptCreDesembolsoPorFechaClienteController {
 

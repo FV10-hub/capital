@@ -1,14 +1,10 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.stock.definicion;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsIva;
 import py.com.capital.CapitaCreditos.entities.stock.StoArticulo;
@@ -19,13 +15,17 @@ import py.com.capital.CapitaCreditos.presentation.utils.GenericLazyDataModel;
 import py.com.capital.CapitaCreditos.services.base.BsIvaService;
 import py.com.capital.CapitaCreditos.services.stock.StoArticuloService;
 
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.util.List;
 import java.util.Objects;
 
 /*
 * 12 dic. 2023 - Elitebook
 */
-@Component
+@Named
 @ViewScoped
 public class StoArticuloController {
 

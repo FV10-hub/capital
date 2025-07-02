@@ -14,7 +14,7 @@ public class FilterConfig {
         FilterRegistrationBean<LoginFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(loginFilter);
         // Aquí mapeas las URLs que protegerá el filtro
-        registrationBean.addUrlPatterns("/pages/*");
+        registrationBean.addUrlPatterns("/faces/*");
         return registrationBean;
     }
 }

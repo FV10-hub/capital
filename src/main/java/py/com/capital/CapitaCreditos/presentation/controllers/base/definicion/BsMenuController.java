@@ -3,9 +3,6 @@
  */
 package py.com.capital.CapitaCreditos.presentation.controllers.base.definicion;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +10,6 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsMenu;
 import py.com.capital.CapitaCreditos.entities.base.BsModulo;
 import py.com.capital.CapitaCreditos.presentation.utils.ApplicationConstant;
@@ -22,17 +18,21 @@ import py.com.capital.CapitaCreditos.presentation.utils.GenericLazyDataModel;
 import py.com.capital.CapitaCreditos.services.base.BsMenuService;
 import py.com.capital.CapitaCreditos.services.base.BsModuloService;
 
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * descomentar si por algun motivo se necesita trabajar directo con spring
- * //@Component y // @Autowired
+ * //@Named y // @Autowired
  */
-@Component
+@Named
 @ViewScoped
-//@Component
+//@Named
 public class BsMenuController {
 
 	/**

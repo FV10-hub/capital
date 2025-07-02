@@ -31,9 +31,9 @@ import org.primefaces.component.api.Widget;
 @ListenerFor(sourceClass = PandoraMenu.class, systemEventClass = PostAddToViewEvent.class)
 public class PandoraMenu extends AbstractMenu implements Widget, ComponentSystemEventListener {
 
-    public static final String COMPONENT_TYPE = "py.com.capital.CapitaCreditos.component.PandoraMenu";
-    public static final String COMPONENT_FAMILY = "py.com.capital.CapitaCreditos.component";
-    private static final String DEFAULT_RENDERER = "py.com.capital.CapitaCreditos.component.PandoraMenuRenderer";
+    public static final String COMPONENT_TYPE = "py.com.capital.CapitaCreditos.presentation.component.PandoraMenu";
+    public static final String COMPONENT_FAMILY = "py.com.capital.CapitaCreditos.presentation.component";
+    private static final String DEFAULT_RENDERER = "py.com.capital.CapitaCreditos.presentation.component.PandoraMenuRenderer";
     private static final String[] LEGACY_RESOURCES = new String[]{"primefaces.css","jquery/jquery.js","jquery/jquery-plugins.js","primefaces.js"};
     private static final String[] MODERN_RESOURCES = new String[]{"components.css","jquery/jquery.js","jquery/jquery-plugins.js","core.js"};
     
