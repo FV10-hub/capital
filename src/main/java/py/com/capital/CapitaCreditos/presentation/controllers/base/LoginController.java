@@ -88,7 +88,6 @@ public class LoginController implements Serializable {
 				// CONSTRUIMOS LA URL DE REDIRECCIÓN
 				String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
 				String url = contextPath + "/faces/pages/commons/dashboard.xhtml";
-				System.out.println("EL URL EN LOGIN ES :::::::: "+url);
 
 				// ORDENAMOS AL NAVEGADOR QUE REDIRIJA
 				PrimeFaces.current().executeScript("window.location.href = '" + url + "';");

@@ -52,7 +52,7 @@
 				<span> Bienvenido, por favor usa el formulario para
 					loguearte. </span>
 			</div>
-			<h:form class="login-forms-wrapper">
+			<h:form id="loginForm" class="login-forms-wrapper">
 				<div class="form-tabs">
 					<div class="tab tab-1 active-tab">LOGIN</div>
 				</div>
@@ -70,7 +70,7 @@
 						</div>
 						<div class="form-footer">
 							<p:commandButton value="INGRESAR"
-								action="#{loginController.loginEncrypt()}" update="@form" />
+								action="#{loginController.loginEncrypt()}" update="growl" />
 						</div>
 
 					</div>

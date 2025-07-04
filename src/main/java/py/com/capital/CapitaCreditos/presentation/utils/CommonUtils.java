@@ -22,6 +22,7 @@ public class CommonUtils {
 	 * @param detail   {@link String} detalle del mensaje.
 	 */
 	public static void mostrarMensaje(FacesMessage.Severity severity, String summary, String detail) {
+		//System.out.println("--- EJECUTANDO CommonUtils.mostrarMensaje ---");
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, detail));
 	}
 

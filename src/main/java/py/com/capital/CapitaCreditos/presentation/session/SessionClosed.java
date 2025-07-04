@@ -34,7 +34,7 @@ public class SessionClosed {
 			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 			response.setHeader("Pragma", "no-cache");
 			response.setDateHeader("Expires", 0);
-			CommonUtils.redireccionar("/login.xhtml");
+			CommonUtils.redireccionar("/faces/pages/login.xhtml");
 		} catch (IOException e) {
 			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡Ups!",
 					"Hubo un problema al tratar de regresar al login, favor de intentar más tarde.");
