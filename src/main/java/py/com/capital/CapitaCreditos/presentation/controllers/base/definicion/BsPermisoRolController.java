@@ -32,7 +32,6 @@ import java.util.Objects;
  */
 @Named
 @ViewScoped
-//@Named
 public class BsPermisoRolController {
 
 	/**

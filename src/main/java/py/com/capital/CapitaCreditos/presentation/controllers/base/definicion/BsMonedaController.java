@@ -30,7 +30,6 @@ import java.util.Objects;
  */
 @Named
 @ViewScoped
-//@Named
 public class BsMonedaController implements Serializable {
 
 	/**

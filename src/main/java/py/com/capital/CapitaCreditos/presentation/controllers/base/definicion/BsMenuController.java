@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
  */
 @Named
 @ViewScoped
-//@Named
 public class BsMenuController {
 
 	/**

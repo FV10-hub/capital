@@ -37,7 +37,6 @@ import java.util.Objects;
  */
 @Named
 @ViewScoped
-//@Named
 public class BsUsuarioController implements Serializable {
 	
 	/**

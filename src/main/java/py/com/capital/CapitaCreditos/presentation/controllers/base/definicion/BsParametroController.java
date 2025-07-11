@@ -3,9 +3,12 @@ package py.com.capital.CapitaCreditos.presentation.controllers.base.definicion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsModulo;
 import py.com.capital.CapitaCreditos.entities.base.BsParametro;
@@ -20,16 +23,15 @@ import py.com.capital.CapitaCreditos.services.base.BsParametroService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+
 import java.util.List;
 import java.util.Objects;
 
 /*
 * 24 nov. 2023 - Elitebook
 */
-@Named
-@ViewScoped
+@Component
+@Scope(ViewScope.SCOPE_VIEW)
 public class BsParametroController {
 
 	/**
