@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
 /*
 * 13 dic. 2023 - Elitebook
 */
-@Service
+//@Service
 public class ReportesServiceClientImpl implements ReportesServiceClient {
 
 	@Value("${spring.base.url.ws.reportes}")

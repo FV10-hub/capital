@@ -33,7 +33,7 @@ public class GenerarReporte {
 	 */
 	private static final Logger LOGGER = LogManager.getLogger(GenerarReporte.class);
 
-	@Autowired
+	//@Autowired
 	private ReportesServiceClient reportesServiceClientImpl;
 
 	public void descargarReporte(ParametrosReporte params) {
