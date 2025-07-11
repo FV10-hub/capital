@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 import py.com.capital.CapitaCreditos.presentation.session.MenuBean;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
@@ -12,8 +13,8 @@ import py.com.capital.CapitaCreditos.services.LoginService;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
+import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
@@ -21,8 +22,8 @@ import java.util.Objects;
 /**
  * Este controlador se va encargar de manejar el flujo de inicio de sesion
  **/
-@Named
-@ViewScoped
+@Component
+@Scope("session")
 public class LoginController implements Serializable {
 	
 	/**

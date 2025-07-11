@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCliente;
@@ -22,8 +23,8 @@ import py.com.capital.CapitaCreditos.services.ventas.VenVendedorService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
+import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -31,8 +32,8 @@ import java.util.Objects;
 /*
 * 27 dic. 2023 - Elitebook
 */
-@Named
-@ViewScoped
+@Component
+@Scope(ViewScope.SCOPE_VIEW)
 public class CreSolicitudCreditoController {
 
 	/**

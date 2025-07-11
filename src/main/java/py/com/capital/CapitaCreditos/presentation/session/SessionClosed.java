@@ -6,8 +6,10 @@ package py.com.capital.CapitaCreditos.presentation.session;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 
@@ -18,7 +20,7 @@ import java.io.IOException;
  *         redireccionar a la pantalla del login.
  */
 @Component
-@ViewScoped
+@Scope(ViewScope.SCOPE_VIEW)
 public class SessionClosed {
 
 	/**

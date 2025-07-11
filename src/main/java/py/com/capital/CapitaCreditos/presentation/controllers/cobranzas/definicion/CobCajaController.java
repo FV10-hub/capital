@@ -6,6 +6,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
@@ -18,16 +19,16 @@ import py.com.capital.CapitaCreditos.services.cobranzas.CobCajaService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
+import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
 /*
 * 28 dic. 2023 - Elitebook
 */
-@Named
-@ViewScoped
+@Component
+@Scope(ViewScope.SCOPE_VIEW)
 public class CobCajaController {
 	/**
 	 * Objeto que permite mostrar los mensajes de LOG en la consola del servidor o

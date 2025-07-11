@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsIva;
 import py.com.capital.CapitaCreditos.entities.stock.StoAjusteInventarioCabecera;
@@ -21,15 +22,15 @@ import py.com.capital.CapitaCreditos.services.stock.StoArticuloService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
+import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Named
-@ViewScoped
+@Component
+@Scope(ViewScope.SCOPE_VIEW)
 public class StoAjusteInventarioCabeceraController {
 
     /**

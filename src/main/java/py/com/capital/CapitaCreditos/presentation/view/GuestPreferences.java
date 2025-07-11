@@ -17,6 +17,8 @@ package py.com.capital.CapitaCreditos.presentation.view;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.SessionScoped;
+
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -26,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@SessionScoped
+@Scope("session")
 public class GuestPreferences implements Serializable {
 
 	/* Modificar estos valores comentados para ejemplo para cambiar los colores, ver

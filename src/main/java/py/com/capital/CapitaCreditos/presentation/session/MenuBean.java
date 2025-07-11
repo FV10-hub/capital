@@ -11,6 +11,7 @@ import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
 import org.primefaces.model.menu.MenuModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.MenuDto;
 import py.com.capital.CapitaCreditos.entities.base.BsMenu;
@@ -29,7 +30,7 @@ import java.util.Objects;
  *         usuario.
  */
 @Component
-@SessionScoped
+@Scope("session")
 public class MenuBean {
 
 	// Objetos personalizado

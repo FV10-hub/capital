@@ -6,6 +6,7 @@ package py.com.capital.CapitaCreditos.presentation.session;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
@@ -13,7 +14,7 @@ import py.com.capital.CapitaCreditos.services.base.BsUsuarioService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.SessionScoped;
-import javax.inject.Named;
+import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -21,8 +22,8 @@ import java.util.Objects;
  * @author DevPredator
  * Clase que mantendra la informacion en la sesion del usuario.
  */
-@Named
-@SessionScoped
+@Component
+@Scope("session")
 public class SessionBean {
 	/**
 	 * Objeto persona que se mantendra en la sesion.

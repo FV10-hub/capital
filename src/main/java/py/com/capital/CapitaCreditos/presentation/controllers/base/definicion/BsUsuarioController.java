@@ -9,6 +9,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.base.BsRol;
@@ -24,8 +25,8 @@ import py.com.capital.CapitaCreditos.services.base.BsUsuarioService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
+import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +34,10 @@ import java.util.Objects;
 
 /**
  * descomentar si por algun motivo se necesita trabajar directo con spring
- * //@Named y // @Autowired
+ * //@Component y // @Autowired
  */
-@Named
-@ViewScoped
+@Component
+@Scope(ViewScope.SCOPE_VIEW)
 public class BsUsuarioController implements Serializable {
 	
 	/**

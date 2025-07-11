@@ -16,10 +16,11 @@
 package py.com.capital.CapitaCreditos.presentation.view;
 
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.Visibility;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-@ViewScoped
+@Scope(ViewScope.SCOPE_VIEW)
 public class CrudDemoView implements Serializable {
     
     private List<Product> products;

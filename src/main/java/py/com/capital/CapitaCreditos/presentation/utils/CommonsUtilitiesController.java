@@ -2,6 +2,7 @@ package py.com.capital.CapitaCreditos.presentation.utils;
 
 import javax.faces.bean.SessionScoped;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsTalonario;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCaja;
@@ -18,7 +19,7 @@ import java.util.List;
 * 5 ene. 2024 - Elitebook
 */
 @Component
-@SessionScoped
+@Scope("session")
 public class CommonsUtilitiesController {
 
 	@Autowired
