@@ -1,12 +1,33 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- Variable del directorio tomada desde application.properties -->
+    <springProperty scope="context" name="LOG_DIR" source="logging.file.path"/>
+
+    <!-- Patrón de log: Fecha, hilo, nivel, clase, línea, mensaje -->
+    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%line - %msg%n"/>
+
+    <!-- Appender para consola -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%thread] %-5level: %logger - %msg%n</pattern>
+            <pattern>${PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <root level="info">
-        <appender-ref ref="STDOUT"/>
-    </root>
+    <!-- Appender para archivo diario -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--<file>${LOG_DIR}/log-latest.log</file> comento esto por que no quiero que cree el archivo temporal-->
+       <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+           <!-- Crea un archivo diario, ej: log-2025-07-11.log -->
+            <fileNamePattern>${LOG_DIR}/log-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <!-- Mantén los logs de los últimos 30 días -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
 
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
 </configuration>
