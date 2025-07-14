@@ -4,7 +4,6 @@ import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerFactory;
 
 public class CustomExceptionHandlerFactory extends ExceptionHandlerFactory {
-
     private final ExceptionHandlerFactory parent;
 
     public CustomExceptionHandlerFactory(ExceptionHandlerFactory parent) {
@@ -16,4 +15,3 @@ public class CustomExceptionHandlerFactory extends ExceptionHandlerFactory {
         return new CustomExceptionHandler(parent.getExceptionHandler());
     }
 }
-

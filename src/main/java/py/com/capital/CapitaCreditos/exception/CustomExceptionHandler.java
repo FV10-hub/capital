@@ -5,11 +5,9 @@ import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerWrapper;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
-import javax.faces.event.ExceptionQueuedEventContext;
 import java.util.Iterator;
 
 public class CustomExceptionHandler extends ExceptionHandlerWrapper {
-
     private final ExceptionHandler wrapped;
 
     public CustomExceptionHandler(ExceptionHandler wrapped) {
@@ -22,29 +20,28 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
     }
 
     @Override
-    public void handle() throws RuntimeException {
-        Iterator<ExceptionQueuedEvent> i = getUnhandledExceptionQueuedEvents().iterator();
+    public void handle() {
+        Iterator<ExceptionQueuedEvent> events = getUnhandledExceptionQueuedEvents().iterator();
 
-        while (i.hasNext()) {
-            ExceptionQueuedEvent event = i.next();
-            ExceptionQueuedEventContext context = (ExceptionQueuedEventContext) event.getSource();
-            Throwable t = context.getException();
-
-            if (t instanceof ViewExpiredException) {
-                try {
-                    FacesContext fc = FacesContext.getCurrentInstance();
-                    fc.getExternalContext().invalidateSession();
-                    // TODO: esto es por que al cerrar la sesion pierde el viewscoped del login
-                    fc.getExternalContext().redirect(fc.getExternalContext().getRequestContextPath() + "/faces/pages/login.xhtml");
-                    fc.responseComplete();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    i.remove();
+        while (events.hasNext()) {
+            ExceptionQueuedEvent event = events.next();
+            if (event.getContext() != null) {
+                Throwable exception = event.getContext().getException();
+                if (exception instanceof ViewExpiredException) {
+                    FacesContext facesContext = FacesContext.getCurrentInstance();
+                    try {
+                        facesContext.getExternalContext().redirect(
+                                facesContext.getExternalContext().getRequestContextPath() + "/faces/pages/login.xhtml");
+                        facesContext.responseComplete();
+                    } catch (Exception e) {
+                        // Logear error si es necesario
+                    } finally {
+                        events.remove();
+                    }
                 }
             }
         }
+
         getWrapped().handle();
     }
 }
-
