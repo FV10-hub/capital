@@ -63,9 +63,6 @@ public class LoginController implements Serializable {
 			try {
 				this.sessionBean.setUsuarioLogueado(usuarioConsultado);
 				this.menuBean.setUsuarioLogueado(usuarioConsultado);
-				LOGGER.warn("WARN");
-				LOGGER.info("INFO");
-				LOGGER.error("error");
 				CommonUtils.redireccionar("/faces/pages/commons/dashboard.xhtml");
 			} catch (IOException e) {
 				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
@@ -78,7 +75,7 @@ public class LoginController implements Serializable {
 
 	}
 
-	public void loginEncrypt() { // <-- Vuelve a ser void
+	public void loginEncrypt() {
 		try {
 			BsUsuario usuarioConsultado = this.loginServiceImpl.findByUsuario(this.username.toLowerCase());
 
