@@ -75,6 +75,8 @@
             <groupId>org.primefaces</groupId>
             <artifactId>pandora</artifactId>
             <version>${pandora.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/pandora-4.1.0.jar</systemPath>
         </dependency>
 
         <!-- PrimeFlex -->
