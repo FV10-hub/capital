@@ -37,6 +37,7 @@ public class CobArqueosCajas extends Common implements Serializable {
 
     @PrePersist
     private void preInsert() {
+        this.setEstado("ACTIVO");
         this.setFechaCreacion(LocalDateTime.now());
         this.setFechaActualizacion(LocalDateTime.now());
     }
