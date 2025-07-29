@@ -1,0 +1,520 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+    <h:head>
+    </h:head>
+    <ui:define name="title">Facturas Venta</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <script type="text/javascript">
+				window.onload = function() {
+					// Esperar hasta que se complete la carga dinámica del botón
+					const observer = new MutationObserver(function(mutations) {
+						mutations.forEach(function(mutation) {
+							// Verificar si el botón está ahora en el DOM
+							const boton = document
+									.getElementById('form:btnImprimirReporte');
+							if (boton) {
+								console.log('Botón encontrado:', boton);
+								boton.addEventListener('click', function() {
+									console.log('PASOO');
+									setTimeout(function() {
+										PF('imprimirDialog').hide();
+										PrimeFaces.current().ajax().update(
+												':form:messages',
+												':form:dt-facturas');
+									}, 2000);
+								});
+
+								observer.disconnect(); // Detener la observación después de encontrar el botón
+							}
+						});
+					});
+					observer.observe(document.body, {
+						childList : true,
+						subtree : true
+					});
+
+				};
+
+            
+
+
+
+            </script>
+            <div class="grid crud-demo">
+                <div class="col-12">
+                    <div class="card">
+                        <p:growl id="messages" showDetail="true"/>
+                        <p:toolbar styleClass="mb-4"
+                                   rendered="#{not comFacturasController.esVisibleFormulario}">
+                            <p:toolbarGroup>
+                                <p:commandButton value="Nuevo" icon="pi pi-plus" id="btnNuevo"
+                                                 actionListener="#{comFacturasController.setEsVisibleFormulario(true)}"
+                                                 update=":form" styleClass="ui-button-success"
+                                                 style="margin-right: .5rem"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        <p:dataTable
+                                rendered="#{not comFacturasController.esVisibleFormulario}"
+                                id="dt-facturas" widgetVar="dtfactura" var="factura"
+                                value="#{comFacturasController.lazyModel}" reflow="true"
+                                selection="#{comFacturasController.comFacturaCabeceraSelected}"
+                                rowKey="#{factura.id}" paginator="true" rows="10"
+                                rowSelectMode="add" paginatorPosition="bottom"
+                                emptyMessage="No hay Registros">
+                            <f:facet name="header">
+                                <div class="products-table-header">
+                                    <span style="font-weight: bold">Administrar Facturas de Compras</span> <span
+                                        class="filter-container ui-input-icon-left"> <i
+                                        class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                               onkeyup="PF('dtfactura').filter()"
+                                                                               placeholder="Buscar..."/>
+									</span>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Proveedor"
+                                      sortBy="#{factura.comProveedor.bsPersona.nombreCompleto}"
+                                      filterBy="#{factura.comProveedor.bsPersona.nombreCompleto}">
+                                <h:outputText
+                                        value="#{factura.comProveedor.bsPersona.nombreCompleto}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Fecha factura</f:facet>
+                                <h:outputText value="#{factura.fechaFactura}"
+                                              converter="localDateConverter">
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Nro. Factura"
+                                      sortBy="#{factura.nroFacturaCompleto}"
+                                      filterBy="#{factura.nroFacturaCompleto}">
+                                <h:outputText value="#{factura.nroFacturaCompleto}"/>
+                            </p:column>
+                            <p:column headerText="Monto Factura"
+                                      sortBy="#{factura.montoTotalFactura}">
+                                <h:outputText value="#{factura.montoTotalFactura}">
+                                    <f:convertNumber currencySymbol="Gs." pattern="###,###,###"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Estado" sortBy="#{factura.estado}"
+                                      filterBy="#{factura.estado}">
+                                <h:outputText value="#{factura.estado}"/>
+                            </p:column>
+                            <p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-eye" update=":form" process="@this"
+                                                 title="Ver Registro"
+                                                 styleClass="edit-button rounded-button ui-button-primary">
+                                    <f:setPropertyActionListener value="#{factura}"
+                                                                 target="#{comFacturasController.comFacturaCabeceraSelected}"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                        <p:panel id="manage-factura"
+                                 rendered="#{comFacturasController.esVisibleFormulario}">
+                            <p:toolbar styleClass="mb-4" id="toolbarBotones">
+                                <p:toolbarGroup>
+                                    <p:commandButton value="Guardar" icon="pi pi-save"
+                                                     id="btnGuardar"
+                                                     disabled="#{comFacturasController.comFacturaCabecera.comFacturaDetalleList.size() == 0 || comFacturasController.estaPagado}"
+                                                     actionListener="#{comFacturasController.guardar}"
+                                                     update=":form" styleClass="ui-button-success"
+                                                     style="margin-right: .5rem"/>
+                                    <p:commandButton value="Cancelar" id="btnCancelar"
+                                                     icon="pi pi-arrow-circle-left"
+                                                     actionListener="#{comFacturasController.cleanFields}"
+                                                     update=":form" styleClass="ui-button-info"
+                                                     style="margin-right: .5rem"/>
+                                    <p:commandButton value="Eliminar" icon="pi pi-trash"
+                                                     disabled="#{comFacturasController.estaPagado}"
+                                                     rendered="#{comFacturasController.comFacturaCabecera.id != null}"
+                                                     actionListener="#{comFacturasController.delete}"
+                                                     update=":form" styleClass="ui-button-danger"
+                                                     style="margin-right: .5rem"/>
+
+                                </p:toolbarGroup>
+                            </p:toolbar>
+                            <div class="col-12">
+                                <div class="card ui-fluid">
+                                    <h5>Facturas</h5>
+                                    <div class="ui-fluid formgrid grid">
+                                        <div class="field grid md:col-4">
+                                            <p:outputLabel for="proveedorLb"
+                                                           styleClass="col-12 mb-2 md:col-4 mb-md-0">Proveedor
+                                            </p:outputLabel>
+                                            <div class="col-12 md:col-8">
+                                                <p:inputText id="proveedorLb"
+                                                             placeholder="Pulse F9 para buscar"
+                                                             value="#{comFacturasController.comFacturaCabecera.comProveedor.bsPersona.nombreCompleto}"
+                                                             onkeydown="if (event.keyCode == 120) {
+														PF('dlgProveedor').show()
+													}"/>
+                                            </div>
+                                        </div>
+                                        <p:divider/>
+                                        <div class="col-12 md:col-12 flex align-items-center justify-content-evenly flex-wrap">
+                                            <div class="field grid">
+                                                <p:outputLabel for="fechaSolLb"
+                                                               styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Factura
+                                                </p:outputLabel>
+                                                <div class="col-12 md:col-6">
+                                                    <p:datePicker id="fechaSolLb" showIcon="true"
+                                                                  value="#{comFacturasController.comFacturaCabecera.fechaFactura}"
+                                                                  pattern="dd/MM/yyyy">
+                                                    </p:datePicker>
+                                                </div>
+                                            </div>
+                                            <div class="field grid  md:col-4">
+                                                <p:outputLabel for="obsLb"
+                                                               styleClass="col-12 mb-2 md:col-4 mb-md-0">Observacion
+                                                </p:outputLabel>
+                                                <div class="col-12 md:col-8">
+                                                    <p:inputTextarea rows="3" id="obsLb"
+                                                                     value="#{comFacturasController.comFacturaCabecera.observacion}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p:divider/>
+                                        <div class="col-12 md:col-6 flex flex-column">
+                                            <div class="field grid">
+                                                <p:outputLabel for="nrofacturaLb"
+                                                               styleClass="col-12 mb-2 md:col-6 mb-md-0">Nro factura
+                                                </p:outputLabel>
+                                                <div class="col-12 md:col-6">
+                                                    <p:inputMask id="nrofacturaLb"
+                                                                 value="#{comFacturasController.comFacturaCabecera.nroFacturaCompleto}"
+                                                                 mask="999-999-99999999" validateMask="true"/>
+                                                </div>
+                                            </div>
+                                            <div class="field grid">
+                                                <p:outputLabel for="estadoLb"
+                                                               styleClass="col-12 mb-2 md:col-6 mb-md-0">Estado
+                                                </p:outputLabel>
+                                                <div class="col-12 md:col-6">
+                                                    <p:selectOneMenu id="estadoLb"
+                                                                     value="#{comFacturasController.comFacturaCabecera.estado}">
+                                                        <f:selectItem itemLabel="Seleccione un estado"
+                                                                      itemValue="#{null}" noSelectionOption="true"/>
+                                                        <f:selectItems value="#{comFacturasController.estadoList}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 md:col-12 flex flex-row">
+                                        <div class="col-4 md:col-2">
+                                            <p:commandButton id="btnAddDetalle" value="Agregar Detalle"
+                                                             icon="pi pi-sync"
+                                                             onclick="PF('dlgAddDetalle').show()"
+                                                             actionListener="#{comFacturasController.abrirDialogoAddDetalle}"
+                                                             update=":form:manageDetalle :form:btnLimpiar :form:btnGuardar"
+                                                             styleClass="ui-button-info" style="margin-right: .5rem"/>
+                                        </div>
+                                        <div class="col-4 md:col-2">
+                                            <p:commandButton value="Limpiar Detalles" icon="pi pi-bolt"
+                                                             id="btnLimpiar"
+                                                             disabled="#{comFacturasController.comFacturaCabecera.comFacturaDetalleList.size() == 0}"
+                                                             actionListener="#{comFacturasController.limpiarDetalle}"
+                                                             process="@this"
+                                                             update=":form:dt-comFacturaDetalle :form:btnGuardar"
+                                                             styleClass="ui-button-primary"
+                                                             style="margin-right: .5rem"/>
+                                        </div>
+                                    </div>
+                                    <h5 class="col-12 md:col-12">Detalle de Articulos</h5>
+                                    <div class="col-12 md:col-12">
+                                        <p:dataTable id="dt-comFacturaDetalle" widgetVar="dtDetalle"
+                                                     var="detalle"
+                                                     value="#{comFacturasController.comFacturaCabecera.comFacturaDetalleList}"
+                                                     reflow="true" paginator="true" rows="12" scrollable="true"
+                                                     scrollHeight="300" paginatorPosition="bottom"
+                                                     emptyMessage="No hay Registros">
+
+                                            <p:column headerText="Nro Orden">
+                                                <h:outputText value="#{detalle.nroOrden}"/>
+                                            </p:column>
+                                            <p:column headerText="Articulo">
+                                                <h:outputText value="#{detalle.stoArticulo.descripcion}"/>
+                                            </p:column>
+                                            <p:column>
+                                                <f:facet name="header">Cantidad</f:facet>
+                                                <f:facet name="footer">
+                                                    <h5>Totales:</h5>
+                                                </f:facet>
+                                                <h:outputText value="#{detalle.cantidad}"/>
+                                            </p:column>
+                                            <p:column headerText="Gravada">
+                                                <f:facet name="footer">
+                                                    <h:outputText
+                                                            value="#{comFacturasController.comFacturaCabecera.montoTotalGravada}">
+                                                        <f:convertNumber pattern="###,###,###"/>
+                                                    </h:outputText>
+                                                </f:facet>
+                                                <h:outputText value="#{detalle.montoGravado}">
+                                                    <f:convertNumber pattern="###,###,###"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Monto Exenta">
+                                                <f:facet name="footer">
+                                                    <h:outputText
+                                                            value="#{comFacturasController.comFacturaCabecera.montoTotalExenta}">
+                                                        <f:convertNumber pattern="###,###,###"/>
+                                                    </h:outputText>
+                                                </f:facet>
+                                                <h:outputText value="#{detalle.montoExento}">
+                                                    <f:convertNumber pattern="###,###,###"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="IVA" style="width: 10%;">
+                                                <f:facet name="footer">
+                                                    <h:outputText
+                                                            value="#{comFacturasController.comFacturaCabecera.montoTotalIva}">
+                                                        <f:convertNumber pattern="###,###,###"/>
+                                                    </h:outputText>
+                                                </f:facet>
+                                                <h:outputText value="#{detalle.montoIva}">
+                                                    <f:convertNumber pattern="###,###,###"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Total Linea" style="width: 10%;">
+                                                <f:facet name="footer">
+                                                    <h:outputText
+                                                            value="#{comFacturasController.comFacturaCabecera.montoTotalFactura}">
+                                                        <f:convertNumber pattern="###,###,###"/>
+                                                    </h:outputText>
+                                                </f:facet>
+                                                <h:outputText value="#{detalle.montoLinea}">
+                                                    <f:convertNumber pattern="###,###,###"/>
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column exportable="false" headerText="Acciones">
+                                                <p:commandButton icon="pi pi-pencil"
+                                                                 update=":form:manageDetalle :form:lbHeader"
+                                                                 process="@this" oncomplete="PF('dlgAddDetalle').show()"
+                                                                 styleClass="edit-button rounded-button ui-button-warning">
+                                                    <f:setPropertyActionListener value="#{detalle}"
+                                                                                 target="#{comFacturasController.comFacturaDetalle}"/>
+                                                </p:commandButton>
+                                                <p:commandButton class="ui-button-danger rounded-button"
+                                                                 icon="pi pi-trash" process="@this"
+                                                                 oncomplete="PF('deleteDetalleDialog').show()">
+                                                    <f:setPropertyActionListener value="#{detalle}"
+                                                                                 target="#{comFacturasController.comFacturaDetalle}"/>
+                                                </p:commandButton>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:panel>
+                        <!-- DIALOGOS -->
+                        <p:dialog widgetVar="dlgProveedor" header="Buscar Proveedor"
+                                  width="650" showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtProveedor" var="proveedor"
+                                         value="#{comFacturasController.lazyModelProveedor}"
+                                         id="dt-proveedor" paginator="true" rows="10"
+                                         paginatorPosition="bottom" emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtProveedor').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgProveedor').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:proveedorLb">
+                                        <f:setPropertyActionListener value="#{proveedor}"
+                                                                     target="#{comFacturasController.comFacturaCabecera.comProveedor}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Nombre"
+                                          sortBy="#{proveedor.bsPersona.nombreCompleto}"
+                                          filterBy="#{proveedor.bsPersona.nombreCompleto}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{proveedor.bsPersona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Documento"
+                                          sortBy="#{proveedor.bsPersona.documento}"
+                                          filterBy="#{proveedor.bsPersona.documento}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{proveedor.bsPersona.documento}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+
+                        <p:dialog widgetVar="dlgArticulo" header="Buscar Articulo"
+                                  width="650" showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtArticulo" var="articulo"
+                                         value="#{comFacturasController.lazyModelArticulos}"
+                                         id="dt-articulo" paginator="true" rows="10"
+                                         paginatorPosition="bottom" emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtArticulo').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgArticulo').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:articuloLb :form:codIvaLb :form:cantidadLb :form:precioLb :form:totalineaLb">
+                                        <f:setPropertyActionListener value="#{articulo}"
+                                                                     target="#{comFacturasController.stoArticuloSelected}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Codigo" sortBy="#{articulo.codArticulo}"
+                                          filterBy="#{articulo.codArticulo}">
+                                    <h:outputText value="#{articulo.codArticulo}"/>
+                                </p:column>
+                                <p:column headerText="Descripcion"
+                                          sortBy="#{articulo.descripcion}"
+                                          filterBy="#{articulo.descripcion}">
+                                    <h:outputText value="#{articulo.descripcion}"/>
+                                </p:column>
+                                <p:column headerText="Precio Unitario"
+                                          sortBy="#{articulo.precioUnitario}"
+                                          filterBy="#{articulo.precioUnitario}">
+                                    <h:outputText value="#{articulo.precioUnitario}">
+                                        <f:convertNumber pattern="###,###,###.##"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Modulo" sortBy="#{articulo.bsIva.codIva}"
+                                          filterBy="#{articulo.bsIva.codIva}">
+                                    <h:outputText value="#{articulo.bsIva.codIva}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+
+                        <p:dialog showEffect="fade" modal="true" widgetVar="dlgAddDetalle"
+                                  responsive="true">
+                            <f:facet name="header">
+                                <p:outputLabel id="lbHeader"
+                                               value="#{comFacturasController.comFacturaDetalle.id == null ? 'Nuevo' : 'Editar'} Detalle"/>
+                            </f:facet>
+                            <p:outputPanel id="manageDetalle" class="ui-fluid">
+                                <p:outputPanel>
+                                    <div class="field">
+                                        <p:outputLabel for="articuloLb">Articulo</p:outputLabel>
+                                        <p:inputText id="articuloLb"
+                                                     placeholder="Pulse F9 para buscar"
+                                                     value="#{comFacturasController.comFacturaDetalle.stoArticulo.descripcion}"
+                                                     onkeydown="if (event.keyCode == 120) {
+										 PF('dlgArticulo').show()
+									 }"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="codIvaLb">Impuesto</p:outputLabel>
+                                        <p:inputText id="codIvaLb" disabled="true"
+                                                     value="#{comFacturasController.comFacturaDetalle.codIva}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="cantidadLb">Cantidad</p:outputLabel>
+                                        <p:spinner id="cantidadLb"
+                                                   value="#{comFacturasController.comFacturaDetalle.cantidad}">
+                                            <p:ajax
+                                                    listener="#{comFacturasController.calculaTotalLineaDetalle}"
+                                                    event="change" update=":form:totalineaLb"/>
+                                        </p:spinner>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="precioLb">Precio Unitario</p:outputLabel>
+                                        <p:inputNumber id="precioLb"
+                                                       value="#{comFacturasController.comFacturaDetalle.precioUnitario}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="totalineaLb">Total Linea</p:outputLabel>
+                                        <p:inputNumber id="totalineaLb"
+                                                       value="#{comFacturasController.comFacturaDetalle.montoLinea}"/>
+                                    </div>
+                                </p:outputPanel>
+                            </p:outputPanel>
+
+                            <f:facet name="footer">
+                                <p:commandButton value="Agregar" icon="pi pi-check"
+                                                 actionListener="#{comFacturasController.agregarDetalle}"
+                                                 update=":form:dt-comFacturaDetalle"
+                                                 oncomplete="PF('dlgAddDetalle').hide()"/>
+                                <p:commandButton value="Cancelar" icon="pi pi-times"
+                                                 actionListener="#{comFacturasController.setComFacturaDetalle(null)}"
+                                                 update=":form:dt-comFacturaDetalle"
+                                                 onclick="PF('dlgAddDetalle').hide()"
+                                                 class="ui-button-secondary"/>
+                            </f:facet>
+                        </p:dialog>
+                        <!-- DIALOGOS -->
+
+                        <!-- confirms -->
+                        <p:confirmDialog widgetVar="deleteDetalleDialog" showEffect="fade"
+                                         width="300" message="Esta seguro que desea eliminar el detalle?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             actionListener="#{comFacturasController.eliminaDetalle}"
+                                             process="@this" oncomplete="PF('deleteDetalleDialog').hide()" />
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('deleteDetalleDialog').hide()" />
+                        </p:confirmDialog>
+                        <!-- confirms -->
+                    </div>
+                </div>
+            </div>
+            <script>
+				function handleImprimirButtonClick() {
+					setTimeout(function() {
+						PF('imprimirDialog').hide();
+						window.location.reload();
+					}, 4000);
+				}
+				PrimeFaces.locales['es'] = {
+						closeText : 'Cerrar',
+						prevText : 'Anterior',
+						nextText : 'Siguiente',
+						monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+								'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+								'Noviembre', 'Diciembre' ],
+						monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+								'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+						dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+								'Jueves', 'Viernes', 'Sábado' ],
+						dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+								'Sab' ],
+						dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+						weekHeader : 'Semana',
+						firstDay : 1,
+						isRTL : false,
+						showMonthAfterYear : false,
+						yearSuffix : '',
+						timeOnlyTitle : 'Sólo hora',
+						timeText : 'Tiempo',
+						hourText : 'Hora',
+						minuteText : 'Minuto',
+						secondText : 'Segundo',
+						millisecondText : 'Milisegundo',
+						currentText : 'Fecha actual',
+						ampm : false,
+						month : 'Mes',
+						week : 'Semana',
+						day : 'Día',
+						allDayText : 'Todo el día',
+						today : 'Hoy',
+						clear : 'Claro'
+					};
+
+            
+
+
+
+            </script>
+        </h:form>
+    </ui:define>
+</ui:composition>

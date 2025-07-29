@@ -4,11 +4,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
+import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobArqueosCajas;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCaja;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobHabilitacionCaja;
@@ -22,12 +23,7 @@ import py.com.capital.CapitaCreditos.services.cobranzas.CobHabilitacionCajaServi
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-
-import org.joinfaces.autoconfigure.viewscope.ViewScope;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -286,7 +282,10 @@ public class CobHabilitacionCajaController {
             this.cobHabilitacionCaja.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
             this.setFechaYHoraCierre();
             if (!Objects.isNull(cobHabilitacionCajaServiceImpl.save(this.cobHabilitacionCaja))) {
-                this.cobArqueosCajaServiceImpl.save(this.arqueosCajasList.stream().findFirst().get());
+                if (this.arqueosCajasList.stream().findFirst().isPresent()) {
+                    this.cobArqueosCajaServiceImpl.save(this.arqueosCajasList.stream().findFirst().get());
+                }
+
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
                         "El registro se guardo correctamente.");
             } else {
@@ -350,7 +349,7 @@ public class CobHabilitacionCajaController {
     public void addArqueoCaja() {
         if (!Objects.isNull(cobArqueosCajas)) {
             arqueosCajasList.add(cobArqueosCajas);
-            PrimeFaces.current().ajax().update("form:messages",":form:dt-arqueos", ":form:btnAddArqueo", ":form:btnGuardar");
+            PrimeFaces.current().ajax().update("form:messages", ":form:dt-arqueos", ":form:btnAddArqueo", ":form:btnGuardar");
             PrimeFaces.current().executeScript("PF('manageArqueoDialog').hide()");
         }
     }
@@ -368,7 +367,7 @@ public class CobHabilitacionCajaController {
             } else {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo eliminar el registro.");
             }
-            PrimeFaces.current().ajax().update("form:messages",":form:dt-arqueos", ":form:btnAddArqueo", ":form:btnGuardar");
+            PrimeFaces.current().ajax().update("form:messages", ":form:dt-arqueos", ":form:btnAddArqueo", ":form:btnGuardar");
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al eliminar", System.err);
             // e.printStackTrace(System.err);

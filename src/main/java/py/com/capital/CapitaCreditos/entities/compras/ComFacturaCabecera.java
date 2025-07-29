@@ -19,7 +19,7 @@ import java.util.Objects;
 */
 @Entity
 @Table(name = "com_facturas_cabecera", uniqueConstraints = @UniqueConstraint(name = "com_fact_cab_unique_nroFact_des", columnNames = {
-		"id_comprobante", "tipo_factura", "nro_factura_completo" }))
+		"tipo_factura", "nro_factura_completo" }))
 public class ComFacturaCabecera extends Common implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -38,12 +38,6 @@ public class ComFacturaCabecera extends Common implements Serializable {
 	// DESEMBOLSO, NCR(nota de credito) O FACTURA NORMAL
 	@Column(name = "tipo_factura")
 	private String tipoFactura;
-
-	@Column(name = "id_comprobante")
-	private Long idComprobate;
-
-	@Column(name = "nro_factura")
-	private Long nroFactura;
 
 	@Column(name = "nro_factura_completo")
 	private String nroFacturaCompleto;
@@ -64,12 +58,8 @@ public class ComFacturaCabecera extends Common implements Serializable {
 	private BigDecimal montoTotalFactura;
 
 	@ManyToOne
-	@JoinColumn(name = "com_proveedro_id", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "com_proveedor_id", referencedColumnName = "id", nullable = false)
 	private ComProveedor comProveedor;
-
-	@ManyToOne
-	@JoinColumn(name = "bs_talonario_id", referencedColumnName = "id", nullable = false)
-	private BsTalonario bsTalonario;
 
 	@ManyToOne
 	@JoinColumn(name = "bs_empresa_id", referencedColumnName = "id", nullable = false)
@@ -130,22 +120,6 @@ public class ComFacturaCabecera extends Common implements Serializable {
 		this.tipoFactura = tipoFactura;
 	}
 
-	public Long getIdComprobate() {
-		return idComprobate;
-	}
-
-	public void setIdComprobate(Long idComprobate) {
-		this.idComprobate = idComprobate;
-	}
-
-	public Long getNroFactura() {
-		return nroFactura;
-	}
-
-	public void setNroFactura(Long nroFactura) {
-		this.nroFactura = nroFactura;
-	}
-
 	public String getNroFacturaCompleto() {
 		return nroFacturaCompleto;
 	}
@@ -184,14 +158,6 @@ public class ComFacturaCabecera extends Common implements Serializable {
 
 	public void setMontoTotalFactura(BigDecimal montoTotalFactura) {
 		this.montoTotalFactura = montoTotalFactura;
-	}
-
-	public BsTalonario getBsTalonario() {
-		return bsTalonario;
-	}
-
-	public void setBsTalonario(BsTalonario bsTalonario) {
-		this.bsTalonario = bsTalonario;
 	}
 
 	public BsEmpresa getBsEmpresa() {

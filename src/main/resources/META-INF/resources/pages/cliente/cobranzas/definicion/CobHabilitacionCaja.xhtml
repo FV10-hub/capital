@@ -45,6 +45,8 @@
 
 
 
+
+
         </script>
     </h:head>
     <ui:define name="title">Habilitaciones de Caja por Usuario</ui:define>
@@ -112,7 +114,7 @@
                             </p:column>
                             <p:column exportable="false" headerText="Acciones">
                                 <p:commandButton icon="pi pi-pencil"
-                                                 update=":form:manage-habilitacion :form:headerLb"
+                                                 update=":form:manage-habilitacion :form:headerLb :form:btnGuardar"
                                                  process="@this"
                                                  oncomplete="PF('manageHabilitacionDialog').show()"
                                                  styleClass="edit-button rounded-button ui-button-warning">
@@ -278,8 +280,10 @@
 
                             <f:facet name="footer">
                                 <p:commandButton id="btnGuardar"
-                                                 disabled="#{cobHabilitacionCajaController.arqueosCajasList.size() == 0}"
-                                                 value="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean ? 'Cerrar' : 'Abrir'}"
+                                                 disabled="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean
+                                                        ? cobHabilitacionCajaController.arqueosCajasList.size() == 0
+                                                        : false}"
+                                                   value="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean ? 'Cerrar' : 'Abrir'}"
                                                  icon="pi pi-check"
                                                  actionListener="#{cobHabilitacionCajaController.guardar}"
                                                  update=":form:manage-habilitacion"/>
