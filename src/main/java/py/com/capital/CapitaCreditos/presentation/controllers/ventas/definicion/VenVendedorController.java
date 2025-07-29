@@ -198,6 +198,7 @@ public class VenVendedorController {
 			try {
 				this.venVendedor.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
 				this.venVendedor.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
+				this.venVendedor.setCodVendedor(this.venVendedor.getBsPersona().getDocumento());
 				if (!Objects.isNull(venVendedorServiceImpl.save(this.venVendedor))) {
 					CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
 							"El registro se guardo correctamente.");

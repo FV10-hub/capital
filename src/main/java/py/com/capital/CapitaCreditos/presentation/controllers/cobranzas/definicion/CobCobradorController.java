@@ -204,6 +204,7 @@ public class CobCobradorController {
 			try {
 				this.cobCobrador.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
 				this.cobCobrador.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
+				this.cobCobrador.setCodCobrador(this.cobCobrador.getBsPersona().getDocumento());
 				if (!Objects.isNull(cobCobradorServiceImpl.save(this.cobCobrador))) {
 					CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
 							"El registro se guardo correctamente.");

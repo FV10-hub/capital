@@ -200,6 +200,7 @@ public class CobClienteController {
 		try {
 			this.cobCliente.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
 			this.cobCliente.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
+			this.cobCliente.setCodCliente(this.cobCliente.getBsPersona().getDocumento());
 			if (!Objects.isNull(cobClienteServiceImpl.save(this.cobCliente))) {
 				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
 						"El registro se guardo correctamente.");
