@@ -1,0 +1,441 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+    <h:head>
+        <script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </script>
+    </h:head>
+    <ui:define name="title">Debitos y Creditos Bancarios</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <div class="grid crud-demo">
+                <div class="col-12">
+                    <div class="card">
+                        <p:growl id="messages" showDetail="true"/>
+                        <p:toolbar styleClass="mb-4"
+                                   rendered="#{not tesDebitoCreditoBancarioController.esVisibleFormulario}">
+                            <p:toolbarGroup>
+                                <p:commandButton value="Nuevo" icon="pi pi-plus"
+                                                 actionListener="#{tesDebitoCreditoBancarioController.setEsVisibleFormulario(true)}"
+                                                 update=":form" styleClass="ui-button-success"
+                                                 style="margin-right: .5rem"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        <p:dataTable
+                                rendered="#{not tesDebitoCreditoBancarioController.esVisibleFormulario}"
+                                id="dt-debitos-creditos" widgetVar="dtDebitosCreditos" var="debcrebancario"
+                                value="#{tesDebitoCreditoBancarioController.lazyModel}" reflow="true"
+                                selection="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancarioSelected}"
+                                rowKey="#{debcrebancario.id}" paginator="true" rows="10"
+                                rowSelectMode="add" paginatorPosition="bottom"
+                                emptyMessage="No hay Registros">
+                            <f:facet name="header">
+                                <div class="products-table-header">
+                                    <span style="font-weight: bold">Administrar Debitos y Creditos Bancarios</span>
+                                    <span
+                                            class="filter-container ui-input-icon-left"> <i
+                                            class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                   onkeyup="PF('dtDebitosCreditos').filter()"
+                                                                                   placeholder="Buscar..."/>
+									</span>
+                                </div>
+                            </f:facet>
+                            <p:column>
+                                <f:facet name="header">Fecha Operacion</f:facet>
+                                <h:outputText value="#{debcrebancario.fechaDebito}"
+                                              converter="localDateConverter">
+                                </h:outputText>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Moneda</f:facet>
+                                <h:outputText
+                                        value="#{debcrebancario.bsMoneda.descripcion}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Banco Saliente</f:facet>
+                                <h:outputText
+                                        value="#{debcrebancario.tesBancoSaliente.bsPersona.nombreCompleto}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Monto Saliente</f:facet>
+                                <h:outputText value="#{debcrebancario.montoTotalSalida}">
+                                    <f:convertNumber currencySymbol="Gs." pattern="###,###,###"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Banco Entrante</f:facet>
+                                <h:outputText
+                                        value="#{debcrebancario.tesBancoEntrante.bsPersona.nombreCompleto}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Monto Entrante</f:facet>
+                                <h:outputText value="#{debcrebancario.montoTotalEntrada}">
+                                    <f:convertNumber currencySymbol="Gs." pattern="###,###,###"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Estado" sortBy="#{debcrebancario.estado}"
+                                      filterBy="#{debcrebancario.estado}">
+                                <h:outputText value="#{debcrebancario.estado}"/>
+                            </p:column>
+                            <p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-eye" update=":form" process="@this"
+                                                 title="Ver Registro"
+                                                 styleClass="edit-button rounded-button ui-button-primary">
+                                    <f:setPropertyActionListener value="#{debcrebancario}"
+                                                                 target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancarioSelected}"/>
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-danger rounded-button"
+                                                 icon="pi pi-trash"
+                                                 oncomplete="PF('deleteDepositoDialog').show()">
+                                    <f:setPropertyActionListener value="#{debcrebancario}"
+                                                                 target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancarioSelected}"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:panel id="manage-debcrebancario"
+                                 rendered="#{tesDebitoCreditoBancarioController.esVisibleFormulario}">
+                            <p:toolbar styleClass="mb-4" id="toolbarBotones">
+                                <p:toolbarGroup>
+                                    <p:commandButton value="Guardar" icon="pi pi-save"
+                                                     id="btnGuardar"
+                                                     actionListener="#{tesDebitoCreditoBancarioController.guardar}"
+                                                     update=":form" styleClass="ui-button-success"
+                                                     style="margin-right: .5rem"/>
+                                    <p:commandButton value="Cancelar"
+                                                     icon="pi pi-arrow-circle-left"
+                                                     actionListener="#{tesDebitoCreditoBancarioController.cleanFields}"
+                                                     update=":form" styleClass="ui-button-info"
+                                                     style="margin-right: .5rem"/>
+                                    <p:commandButton value="Eliminar" icon="pi pi-trash"
+                                                     rendered="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.id != null}"
+                                                     actionListener="#{tesDebitoCreditoBancarioController.delete}"
+                                                     update=":form" styleClass="ui-button-danger"
+                                                     style="margin-right: .5rem"/>
+
+                                </p:toolbarGroup>
+                            </p:toolbar>
+                            <div class="col-12">
+                                <div class="card ui-fluid">
+                                    <h5>Debitos y Creditos Bancarios</h5>
+                                    <div class="ui-fluid formgrid grid">
+                                        <div class="col-12 md:col-6 flex flex-column">
+                                            <div class="field grid">
+                                                <p:outputLabel for="fechaOpLb"
+                                                               styleClass="col-12 mb-2 md:col-4 mb-md-0">Fecha Deposito
+                                                </p:outputLabel>
+                                                <div class="col-12 md:col-4">
+                                                    <p:datePicker id="fechaOpLb" showIcon="true"
+                                                                  value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.fechaDebito}"
+                                                                  pattern="dd/MM/yyyy">
+                                                    </p:datePicker>
+                                                </div>
+                                            </div>
+                                            <div class="field grid">
+                                                <p:outputLabel for="obsLb"
+                                                               styleClass="col-12 mb-2 md:col-4 mb-md-0">Observacion
+                                                </p:outputLabel>
+                                                <div class="col-12 md:col-6">
+                                                    <p:inputTextarea rows="3" id="obsLb" autocomplete="off"
+                                                                     value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.observacion}"/>
+                                                </div>
+                                            </div>
+                                            <div class="field grid">
+                                                <p:outputLabel for="monedaLb"
+                                                               styleClass="col-12 mb-2 md:col-4 mb-md-0">Moneda
+                                                </p:outputLabel>
+                                                <div class="col-12 md:col-6">
+                                                    <p:selectOneMenu id="monedaLb" required="true"
+                                                                     value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.bsMoneda.id}">
+                                                        <f:selectItem itemLabel="Seleccione una moneda"
+                                                                      itemValue="#{null}" noSelectionOption="true"/>
+                                                        <f:selectItems
+                                                                value="#{tesDebitoCreditoBancarioController.lazyModelMoneda}"
+                                                                var="moneda" itemLabel="#{moneda.descripcion}"
+                                                                itemValue="#{moneda.id}"/>
+                                                        <p:ajax event="valueChange"
+                                                                update=":form:bancoSalienteLb :form:bancoEntranteLb :form:dt-banco-saliente :form:dt-banco-entrante"
+                                                                listener="#{tesDebitoCreditoBancarioController.onModuloChange}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                            <div class="field grid">
+                                                <p:outputLabel for="estadoLb"
+                                                               styleClass="col-12 mb-2 md:col-4 mb-md-0">Estado
+                                                </p:outputLabel>
+                                                <div class="col-12 md:col-6">
+                                                    <p:selectOneMenu id="estadoLb"
+                                                                     value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.estado}">
+                                                        <f:selectItem itemLabel="Seleccione un estado"
+                                                                      itemValue="#{null}" noSelectionOption="true"/>
+                                                        <f:selectItems
+                                                                value="#{tesDebitoCreditoBancarioController.estadoList}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12" style="min-height: 300px">
+                                            <div class="grid mt-6">
+                                                <div class="col-5 flex flex-column">
+                                                    <div class="field grid">
+                                                        <p:outputLabel for="bancoSalienteLb"
+                                                                       styleClass="col-12 mb-2 md:col-2 mb-md-0">
+                                                            Banco Saliente
+                                                        </p:outputLabel>
+                                                        <div class="col-12 md:col-6">
+                                                            <p:inputText id="bancoSalienteLb"
+                                                                         placeholder="Pulse F9 para buscar"
+                                                                         autocomplete="off"
+                                                                         styleClass="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.tesBancoSaliente.id != null ? '' : 'ui-state-error'}"
+                                                                         value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.tesBancoSaliente.bsPersona.nombreCompleto}"
+                                                                         onkeydown="if (event.keyCode == 120) {
+                                                                        PF('dlgBancoSaliente').show()
+                                                                    }"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="field grid">
+                                                        <p:outputLabel for="montoSaliente"
+                                                                       styleClass="col-12 mb-2 md:col-2 mb-md-0"
+                                                                       value="Monto Saliente"/>
+                                                        <div class="col-12 md:col-6">
+                                                            <p:inputNumber id="montoSaliente"
+                                                                           value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.montoTotalSalida}">
+                                                                <p:ajax listener="#{tesDebitoCreditoBancarioController.seteaMismoValor}" event="keyup" update=":form:montoEntrante" />
+                                                            </p:inputNumber>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-1">
+                                                    <p:divider layout="vertical">
+                                                        <b></b>
+                                                    </p:divider>
+                                                </div>
+                                                <div class="col-5 flex flex-column">
+                                                    <div class="field grid">
+                                                        <p:outputLabel for="bancoEntranteLb"
+                                                                       styleClass="col-12 mb-2 md:col-2 mb-md-0">
+                                                            Banco Entrante
+                                                        </p:outputLabel>
+                                                        <div class="col-12 md:col-6">
+                                                            <p:inputText id="bancoEntranteLb"
+                                                                         placeholder="Pulse F9 para buscar"
+                                                                         autocomplete="off"
+                                                                         styleClass="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.tesBancoEntrante.id != null ? '' : 'ui-state-error'}"
+                                                                         value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.tesBancoEntrante.bsPersona.nombreCompleto}"
+                                                                         onkeydown="if (event.keyCode == 120) {
+                                                                        PF('dlgBancoEntrante').show()
+                                                                    }"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="field grid">
+                                                        <p:outputLabel for="montoEntrante"
+                                                                       styleClass="col-12 mb-2 md:col-2 mb-md-0"
+                                                                       value="Monto Entrante"/>
+                                                        <div class="col-12 md:col-6">
+                                                            <p:inputNumber id="montoEntrante"
+                                                                           value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.montoTotalEntrada}"/>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:panel>
+
+                        <!-- DIALOGOS -->
+                        <p:dialog widgetVar="dlgBancoSaliente" header="Buscar Banco Saliente" width="650"
+                                  showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtBancoSaliente" var="bancoSaliente"
+                                         value="#{tesDebitoCreditoBancarioController.lazyModelBancoSaliente}"
+                                         id="dt-banco-saliente"
+                                         paginator="true" rows="10" paginatorPosition="bottom"
+                                         emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtBancoSaliente').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgBancoSaliente').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:bancoSalienteLb">
+                                        <f:setPropertyActionListener value="#{bancoSaliente}"
+                                                                     target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.tesBancoSaliente}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Nro. Cuenta" sortBy="#{bancoSaliente.codBnaco}"
+                                          filterBy="#{bancoSaliente.codBnaco}">
+                                    <h:outputText value="#{bancoSaliente.codBnaco}"/>
+                                </p:column>
+                                <p:column headerText="Nombre"
+                                          sortBy="#{bancoSaliente.bsPersona.nombreCompleto}"
+                                          filterBy="#{bancoSaliente.bsPersona.nombreCompleto}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{bancoSaliente.bsPersona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Documento"
+                                          sortBy="#{bancoSaliente.bsPersona.documento}"
+                                          filterBy="#{bancoSaliente.bsPersona.documento}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{bancoSaliente.bsPersona.documento}"/>
+                                </p:column>
+                                <p:column headerText="Moneda"
+                                          sortBy="#{bancoSaliente.bsMoneda.codMoneda}"
+                                          filterBy="#{bancoSaliente.bsMoneda.codMoneda}">
+                                    <h:outputText value="#{bancoSaliente.bsMoneda.codMoneda}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+
+                        <p:dialog widgetVar="dlgBancoEntrante" header="Buscar Banco Entrante" width="650"
+                                  showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtBancoEntrante" var="bancoEntrante"
+                                         value="#{tesDebitoCreditoBancarioController.lazyModelBancoEntrante}"
+                                         id="dt-banco-entrante"
+                                         paginator="true" rows="10" paginatorPosition="bottom"
+                                         emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtBancoEntrante').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgBancoEntrante').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:bancoEntranteLb">
+                                        <f:setPropertyActionListener value="#{bancoEntrante}"
+                                                                     target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.tesBancoEntrante}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Nro. Cuenta" sortBy="#{bancoEntrante.codBnaco}"
+                                          filterBy="#{bancoEntrante.codBnaco}">
+                                    <h:outputText value="#{bancoEntrante.codBnaco}"/>
+                                </p:column>
+                                <p:column headerText="Nombre"
+                                          sortBy="#{bancoEntrante.bsPersona.nombreCompleto}"
+                                          filterBy="#{bancoEntrante.bsPersona.nombreCompleto}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{bancoEntrante.bsPersona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Documento"
+                                          sortBy="#{bancoEntrante.bsPersona.documento}"
+                                          filterBy="#{bancoEntrante.bsPersona.documento}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{bancoEntrante.bsPersona.documento}"/>
+                                </p:column>
+                                <p:column headerText="Moneda"
+                                          sortBy="#{bancoEntrante.bsMoneda.codMoneda}"
+                                          filterBy="#{bancoEntrante.bsMoneda.codMoneda}">
+                                    <h:outputText value="#{bancoEntrante.bsMoneda.codMoneda}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+
+                        <p:dialog widgetVar="dlgNoTieneHabilitacion" modal="true"
+                                  responsive="true" closable="false" width="400" showEffect="fade"
+                                  hideEffect="fade">
+                            <div
+                                    class="flex flex-column align-items-center align-items-center">
+                                <h4>¡Atención!</h4>
+                                <i class="pi pi-info-circle ui-color-danger"
+                                   style="font-size: 5rem; color: #D32F2F;"></i>
+                                <h5 class="mt-3">EL USUARIO NO HABILITACION</h5>
+                                <p class="mb-0">¡POR FAVOR CREA UNA UNA HABILITACION PARA
+                                    ESTA OPERACION!</p>
+                            </div>
+
+                            <f:facet name="footer">
+                                <p:commandButton value="Habilitar Caja"
+                                                 icon="pi pi-angle-double-right"
+                                                 styleClass="ui-button-outlined ui-button-info"
+                                                 actionListener="#{tesDebitoCreditoBancarioController.redireccionarAHabilitaciones}"/>
+                            </f:facet>
+                        </p:dialog>
+
+                        <!-- DIALOGOS -->
+
+                        <!-- confirms -->
+                        <p:confirmDialog widgetVar="deleteDepositoDialog" showEffect="fade"
+                                         width="300" message="Esta seguro que desea eliminar el registro?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             actionListener="#{tesDebitoCreditoBancarioController.delete}"
+                                             process="@this"
+                                             oncomplete="PF('deleteDepositoDialog').hide()"/>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('deleteDepositoDialog').hide()"/>
+                        </p:confirmDialog>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

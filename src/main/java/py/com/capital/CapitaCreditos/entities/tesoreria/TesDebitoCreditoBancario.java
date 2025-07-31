@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 @Entity
@@ -70,7 +71,97 @@ public class TesDebitoCreditoBancario extends Common implements Serializable {
 		this.setFechaActualizacion(LocalDateTime.now());
 	}
 
+	public Long getId() {
+		return id;
+	}
 
-	
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public LocalDate getFechaDebito() {
+		return fechaDebito;
+	}
+
+	public void setFechaDebito(LocalDate fechaDebito) {
+		this.fechaDebito = fechaDebito;
+	}
+
+	public String getObservacion() {
+		return observacion;
+	}
+
+	public void setObservacion(String observacion) {
+		this.observacion = observacion;
+	}
+
+	public BigDecimal getMontoTotalEntrada() {
+		return montoTotalEntrada;
+	}
+
+	public void setMontoTotalEntrada(BigDecimal montoTotalEntrada) {
+		this.montoTotalEntrada = montoTotalEntrada;
+	}
+
+	public BigDecimal getMontoTotalSalida() {
+		return montoTotalSalida;
+	}
+
+	public void setMontoTotalSalida(BigDecimal montoTotalSalida) {
+		this.montoTotalSalida = montoTotalSalida;
+	}
+
+	public TesBanco getTesBancoSaliente() {
+		return tesBancoSaliente;
+	}
+
+	public void setTesBancoSaliente(TesBanco tesBancoSaliente) {
+		this.tesBancoSaliente = tesBancoSaliente;
+	}
+
+	public TesBanco getTesBancoEntrante() {
+		return tesBancoEntrante;
+	}
+
+	public void setTesBancoEntrante(TesBanco tesBancoEntrante) {
+		this.tesBancoEntrante = tesBancoEntrante;
+	}
+
+	public CobHabilitacionCaja getCobHabilitacionCaja() {
+		return cobHabilitacionCaja;
+	}
+
+	public void setCobHabilitacionCaja(CobHabilitacionCaja cobHabilitacionCaja) {
+		this.cobHabilitacionCaja = cobHabilitacionCaja;
+	}
+
+	public BsMoneda getBsMoneda() {
+		return bsMoneda;
+	}
+
+	public void setBsMoneda(BsMoneda bsMoneda) {
+		this.bsMoneda = bsMoneda;
+	}
+
+	public BsEmpresa getBsEmpresa() {
+		return bsEmpresa;
+	}
+
+	public void setBsEmpresa(BsEmpresa bsEmpresa) {
+		this.bsEmpresa = bsEmpresa;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TesDebitoCreditoBancario that = (TesDebitoCreditoBancario) o;
+		return Objects.equals(id, that.id) && Objects.equals(tesBancoSaliente, that.tesBancoSaliente) && Objects.equals(tesBancoEntrante, that.tesBancoEntrante) && Objects.equals(bsMoneda, that.bsMoneda) && Objects.equals(bsEmpresa, that.bsEmpresa);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, tesBancoSaliente, tesBancoEntrante, bsMoneda, bsEmpresa);
+	}
 }
 

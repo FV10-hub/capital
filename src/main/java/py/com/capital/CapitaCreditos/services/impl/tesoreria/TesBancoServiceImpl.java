@@ -26,4 +26,9 @@ public class TesBancoServiceImpl extends CommonServiceImpl<TesBanco, TesBancoRep
 		return this.repository.buscarTesBancoActivosLista(idEmpresa);
 	}
 
+	@Override
+	public List<TesBanco> buscarTesBancoActivosPorMonedaLista(Long idMoneda) {
+		return this.repository.buscarTesBancoActivosPorMonedaLista(idMoneda);
+	}
+
 }

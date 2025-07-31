@@ -12,4 +12,6 @@ public interface TesBancoService extends CommonService<TesBanco> {
 	 * public Curso findCursoByAlumnoId(Long id);
 	 * */
 	List<TesBanco> buscarTesBancoActivosLista(Long idEmpresa);
+
+	List<TesBanco> buscarTesBancoActivosPorMonedaLista(Long idMoneda);
 }
