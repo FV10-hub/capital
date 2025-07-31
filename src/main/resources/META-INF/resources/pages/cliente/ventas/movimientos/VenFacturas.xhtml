@@ -155,7 +155,7 @@
 										style="margin-right: .5rem" />
 									<p:commandButton value="Eliminar" icon="pi pi-trash"
 										disabled="#{venFacturasController.estaCobrado || venFacturasController.venFacturaCabecera.indImpresoBoolean}"
-										rendered="#{venFacturasController.venFacturaCabecera.id != null}"
+										rendered="false"
 										actionListener="#{venFacturasController.delete}"
 										update=":form" styleClass="ui-button-danger"
 										style="margin-right: .5rem" />

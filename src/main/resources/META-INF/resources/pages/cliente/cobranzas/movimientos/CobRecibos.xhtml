@@ -114,7 +114,7 @@
 										target="#{cobRecibosController.cobReciboCabeceraSelected}" />
 								</p:commandButton>
 								<p:commandButton class="ui-button-danger rounded-button"
-									icon="pi pi-trash"
+									icon="pi pi-trash" rendered="false"
 									oncomplete="PF('deleteFacturaDialog').show()">
 									<f:setPropertyActionListener value="#{recibo}"
 										target="#{cobRecibosController.cobReciboCabeceraSelected}" />

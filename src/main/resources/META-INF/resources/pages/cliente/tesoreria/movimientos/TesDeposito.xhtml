@@ -106,7 +106,7 @@
 									<f:setPropertyActionListener value="#{deposito}"
 										target="#{tesDepositoController.tesDepositoSelected}" />
 								</p:commandButton>
-								<p:commandButton class="ui-button-danger rounded-button"
+								<p:commandButton class="ui-button-danger rounded-button" rendered="false"
 									icon="pi pi-trash"
 									oncomplete="PF('deleteDepositoDialog').show()">
 									<f:setPropertyActionListener value="#{deposito}"

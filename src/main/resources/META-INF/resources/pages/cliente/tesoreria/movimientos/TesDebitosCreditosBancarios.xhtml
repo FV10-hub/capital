@@ -135,7 +135,7 @@
                                                                  target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancarioSelected}"/>
                                 </p:commandButton>
                                 <p:commandButton class="ui-button-danger rounded-button"
-                                                 icon="pi pi-trash"
+                                                 icon="pi pi-trash" rendered="false"
                                                  oncomplete="PF('deleteDepositoDialog').show()">
                                     <f:setPropertyActionListener value="#{debcrebancario}"
                                                                  target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancarioSelected}"/>
@@ -172,7 +172,7 @@
                                         <div class="col-12 md:col-6 flex flex-column">
                                             <div class="field grid">
                                                 <p:outputLabel for="fechaOpLb"
-                                                               styleClass="col-12 mb-2 md:col-4 mb-md-0">Fecha Deposito
+                                                               styleClass="col-12 mb-2 md:col-4 mb-md-0">Fecha Operacion
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-4">
                                                     <p:datePicker id="fechaOpLb" showIcon="true"
