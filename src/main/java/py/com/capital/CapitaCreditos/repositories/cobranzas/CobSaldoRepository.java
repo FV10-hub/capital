@@ -32,4 +32,7 @@ public interface CobSaldoRepository extends JpaRepository<CobSaldo, Long>{
 	@Query("SELECT m FROM CobSaldo m where m.estado = 'ACTIVO' and m.saldoCuota > 0 and m.bsEmpresa.id = ?1 and m.cobCliente.id = ?2 ")
 	List<CobSaldo> buscarSaldoPorClienteMayorACeroLista(Long idEmpresa, Long idCliente);
 
+	@Query("SELECT m FROM CobSaldo m where m.estado = 'ACTIVO' and m.saldoCuota > 0 and m.bsEmpresa.id = ?1 and m.cobCliente.id = ?2 and m.idComprobate = ?3 and m.tipoComprobante = ?4 ")
+	List<CobSaldo> buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(Long idEmpresa, Long idCliente, Long idComprobante, String tipoComprobante);
+
 }

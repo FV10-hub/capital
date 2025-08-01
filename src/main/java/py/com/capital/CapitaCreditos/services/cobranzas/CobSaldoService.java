@@ -19,4 +19,6 @@ public interface CobSaldoService extends CommonService<CobSaldo>{
 	
 	List<CobSaldo> buscarSaldoPorClienteMayorACeroLista(Long idEmpresa, Long idCliente);
 
+	List<CobSaldo> buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(Long idEmpresa, Long idCliente, Long idComprobante, String TipoComprobante);
+
 }

@@ -42,4 +42,9 @@ public class CobSaldoServiceImpl extends CommonServiceImpl<CobSaldo, CobSaldoRep
 		return this.repository.buscarSaldoPorClienteMayorACeroLista(idEmpresa, idCliente);
 	}
 
+	@Override
+	public List<CobSaldo> buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(Long idEmpresa, Long idCliente, Long idComprobante, String tipoComprobante) {
+		return this.repository.buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(idEmpresa,idCliente,idComprobante,tipoComprobante);
+	}
+
 }

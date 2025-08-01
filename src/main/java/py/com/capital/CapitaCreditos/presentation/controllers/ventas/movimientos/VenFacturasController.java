@@ -178,7 +178,7 @@ public class VenFacturasController {
 			venFacturaCabecera = new VenFacturaCabecera();
 			venFacturaCabecera.setFechaFactura(LocalDate.now());
 			venFacturaCabecera.setIndCobrado("N");
-			venFacturaCabecera.setIdComprobate(null);
+			venFacturaCabecera.setIdComprobante(null);
 			venFacturaCabecera.setTipoFactura("FACTURA");
 			venFacturaCabecera.setEstado(Estado.ACTIVO.getEstado());
 			venFacturaCabecera.setBsEmpresa(new BsEmpresa());
@@ -284,10 +284,10 @@ public class VenFacturasController {
 			if (condicion.isPresent()) {
 				this.venFacturaCabecera.setVenCondicionVenta(condicion.get());
 			}
-			this.venFacturaCabecera.setIdComprobate(creDesembolsoCabecera.getId());
+			this.venFacturaCabecera.setIdComprobante(creDesembolsoCabecera.getId());
 			this.venFacturaCabecera.setVenVendedor(creDesembolsoCabecera.getCreSolicitudCredito().getVenVendedor());
 			this.venFacturaCabecera.setCobCliente(creDesembolsoCabecera.getCreSolicitudCredito().getCobCliente());
-			this.venFacturaCabecera.setIdComprobate(creDesembolsoCabecera.getId());
+			this.venFacturaCabecera.setIdComprobante(creDesembolsoCabecera.getId());
 			this.venFacturaCabecera.setTipoFactura("DESEMBOLSO");
 			cargarDetalleSiEsDesembolso(creDesembolsoCabecera);
 		}

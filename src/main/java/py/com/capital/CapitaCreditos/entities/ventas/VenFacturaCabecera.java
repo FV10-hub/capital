@@ -42,7 +42,7 @@ public class VenFacturaCabecera extends Common implements Serializable {
 	private String tipoFactura;
 
 	@Column(name = "id_comprobante")
-	private Long idComprobate;
+	private Long idComprobante;
 
 	@Column(name = "nro_factura")
 	private Long nroFactura;
@@ -149,12 +149,12 @@ public class VenFacturaCabecera extends Common implements Serializable {
 		this.tipoFactura = tipoFactura;
 	}
 
-	public Long getIdComprobate() {
-		return idComprobate;
+	public Long getIdComprobante() {
+		return idComprobante;
 	}
 
-	public void setIdComprobate(Long idComprobate) {
-		this.idComprobate = idComprobate;
+	public void setIdComprobante(Long idComprobante) {
+		this.idComprobante = idComprobante;
 	}
 
 	public Long getNroFactura() {
