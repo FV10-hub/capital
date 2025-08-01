@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+    <h:head>
+        <script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+		</script>
+    </h:head>
+    <ui:define name="title">Conciliacion Bancaria</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <div class="grid crud-demo">
+                <div class="col-12">
+                    <div class="card ui-fluid">
+                        <h5>Conciliacion Bancaria</h5>
+                        <div class="field grid">
+                            <p:outputLabel for="fecdesde"
+                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Desde</p:outputLabel>
+                            <div class="col-12 md:col-2">
+                                <p:datePicker id="fecdesde" autocomplete="off"
+                                              value="#{tesConciliacionValorController.fecDesde}"
+                                              pattern="dd/MM/yyyy">
+                                </p:datePicker>
+                            </div>
+                        </div>
+                        <div class="field grid">
+                            <p:outputLabel for="fechasta"
+                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Hasta</p:outputLabel>
+                            <div class="col-12 md:col-2">
+                                <p:datePicker id="fechasta" autocomplete="off"
+                                              value="#{tesConciliacionValorController.fecHasta}"
+                                              pattern="dd/MM/yyyy">
+                                </p:datePicker>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h5>Procesar</h5>
+                        <div class="formgroup-inline flex align-items-center">
+
+                            <div class="field col-4 md:col-2">
+                                <p:outputLabel for="formato" value="Estado" />
+                            </div>
+                            <div class="field col-4 md:col-4">
+                                <p:selectOneMenu id="formato"
+                                                 value="#{tesConciliacionValorController.indConsiliado}">
+                                    <f:selectItem itemLabel="Selecciona un Estado"
+                                                  itemValue="#{null}" noSelectionOption="true" />
+                                    <f:selectItem itemLabel="CONSILIADO" itemValue="S" />
+                                    <f:selectItem itemLabel="NO CONSILIADO" itemValue="N" />
+                                    <f:selectItem itemLabel="TODOS" itemValue="T" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="field col-4 md:col-4">
+                                <p:commandButton
+                                        ajax="false"
+                                        value="Consultar"
+                                        icon="pi pi-cloud-download"
+                                        styleClass="ui-button-info" />
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

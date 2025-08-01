@@ -3,6 +3,7 @@ package py.com.capital.CapitaCreditos.services.cobranzas;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCobrosValores;
 import py.com.capital.CapitaCreditos.services.CommonService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /*
@@ -19,5 +20,7 @@ public interface CobCobrosValoresService extends CommonService<CobCobrosValores>
 	List<CobCobrosValores> buscarValoresPorComprobanteLista(Long idEmpresa,Long idComprobante, String tipoComprobante);
 
 	List<CobCobrosValores> buscarValoresDepositoLista(Long idEmpresa,Long idDeposito);
+
+	List<CobCobrosValores> buscarValoresParaConciliarPorFechas(Long idEmpresa, LocalDate fechaDesde, LocalDate fechaHasta);
 	
 }

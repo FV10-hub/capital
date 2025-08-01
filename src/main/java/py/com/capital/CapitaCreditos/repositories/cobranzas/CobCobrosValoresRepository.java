@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCobrosValores;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /*
@@ -30,5 +31,10 @@ public interface CobCobrosValoresRepository extends JpaRepository<CobCobrosValor
 	
 	@Query("SELECT m FROM CobCobrosValores m where m.estado = 'ACTIVO' and m.indDepositado = 'S' and m.bsEmpresa.id = ?1 and m.tesDeposito.id = ?2 ")
 	List<CobCobrosValores> buscarValoresDepositoLista(Long idEmpresa,Long idDeposito);
+
+	@Query("SELECT m FROM CobCobrosValores m WHERE m.estado = 'ACTIVO' AND m.bsEmpresa.id = ?1 AND m.fechaValor >= ?2 AND m.fechaValor <= ?3")
+	List<CobCobrosValores> buscarValoresParaConciliarPorFechas(Long idEmpresa, LocalDate fechaDesde, LocalDate fechaHasta);
+
+
 
 }
