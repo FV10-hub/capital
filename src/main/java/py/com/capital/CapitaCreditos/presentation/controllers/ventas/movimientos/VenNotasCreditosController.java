@@ -255,6 +255,8 @@ public class VenNotasCreditosController {
             venFacturaAsociada.getVenFacturaDetalleList().stream().forEach(factAsociada -> {
                 this.detalle = new VenFacturaDetalle();
                 this.detalle.setId(null);
+                this.detalle.setEstado(Estado.ACTIVO.getEstado());
+                this.detalle.setUsuarioModificacion(this.commonsUtilitiesController.getCodUsuarioLogueada());
                 this.detalle.setCantidad(factAsociada.getCantidad());
                 this.detalle.setNroOrden(factAsociada.getNroOrden());
                 this.detalle.setPrecioUnitario(factAsociada.getPrecioUnitario());
@@ -608,14 +610,6 @@ public class VenNotasCreditosController {
         PrimeFaces.current().ajax().update(":form:dt-detalle");
     }
 
-    public void agregarDetalle() {
-        if (StringUtils.equalsIgnoreCase("NCR", venFacturaCabecera.getTipoFactura())) {
-            // TODO: aca debo implementar notas de creditos
-            return;
-        }
-        cargaDetalleVenta();
-    }
-
     private void cargaDetalleVenta() {
         if (Objects.isNull(detalle.getCodIva())) {
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
@@ -683,7 +677,7 @@ public class VenNotasCreditosController {
                 for (int i = 1; i <= plazo; i++) {
                     CobSaldo saldo = new CobSaldo();
 
-                    saldo.setIdComprobate(factura.getId());
+                    saldo.setIdComprobate(factura.getIdComprobante());
                     saldo.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
                     saldo.setTipoComprobante("NCR");
                     saldo.setNroComprobanteCompleto(factura.getNroFacturaCompleto());
@@ -691,8 +685,9 @@ public class VenNotasCreditosController {
                     // montos
                     saldo.setIdCuota(factura.getId());
                     saldo.setNroCuota(i);
-                    saldo.setMontoCuota(montoCuota);
-                    saldo.setSaldoCuota(montoCuota);
+                    saldo.setMontoCuota(montoCuota.negate());
+                    //TODO: pongo en cero ya que se va aplicar al guardar
+                    saldo.setSaldoCuota(BigDecimal.ZERO);
 
                     saldo.setFechaVencimiento(fechaVencimiento);
 
@@ -738,7 +733,6 @@ public class VenNotasCreditosController {
         PrimeFaces.current().ajax().update(":form:btnLimpiar");
     }
 
-    //TODO pensar bien como hacer lo de que cuotas aplicar
     public void guardar() {
         try {
             if (Objects.isNull(this.venFacturaCabecera.getBsTalonario())
@@ -771,17 +765,37 @@ public class VenNotasCreditosController {
                         this.venFacturaCabecera.getBsTalonario().getBsTimbrado().getCodExpedicion(),
                         this.venFacturaCabecera.getNroFactura()));
             }
-
+            this.venFacturaCabecera.setCabeceraADetalle();
             VenFacturaCabecera facturaGuardada = this.venFacturasServiceImpl.save(this.venFacturaCabecera);
 
             if (!Objects.isNull(facturaGuardada)) {
-                // TODO: aca debo ver el caso de NCR
-                if (facturaGuardada.getTipoFactura().equalsIgnoreCase("FACTURA")) {
+                if (facturaGuardada.getTipoFactura().equalsIgnoreCase("NCR")) {
                     parseaDetalleASaldo(facturaGuardada);
                 }
                 if (!Objects.isNull(this.cobSaldoServiceImpl.saveAll(listaSaldoAGenerar))) {
-                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                            "El registro se guardo correctamente.");
+                    List<CobSaldo> saldosAsociados = this.cobSaldoServiceImpl
+                            .buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(
+                                    this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                                    this.venFacturaCabecera.getCobCliente().getId(),
+                                    this.venFacturaCabecera.getIdComprobante(),
+                                    "FACTURA");
+                    BigDecimal montoNcPendiente = facturaGuardada.getMontoTotalFactura().abs();
+                    for (CobSaldo cuota : saldosAsociados) {
+                        if (cuota.getSaldoCuota().compareTo(BigDecimal.ZERO) > 0 && montoNcPendiente.compareTo(BigDecimal.ZERO) > 0) {
+                            // El monto a restar es el menor entre el saldo de la cuota y lo que resta de la NC
+                            BigDecimal aRestar = cuota.getSaldoCuota().min(montoNcPendiente);
+                            cuota.setSaldoCuota(cuota.getSaldoCuota().subtract(aRestar));
+                            montoNcPendiente = montoNcPendiente.subtract(aRestar);
+                        }
+                    }
+                    if (!Objects.isNull(this.cobSaldoServiceImpl.saveAll(saldosAsociados))) {
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                                "El registro se guardo correctamente.");
+                    }else{
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+                                "No se Pudieron actualizar los saldos.");
+                    }
+
                 } else {
                     CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
                             "No se Pudieron crear los saldos.");
