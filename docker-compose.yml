@@ -1,7 +1,8 @@
 version: '3.8'
 
-services:ntainer_name: postgres-1
+services:
   postgres:
+    container_name: postgres
     image: postgres:15.3
     co5-dev
     restart: always

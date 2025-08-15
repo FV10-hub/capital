@@ -3,6 +3,7 @@ package py.com.capital.CapitaCreditos.presentation.controllers.tesoreria.movimie
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -51,10 +52,10 @@ public class TesConciliacionValorController {
 
     private LocalDate fecDesde;
     private LocalDate fecHasta;
-
     private String indConsiliado;
-
     private static final String DT_NAME = "dt-conciliacion";
+
+    public BigDecimal montoTotalConciliado = BigDecimal.ZERO;
 
     // services
     @Autowired
@@ -170,7 +171,7 @@ public class TesConciliacionValorController {
         if (Objects.isNull(lazyModelValores)) {
             List<CobCobrosValores> listaFiltrada = this.cobCobrosValoresServiceImpl
                     .buscarCobCobrosValoresActivosLista(this.commonsUtilitiesController.getIdEmpresaLogueada()).stream()
-                    .filter(valor -> valor.getIndDepositado().equalsIgnoreCase("N"))
+                    .filter(valor -> valor.getIndDepositado().equalsIgnoreCase("S"))
                     .sorted(Comparator.comparing(CobCobrosValores::getFechaValor)).collect(Collectors.toList());
             lazyModelValores = listaFiltrada;
         }
@@ -223,6 +224,14 @@ public class TesConciliacionValorController {
 
     public void setEsVisibleFormulario(boolean esVisibleFormulario) {
         this.esVisibleFormulario = esVisibleFormulario;
+    }
+
+    public BigDecimal getMontoTotalConciliado() {
+        return montoTotalConciliado;
+    }
+
+    public void setMontoTotalConciliado(BigDecimal montoTotalConciliado) {
+        this.montoTotalConciliado = montoTotalConciliado;
     }
 
     public TesConciliacionValorService getTesConciliacionValorServiceImpl() {
@@ -285,6 +294,16 @@ public class TesConciliacionValorController {
         this.indConsiliado = indConsiliado;
     }
 
+    public void consultarValoresAConciliar(){
+        this.lazyModelValores = this.cobCobrosValoresServiceImpl
+                .buscarValoresParaConciliarPorFechas(
+                        this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                        this.fecDesde,
+                        this.fecHasta);
+        this.esVisibleFormulario = true;
+        var a = 0;
+        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
+    }
     public void guardar() {
         /*try {
             if (Objects.isNull(this.tesDeposito.getTesBanco())

@@ -39,7 +39,9 @@
 				today : 'Hoy',
 				clear : 'Claro'
 			};
-		</script>
+
+
+        </script>
     </h:head>
     <ui:define name="title">Conciliacion Bancaria</ui:define>
     <ui:define name="content">
@@ -50,55 +52,142 @@
                         <h5>Conciliacion Bancaria</h5>
                         <div class="field grid">
                             <p:outputLabel for="fecdesde"
-                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Desde</p:outputLabel>
+                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Desde
+                            </p:outputLabel>
                             <div class="col-12 md:col-2">
                                 <p:datePicker id="fecdesde" autocomplete="off"
                                               value="#{tesConciliacionValorController.fecDesde}"
-                                              pattern="dd/MM/yyyy">
+                                              pattern="dd/MM/yyyy"
+                                              showButtonBar="true"
+                                              mask="true"
+                                              showOnFocus="false">
                                 </p:datePicker>
                             </div>
                         </div>
                         <div class="field grid">
                             <p:outputLabel for="fechasta"
-                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Hasta</p:outputLabel>
+                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Hasta
+                            </p:outputLabel>
                             <div class="col-12 md:col-2">
                                 <p:datePicker id="fechasta" autocomplete="off"
                                               value="#{tesConciliacionValorController.fecHasta}"
-                                              pattern="dd/MM/yyyy">
+                                              pattern="dd/MM/yyyy"
+                                              showButtonBar="true"
+                                              mask="true"
+                                              showOnFocus="false">
                                 </p:datePicker>
                             </div>
                         </div>
-                    </div>
+                        <div class="card">
+                            <h5>Procesar</h5>
+                            <div class="formgroup-inline flex align-items-center">
 
-                    <div class="card">
-                        <h5>Procesar</h5>
-                        <div class="formgroup-inline flex align-items-center">
+                                <div class="field col-4 md:col-2">
+                                    <p:outputLabel for="formato" value="Estado"/>
+                                </div>
+                                <div class="field col-4 md:col-4">
+                                    <p:selectOneMenu id="formato"
+                                                     value="#{tesConciliacionValorController.indConsiliado}">
+                                        <f:selectItem itemLabel="Selecciona un Estado"
+                                                      itemValue="#{null}" noSelectionOption="true"/>
+                                        <f:selectItem itemLabel="CONSILIADO" itemValue="S"/>
+                                        <f:selectItem itemLabel="NO CONSILIADO" itemValue="N"/>
+                                        <f:selectItem itemLabel="TODOS" itemValue="T"/>
+                                    </p:selectOneMenu>
+                                </div>
+                                <div class="field col-4 md:col-4">
+                                    <p:commandButton
+                                            actionListener="#{tesConciliacionValorController.consultarValoresAConciliar}"
+                                            value="Consultar"
+                                            icon="pi pi-cloud-download"
+                                            styleClass="ui-button-info"/>
+                                </div>
 
-                            <div class="field col-4 md:col-2">
-                                <p:outputLabel for="formato" value="Estado" />
-                            </div>
-                            <div class="field col-4 md:col-4">
-                                <p:selectOneMenu id="formato"
-                                                 value="#{tesConciliacionValorController.indConsiliado}">
-                                    <f:selectItem itemLabel="Selecciona un Estado"
-                                                  itemValue="#{null}" noSelectionOption="true" />
-                                    <f:selectItem itemLabel="CONSILIADO" itemValue="S" />
-                                    <f:selectItem itemLabel="NO CONSILIADO" itemValue="N" />
-                                    <f:selectItem itemLabel="TODOS" itemValue="T" />
-                                </p:selectOneMenu>
-                            </div>
-                            <div class="field col-4 md:col-4">
-                                <p:commandButton
-                                        ajax="false"
-                                        value="Consultar"
-                                        icon="pi pi-cloud-download"
-                                        styleClass="ui-button-info" />
                             </div>
 
                         </div>
-
                     </div>
+
+                    <p:panel id="manage-conciliacion">
+                        <p:dataTable id="dt-conciliacion" widgetVar="dtConciliacion" var="valor"
+                                     rendered="#{tesConciliacionValorController.esVisibleFormulario}"
+                                     value="#{tesConciliacionValorController.lazyModelValores}"
+                                     selection="#{tesConciliacionValorController.cobrosValoresList}"
+                                     paginator="true" rows="10" paginatorPosition="bottom"
+                                     rowKey="#{valor.id}" selectionPageOnly="false"
+                                     emptyMessage="No hay Registros">
+                            <f:facet name="header">
+                                <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtConciliacion').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                                </div>
+                            </f:facet>
+
+                            <!--
+                            <p:ajax event="rowSelect"
+                            <p:ajax event="rowUnselect"
+                             -->
+                            <p:ajax event="rowSelectCheckbox"
+                                    listener="#{tesConciliacionValorController.onRowSelect}"/>
+                            <p:ajax event="rowUnselectCheckbox"
+                                    listener="#{tesConciliacionValorController.onRowUnselect}"/>
+                            <p:column selectionMode="multiple"
+                                      style="width:16px;text-align:center"/>
+                            <p:column headerText="Tipo Valor"
+                                      sortBy="#{valor.bsTipoValor.descripcion}"
+                                      filterBy="#{valor.bsTipoValor.descripcion}">
+                                <h:outputText value="#{valor.bsTipoValor.descripcion}"/>
+                            </p:column>
+                            <p:column headerText="Nro. Comprobante"
+                                      sortBy="#{valor.nroComprobanteCompleto}"
+                                      filterBy="#{valor.nroComprobanteCompleto}">
+                                <h:outputText value="#{valor.nroComprobanteCompleto}"/>
+                            </p:column>
+                            <p:column headerText="Tipo Comprobante"
+                                      sortBy="#{valor.tipoComprobante}"
+                                      filterBy="#{valor.tipoComprobante}">
+                                <h:outputText value="#{valor.tipoComprobante}"/>
+                            </p:column>
+                            <p:column headerText="Nro. Valor" sortBy="#{valor.nroValor}">
+                                <h:outputText value="#{valor.nroValor}">
+                                    <f:convertNumber pattern="###,###,###"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Fecha Valor</f:facet>
+                                <f:facet name="footer">
+                                    <h5 class="text-sm">Total Seleccionado:</h5>
+                                </f:facet>
+                                <h:outputText value="#{valor.fechaValor}"
+                                              converter="localDateConverter">
+                                </h:outputText>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Fecha Vencimiento Valor</f:facet>
+                                <h:outputText value="#{valor.fechaVencimiento}"
+                                              converter="localDateConverter">
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Monto Valor">
+                                <f:facet name="footer">
+                                    <h:outputText
+                                            value="#{tesConciliacionValorController.montoTotalConciliado}">
+                                        <f:convertNumber pattern="###,###,###"/>
+                                    </h:outputText>
+                                </f:facet>
+                                <h:outputText value="#{valor.montoValor}">
+                                    <f:convertNumber pattern="###,###,###"/>
+                                </h:outputText>
+                            </p:column>
+
+                        </p:dataTable>
+                    </p:panel>
+
                 </div>
+
             </div>
         </h:form>
     </ui:define>
