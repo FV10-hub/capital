@@ -24,4 +24,5 @@ public interface LoginService {
 	BsUsuario findByUsuario(String codUsuario);
 	
 	List<MenuDto> consultarMenuPorUsuario(Long id);
+
 }

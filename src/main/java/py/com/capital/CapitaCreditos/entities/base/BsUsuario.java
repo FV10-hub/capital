@@ -3,6 +3,7 @@ package py.com.capital.CapitaCreditos.entities.base;
 import javax.persistence.*;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 /**
@@ -22,6 +23,12 @@ public class BsUsuario extends Common {
 
 	@Column(name = "password")
 	private String password;
+
+	@Column(name = "intentos_fallidos")
+	private Integer intentosFallidos = 0;
+
+	@Column(name = "bloqueado_hasta")
+	private LocalDateTime bloqueadoHasta;
 
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_bs_persona")
@@ -99,10 +106,43 @@ public class BsUsuario extends Common {
 		this.password = passwordEncryptor.encryptPassword(this.password);
 	}
 
+	public Integer getIntentosFallidos() {
+		return intentosFallidos;
+	}
+
+	public void setIntentosFallidos(Integer intentosFallidos) {
+		this.intentosFallidos = intentosFallidos;
+	}
+
+	public LocalDateTime getBloqueadoHasta() {
+		return bloqueadoHasta;
+	}
+
+	public void setBloqueadoHasta(LocalDateTime bloqueadoHasta) {
+		this.bloqueadoHasta = bloqueadoHasta;
+	}
+
 	// Método para verificar la contraseña al hacer login
 	public boolean checkPassword(String inputPassword) {
 		StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 		return passwordEncryptor.checkPassword(inputPassword, this.password);
+	}
+
+	public boolean estaBloqueado() {
+		return bloqueadoHasta != null && LocalDateTime.now().isBefore(bloqueadoHasta);
+	}
+
+	public void registrarFallo(int maxIntentos, Duration lockDuration) {
+		this.intentosFallidos += 1;
+		if (this.intentosFallidos >= maxIntentos) {
+			this.bloqueadoHasta = LocalDateTime.now().plus(lockDuration);
+			this.intentosFallidos = 0;
+		}
+	}
+
+	public void registrarExito() {
+		this.intentosFallidos = 0;
+		this.bloqueadoHasta = null;
 	}
 
 	public String getPersonaNombreCompleto() {
