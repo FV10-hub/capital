@@ -92,7 +92,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="personalb">Persona</p:outputLabel>
-										<p:inputText id="personalb" placeholder="Pulse F9 para buscar"
+										<p:inputText id="personalb" placeholder="Pulse F9 para buscar" autocomplete="off"
 											value="#{bsUsuarioController.bsUsuario.bsPersona.nombreCompleto}"
 											onkeydown="if (event.keyCode == 120) {
                                              PF('dlgPersona').show()
@@ -101,7 +101,7 @@
 									<div class="field">
 										<p:outputLabel for="rollb">Rol</p:outputLabel>
 										<p:inputText id="rollb" placeholder="Pulse F9 para buscar"
-											update="dt-rol"
+											update="dt-rol" autocomplete="off"
 											value="#{bsUsuarioController.bsUsuario.rol.nombre}"
 											onkeydown="if (event.keyCode == 120) {
                                              PF('dlgRol').show()
@@ -109,7 +109,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="empresalb">Empresa</p:outputLabel>
-										<p:inputText id="empresalb" placeholder="Pulse F9 para buscar"
+										<p:inputText id="empresalb" placeholder="Pulse F9 para buscar" autocomplete="off"
 											value="#{bsUsuarioController.bsUsuario.bsEmpresa.nombreFantasia}"
 											onkeydown="if (event.keyCode == 120) {
                                              PF('dlgEmpresa').show()

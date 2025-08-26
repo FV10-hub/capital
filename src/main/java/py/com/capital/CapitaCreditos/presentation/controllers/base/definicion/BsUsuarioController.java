@@ -114,6 +114,7 @@ public class BsUsuarioController implements Serializable {
 	public BsUsuario getBsUsuario() {
 		if (Objects.isNull(bsUsuario)) {
 			this.bsUsuario = new BsUsuario();
+			this.bsUsuario.setEstado(Estado.ACTIVO.getEstado());
 			this.bsUsuario.setBsPersona(new BsPersona());
 			this.bsUsuario.setBsEmpresa(new BsEmpresa());
 			this.bsUsuario.setRol(new BsRol());
@@ -304,9 +305,9 @@ public class BsUsuarioController implements Serializable {
 		}
 		try {
 			this.bsUsuario.setCodUsuario(this.bsUsuario.getCodUsuario().toLowerCase());
-			this.bsUsuario.encryptPassword();
+			//this.bsUsuario.encryptPassword();
 			this.bsUsuario.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
-			if (!Objects.isNull(bsUsuarioServiceImpl.save(this.bsUsuario))) {
+			if (!Objects.isNull(bsUsuarioServiceImpl.guardarConEncriptacionDePassword(this.bsUsuario))) {
 				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
 						"El registro se guardo correctamente.");
 			} else {

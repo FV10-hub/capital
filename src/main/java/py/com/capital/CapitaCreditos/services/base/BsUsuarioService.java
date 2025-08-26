@@ -5,6 +5,8 @@ import py.com.capital.CapitaCreditos.services.CommonService;
 
 public interface BsUsuarioService extends CommonService<BsUsuario> {
 
+	BsUsuario guardarConEncriptacionDePassword(BsUsuario usuario);
+
 	/*
 	 * agregar aca los metodos personalizados
 	 * public Curso findCursoByAlumnoId(Long id);

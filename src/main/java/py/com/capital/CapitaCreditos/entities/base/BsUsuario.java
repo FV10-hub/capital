@@ -101,10 +101,10 @@ public class BsUsuario extends Common {
 		this.bsEmpresa = bsEmpresa;
 	}
 
-	public void encryptPassword() {
+	/*public void encryptPassword() {
 		StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 		this.password = passwordEncryptor.encryptPassword(this.password);
-	}
+	}*/
 
 	public Integer getIntentosFallidos() {
 		return intentosFallidos;

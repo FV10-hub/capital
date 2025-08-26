@@ -57,8 +57,8 @@ public class SessionBean {
 		}
 		try {
 			this.usuarioLogueado.setPassword(newPassword);
-			this.usuarioLogueado.encryptPassword();
-			if (!Objects.isNull(bsUsuarioServiceImpl.save(this.usuarioLogueado))) {
+			//this.usuarioLogueado.encryptPassword();
+			if (!Objects.isNull(bsUsuarioServiceImpl.guardarConEncriptacionDePassword(this.usuarioLogueado))) {
 				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
 						"El registro se guardo correctamente.");
 			} else {
