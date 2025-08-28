@@ -123,10 +123,10 @@ public class BsUsuario extends Common {
 	}
 
 	// Método para verificar la contraseña al hacer login
-	public boolean checkPassword(String inputPassword) {
+	/*public boolean checkPassword(String inputPassword) {
 		StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 		return passwordEncryptor.checkPassword(inputPassword, this.password);
-	}
+	}*/
 
 	public boolean estaBloqueado() {
 		return bloqueadoHasta != null && LocalDateTime.now().isBefore(bloqueadoHasta);

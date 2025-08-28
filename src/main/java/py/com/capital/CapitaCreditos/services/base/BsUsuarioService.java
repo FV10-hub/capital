@@ -7,6 +7,8 @@ public interface BsUsuarioService extends CommonService<BsUsuario> {
 
 	BsUsuario guardarConEncriptacionDePassword(BsUsuario usuario);
 
+	public boolean validatePassword(String inputPassword, String userSavedPassword);
+
 	/*
 	 * agregar aca los metodos personalizados
 	 * public Curso findCursoByAlumnoId(Long id);

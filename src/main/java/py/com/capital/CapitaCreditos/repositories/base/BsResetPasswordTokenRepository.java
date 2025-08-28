@@ -25,4 +25,6 @@ public interface BsResetPasswordTokenRepository extends JpaRepository<BsResetPas
 	@Query("SELECT m FROM BsResetPasswordToken m where m.estado = 'ACTIVO'")
 	List<BsResetPasswordToken> buscarActivosLista();
 
+
+
 }

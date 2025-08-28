@@ -27,4 +27,9 @@ extends CommonServiceImpl<BsUsuario, BsUsuarioRepository> implements BsUsuarioSe
         usuario.setPassword(encoder.encode(passPlano));
         return repository.save(usuario);
     }
+
+    @Override
+    public boolean validatePassword(String inputPassword, String userSavedPassword) {
+        return this.encoder.matches(inputPassword, userSavedPassword);
+    }
 }
