@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package py.com.capital.CapitaCreditos.services.base;
 
@@ -11,14 +11,18 @@ import py.com.capital.CapitaCreditos.services.CommonService;
 import java.util.List;
 
 /**
- * 
+ *
  */
-public interface BsResetPasswordTokenService extends CommonService<BsResetPasswordToken>  {
-	
-	Page<BsResetPasswordToken> buscarTodos(Pageable pageable);
-	
-	List<BsResetPasswordToken> buscarTodosLista();
-	
-	List<BsResetPasswordToken> buscarActivosLista();
-	
+public interface BsResetPasswordTokenService extends CommonService<BsResetPasswordToken> {
+
+    Page<BsResetPasswordToken> buscarTodos(Pageable pageable);
+
+    List<BsResetPasswordToken> buscarTodosLista();
+
+    List<BsResetPasswordToken> buscarActivosLista();
+
+    int marcarUsado(Long id);
+
+    int purgeCaducados();
+
 }

@@ -42,4 +42,14 @@ public class BsResetPasswordTokenServiceImpl
         return repository.buscarActivosLista();
     }
 
+    @Override
+    public int marcarUsado(Long id) {
+        return this.repository.marcarUsado(id);
+    }
+
+    @Override
+    public int purgeCaducados() {
+        return this.repository.purgeCaducados();
+    }
+
 }

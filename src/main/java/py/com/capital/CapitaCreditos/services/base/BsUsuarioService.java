@@ -9,6 +9,8 @@ public interface BsUsuarioService extends CommonService<BsUsuario> {
 
 	public boolean validatePassword(String inputPassword, String userSavedPassword);
 
+	BsUsuario buscarPorEmail(String email);
+
 	/*
 	 * agregar aca los metodos personalizados
 	 * public Curso findCursoByAlumnoId(Long id);

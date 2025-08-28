@@ -6,6 +6,7 @@ import py.com.capital.CapitaCreditos.entities.MenuDto;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BsUsuarioRepository extends JpaRepository<BsUsuario, Long> {
 
@@ -24,6 +25,13 @@ public interface BsUsuarioRepository extends JpaRepository<BsUsuario, Long> {
 			+ "where u.id = ?1 ")
 			//+ "ORDER BY men.nroOrden ASC")
 	List<MenuDto> findMenuByUser(Long idUsuario);
+
+	//usa los métodos derivados de SpringJPA entre entidades
+	// Buscar usuario por email de la persona (case-insensitive)
+	Optional<BsUsuario> findByBsPersonaEmailIgnoreCase(String email);
+
+	// ¿Existe un usuario con ese email?
+	boolean existsByBsPersonaEmailIgnoreCase(String email);
 	
 	
 }

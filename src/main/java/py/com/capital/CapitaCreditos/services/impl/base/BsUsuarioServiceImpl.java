@@ -32,4 +32,9 @@ extends CommonServiceImpl<BsUsuario, BsUsuarioRepository> implements BsUsuarioSe
     public boolean validatePassword(String inputPassword, String userSavedPassword) {
         return this.encoder.matches(inputPassword, userSavedPassword);
     }
+
+    @Override
+    public BsUsuario buscarPorEmail(String email) {
+        return this.repository.findByBsPersonaEmailIgnoreCase(email).orElse(null);
+    }
 }

@@ -6,7 +6,9 @@ package py.com.capital.CapitaCreditos.repositories.base;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import py.com.capital.CapitaCreditos.entities.base.BsResetPasswordToken;
 
 import java.util.List;
@@ -24,6 +26,14 @@ public interface BsResetPasswordTokenRepository extends JpaRepository<BsResetPas
 	
 	@Query("SELECT m FROM BsResetPasswordToken m where m.estado = 'ACTIVO'")
 	List<BsResetPasswordToken> buscarActivosLista();
+
+	@Modifying
+	@Query("update BsResetPasswordToken t set t.validated = 'N' where t.id = :id")
+	int marcarUsado(@Param("id") Long id);
+
+	@Modifying
+	@Query("delete from BsResetPasswordToken t where t.validated = 'S' or t.expiredAt < CURRENT_TIMESTAMP")
+	int purgeCaducados();
 
 
 
