@@ -42,4 +42,10 @@ public class BsAccessLogServiceImpl
         return repository.buscarActivosLista();
     }
 
+    @Override
+    public int deleteOldBatch(int retentionDays, int batch) {
+        return repository.deleteOldBatch(retentionDays, batch);
+    }
+
+
 }
