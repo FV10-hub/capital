@@ -135,11 +135,13 @@
                                     <p:commandButton id="btnValidar" value="Validar" icon="pi pi-check"
                                                      rendered="#{loginController.campoVerificacionVisible}"
                                                      action="#{loginController.validarCodigoSeguridad()}"
+                                                     process="@this :loginForm:dlgContent"
                                                      update=":loginForm :growl"
                                                      oncomplete="PF('dlgProcesarReseteo').hide()"/>
 
                                     <p:commandButton id="btnEnviar" value="Enviar" icon="pi pi-check"
                                                      rendered="#{not loginController.campoVerificacionVisible}"
+                                                     process="@this :loginForm:dlgContent"
                                                      action="#{loginController.procesarCambioPassword()}"
                                                      update=":loginForm:dlgContent :loginForm:panel-botones :growl"/>
                                 </h:panelGroup>
@@ -149,31 +151,42 @@
                         <p:dialog header="Cambiar contraseña" widgetVar="dlgCambiarPassword"
                                   minHeight="40" width="350" showEffect="fade">
                             <p:outputPanel id="manage-reset" class="ui-fluid">
-                                <p:outputPanel>
-                                    <div class="field">
-                                        <p:outputLabel for="label">Nueva Contraseña</p:outputLabel>
-                                        <p:password id="label" value="#{loginController.newPassword}" />
-                                    </div>
-                                </p:outputPanel>
+                                <div class="field">
+                                    <p:outputLabel for="pwd1">Nueva Contraseña</p:outputLabel>
+                                    <p:password id="pwd1"
+                                                value="#{loginController.newPassword}"
+                                                required="true" toggleMask="true">
+                                    </p:password>
+                                    <p:message for="pwd1"/>
+                                </div>
+
+                                <div class="field" style="margin-top:2rem">
+                                    <p:outputLabel for="pwd2">Confirma Contraseña</p:outputLabel>
+                                    <p:password id="pwd2"
+                                                value="#{loginController.confirmPassword}"
+                                                required="true" toggleMask="true"/>
+                                </div>
                             </p:outputPanel>
+
                             <f:facet name="footer">
-                                <p:commandButton class="ui-button-primary rounded-button"
-                                                 value="Guardar" icon="pi pi-check"
-                                                 oncomplete="PF('confirmarDialog').show()">
-                                </p:commandButton>
+                                <p:commandButton value="Guardar" icon="pi pi-check"
+                                                 process="@this :loginForm:pwd1 :loginForm:pwd2"
+                                                 update=":growl"
+                                                 oncomplete="if (args &amp;&amp; !args.validationFailed) PF('confirmarDialog').show()"/>
                             </f:facet>
                         </p:dialog>
 
                         <!-- confirms -->
-                        <p:confirmDialog global="true" widgetVar="confirmarDialog" showEffect="fade" modal="false"
-                                         width="300" message="Esta seguro que desea resetear la contraseña?"
-                                         header="Confirmacion" >
+                        <p:confirmDialog global="true" widgetVar="confirmarDialog" showEffect="fade"
+                                         modal="false" width="300"
+                                         message="Esta seguro que desea resetear la contraseña?"
+                                         header="Confirmacion">
                             <p:commandButton value="Si" icon="pi pi-check" update=":growl"
                                              actionListener="#{loginController.updatePasswordUserLogged()}"
-                                             oncomplete="PF('confirmarDialog').hide()" />
+                                             oncomplete="PF('confirmarDialog').hide()"/>
                             <p:commandButton value="No" type="button" update=":loginForm"
                                              styleClass="ui-button-secondary" icon="pi pi-times"
-                                             onclick="PF('confirmarDialog').hide()" />
+                                             onclick="PF('confirmarDialog').hide()"/>
                         </p:confirmDialog>
                     </div>
                 </div>

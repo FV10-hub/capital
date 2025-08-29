@@ -60,6 +60,8 @@ public class LoginController implements Serializable {
 
     private String newPassword = "";
 
+    private String confirmPassword = "";
+
     private String codUsuarioAResetear = "";
 
     /**
@@ -196,6 +198,7 @@ public class LoginController implements Serializable {
     }
 
     public void setNewPassword(String newPassword) {
+        System.out.println("se escritio newPassword "+newPassword);
         this.newPassword = newPassword;
     }
 
@@ -213,6 +216,15 @@ public class LoginController implements Serializable {
 
     public void setCodUsuarioAResetear(String codUsuarioAResetear) {
         this.codUsuarioAResetear = codUsuarioAResetear;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        System.out.println("se escritio confirmPassword "+confirmPassword);
+        this.confirmPassword = confirmPassword;
     }
 
     // metodos
@@ -341,7 +353,7 @@ public class LoginController implements Serializable {
         modelo.put("nombreEmpresa", "CapitalSys");
         modelo.put("nombreUsuario", bsUsuario.getBsPersona().getNombreCompleto());
         modelo.put("codigo", hash);
-        boolean envioExitoso = emailService.sendEmail(generarRequest(bsUsuario.getBsPersona().getEmail(), modelo), "email-template.html");
+        boolean envioExitoso = true;//emailService.sendEmail(generarRequest(bsUsuario.getBsPersona().getEmail(), modelo), "email-template.html");
         if (!envioExitoso) {
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "NO SE ENVIO",
                     "Algo salio mal contacte con el Administrador: " + this.correoParaRecuperacion);
@@ -402,9 +414,22 @@ public class LoginController implements Serializable {
     }
 
     public void updatePasswordUserLogged() {
-        if (this.newPassword != null && this.newPassword.length() < 6) {
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
-                    "La contraseña no puede ser nula y debe contener mas de 6 caracteres.");
+        String newPwdTrimmed = (newPassword != null) ? newPassword.trim() : "";
+        String confirmPwdTrimmed = (confirmPassword != null) ? confirmPassword.trim() : "";
+
+        if (!newPwdTrimmed.equals(confirmPwdTrimmed)) {
+            FacesContext.getCurrentInstance().addMessage(
+                    "loginForm:pwd2",
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Las contraseñas no coinciden. Verifique los espacios.", null)
+            );
+            return;
+        }
+
+        if (newPassword.length() < 6) {
+            FacesContext.getCurrentInstance().addMessage(
+                    "loginForm:pwd1",
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "La contraseña debe tener al menos 7 caracteres", null)
+            );
             return;
         }
         try {
