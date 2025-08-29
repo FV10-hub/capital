@@ -8,13 +8,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.dtos.EmaiRequest;
+import py.com.capital.CapitaCreditos.dtos.EmailAdjunto;
 import py.com.capital.CapitaCreditos.entities.base.BsAccessLog;
+import py.com.capital.CapitaCreditos.entities.base.BsResetPasswordToken;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 import py.com.capital.CapitaCreditos.presentation.session.MenuBean;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.services.LoginService;
 import py.com.capital.CapitaCreditos.services.base.BsAccessLogService;
+import py.com.capital.CapitaCreditos.services.base.BsResetPasswordTokenService;
 import py.com.capital.CapitaCreditos.services.base.BsUsuarioService;
 import py.com.capital.CapitaCreditos.services.impl.EmailServiceImpl;
 
@@ -23,12 +26,10 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Este controlador se va encargar de manejar el flujo de inicio de sesion
@@ -65,6 +66,9 @@ public class LoginController implements Serializable {
 
     @Autowired
     private BsAccessLogService bsAccessLogServiceImpl;
+
+    @Autowired
+    private BsResetPasswordTokenService bsResetPasswordTokenServiceImpl;
 
     @Autowired
     private BsUsuarioService bsUsuarioServiceImpl;
@@ -273,28 +277,14 @@ public class LoginController implements Serializable {
         this.token = null;
     }
 
-    public void enviarEmail() {
+    public void procesarCambioPassword() {
         BsUsuario bsUsuario = bsUsuarioServiceImpl.buscarPorEmail(this.correoParaRecuperacion);
         if (Objects.isNull(bsUsuario)) {
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
                     "El correo " + this.correoParaRecuperacion + " no corresponde a ningun usuario");
             return;
         }
-        Map<String, Object> modelo = new HashMap<>();
-        modelo.put("nombreEmpresa","CapitalSys");
-        modelo.put("nombreUsuario", bsUsuario.getBsPersona().getNombreCompleto());
-        modelo.put("codigo", 1234567);
-        EmaiRequest emaiRequest = new EmaiRequest(
-                new String[]{(bsUsuario.getBsPersona().getEmail())},
-                "Reseta tu Password",
-                Collections.emptyList(),
-                modelo);
-        boolean envioExitoso = emailService.sendEmail(emaiRequest, "email-template.html");
-        if (envioExitoso) {
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "ENVIADO",
-                    "Revisa el codigo que llego a tu correo :" + this.correoParaRecuperacion);
-            this.campoVerificacionVisible = true;
-        }
+        this.enviarEmail(bsUsuario);
 
     }
 
@@ -317,5 +307,56 @@ public class LoginController implements Serializable {
         return m + "m " + s + "s";
     }
 
+    private boolean enviarEmail(BsUsuario bsUsuario) {
+        String hash = generarCodigo();
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("nombreEmpresa", "CapitalSys");
+        modelo.put("nombreUsuario", bsUsuario.getBsPersona().getNombreCompleto());
+        modelo.put("codigo", hash);
+
+        boolean envioExitoso = emailService.sendEmail(generarRequest(bsUsuario.getBsPersona().getEmail(), modelo), "email-template.html");
+        if (!envioExitoso) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "NO SE ENVIO",
+                    "Algo salio mal contacte con el Administrador: " + this.correoParaRecuperacion);
+            this.campoVerificacionVisible = false;
+            return false;
+        }
+        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "ENVIADO",
+                "Revisa el codigo que llego a tu correo: " + this.correoParaRecuperacion);
+        this.campoVerificacionVisible = true;
+        this.guardarToken(bsUsuario.getCodUsuario(), hash);
+        return true;
+    }
+
+    private String generarCodigo() {
+        SecureRandom secureRandom = new SecureRandom();
+        int numero = 100000 + secureRandom.nextInt(900000);
+        return String.valueOf(numero);
+    }
+
+    private void guardarToken(String codUsuario, String hash) {
+        BsResetPasswordToken resetPasswordToken = new BsResetPasswordToken();
+        resetPasswordToken.setCodUsuario(codUsuario);
+        resetPasswordToken.setToken(hash);
+        resetPasswordToken.setValidated("N");
+        resetPasswordToken.setExpiredAt(LocalDateTime.now().plus(lockDuration));
+        this.bsResetPasswordTokenServiceImpl.save(resetPasswordToken);
+    }
+
+    private EmaiRequest generarRequest(String email, Map<String, Object> modelo) {
+        //TODO: aca arma los adjuntos
+        List<EmailAdjunto> adjuntosDePrueba = new ArrayList<>();
+        try {
+            adjuntosDePrueba = emailService.prepararAdjuntos("D:\\Tesis_2025");
+        } catch (Exception e) {
+            LOGGER.error(String.format("Error al armar los archivos adjuntos: %s archivo: %s", e.getMessage()));
+        }
+        EmaiRequest emaiRequest = new EmaiRequest(
+                new String[]{(email)},
+                "Reseta tu Password",
+                Collections.emptyList(),//no enviamos ningun adjunto
+                modelo);
+        return emaiRequest;
+    }
 
 }

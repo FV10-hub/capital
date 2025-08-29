@@ -137,7 +137,7 @@
 
                                 <p:commandButton id="btnEnviar" value="Enviar" icon="pi pi-check"
                                                  rendered="#{not loginController.campoVerificacionVisible}"
-                                                 action="#{loginController.enviarEmail}"
+                                                 action="#{loginController.procesarCambioPassword()}"
                                                  update=":loginForm:dlgContent :loginForm:btnValidar :loginForm:btnEnviar :growl"/>
                             </f:facet>
                         </p:dialog>

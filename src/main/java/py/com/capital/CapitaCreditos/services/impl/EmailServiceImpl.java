@@ -3,18 +3,22 @@ package py.com.capital.CapitaCreditos.services.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import py.com.capital.CapitaCreditos.dtos.EmaiRequest;
+import py.com.capital.CapitaCreditos.dtos.EmailAdjunto;
 import py.com.capital.CapitaCreditos.repositories.base.EmailReposiroty;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class EmailServiceImpl implements EmailReposiroty {
@@ -35,7 +39,6 @@ public class EmailServiceImpl implements EmailReposiroty {
     @Override
     public boolean sendEmail(EmaiRequest mail, String templateName) {
         try {
-
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                     StandardCharsets.UTF_8.name());
@@ -66,5 +69,30 @@ public class EmailServiceImpl implements EmailReposiroty {
             LOGGER.error(e.getMessage(), e);
             return false;
         }
+    }
+
+    @Override
+    public List<EmailAdjunto> prepararAdjuntos(String directorio) throws Exception {
+        File folder = new File(directorio);
+
+        if (!folder.exists() || !folder.isDirectory()) {
+            throw new Exception("No existe el directorio o no es un directorio: " + directorio);
+        }
+
+        String[] nombres = folder.list();
+        if (nombres == null) {
+            return Collections.emptyList();
+        }
+
+        List<EmailAdjunto> adjuntos = new ArrayList<>();
+        for (String nombre : nombres) {
+            if (nombre.toLowerCase().endsWith(".pdf")) {
+                File archivo = new File(folder, nombre);
+                if (archivo.isFile()) {
+                    adjuntos.add(new EmailAdjunto(archivo, nombre));
+                }
+            }
+        }
+        return adjuntos;
     }
 }
