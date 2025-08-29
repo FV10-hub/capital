@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.services.base.BsAccessLogService;
+import py.com.capital.CapitaCreditos.services.base.BsResetPasswordTokenService;
 
 @Component
 public class AccessLogCleanupJob {
@@ -13,13 +14,17 @@ public class AccessLogCleanupJob {
     private static final Logger LOGGER = LogManager.getLogger(AccessLogCleanupJob.class);
 
     private final BsAccessLogService bsAccessLogServiceImpl;
+
+    private final BsResetPasswordTokenService bsResetPasswordTokenServiceImpl;
     private final int retentionDays;
     private final int batchSize;
 
     public AccessLogCleanupJob(BsAccessLogService bsAccessLogServiceImpl,
+                               BsResetPasswordTokenService bsResetPasswordTokenServiceImpl,
                                @Value("${app.accesslog.retention-days}") int retentionDays,
                                @Value("${app.accesslog.cleanup.batch-size}") int batchSize) {
         this.bsAccessLogServiceImpl = bsAccessLogServiceImpl;
+        this.bsResetPasswordTokenServiceImpl = bsResetPasswordTokenServiceImpl;
         this.retentionDays = retentionDays;
         this.batchSize = batchSize;
     }
@@ -29,6 +34,7 @@ public class AccessLogCleanupJob {
         int total = 0;
         int deleted;
         do {
+            this.bsResetPasswordTokenServiceImpl.purgeCaducados();
             deleted = bsAccessLogServiceImpl.deleteOldBatch(retentionDays, batchSize);
             total += deleted;
         } while (deleted == batchSize);

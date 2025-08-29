@@ -54,6 +54,7 @@
 
 
 
+
     </script>
 </h:head>
 
@@ -90,17 +91,18 @@
                                     action="#{loginController.prepararReset}"
                                     update=":loginForm:manage-pass"
                                     value="¿Olvidaste tu contraseña?" type="button"
-                                    onclick="PF('dlgResetearPassword').show()">
+                                    onclick="PF('dlgProcesarReseteo').show()">
                             </p:commandButton>
                         </div>
-                        <p:dialog id="manage-pass" header="Resetear contraseña"
-                                  widgetVar="dlgResetearPassword" minHeight="40" width="550"
+
+                        <p:dialog id="manage-pass" header="Solicitar Código de Verificación"
+                                  widgetVar="dlgProcesarReseteo" minHeight="40" width="550"
                                   showEffect="fade" modal="true">
 
                             <h:panelGroup id="dlgContent" class="ui-fluid">
-                                <!-- Sección correo -->
                                 <div class="field">
-                                    <p:outputLabel class="mb-5" rendered="#{not loginController.campoVerificacionVisible}">
+                                    <p:outputLabel class="mb-5"
+                                                   rendered="#{not loginController.campoVerificacionVisible}">
                                         Ingresa tu correo electronico
                                     </p:outputLabel>
                                     <p:inputText id="correo"
@@ -116,7 +118,6 @@
                                     <p:message for="correo"/>
                                 </div>
 
-                                <!-- Sección código -->
                                 <div class="field">
                                     <p:outputLabel rendered="#{loginController.campoVerificacionVisible}">
                                         Ingresa el codigo que recibiste
@@ -130,17 +131,50 @@
                             </h:panelGroup>
 
                             <f:facet name="footer">
-                                <p:commandButton id="btnValidar" value="Validar" icon="pi pi-check"
-                                                 rendered="#{loginController.campoVerificacionVisible}"
-                                                 update=":loginForm :growl"
-                                                 oncomplete="PF('dlgResetearPassword').hide()"/>
+                                <h:panelGroup id="panel-botones">
+                                    <p:commandButton id="btnValidar" value="Validar" icon="pi pi-check"
+                                                     rendered="#{loginController.campoVerificacionVisible}"
+                                                     action="#{loginController.validarCodigoSeguridad()}"
+                                                     update=":loginForm :growl"
+                                                     oncomplete="PF('dlgProcesarReseteo').hide()"/>
 
-                                <p:commandButton id="btnEnviar" value="Enviar" icon="pi pi-check"
-                                                 rendered="#{not loginController.campoVerificacionVisible}"
-                                                 action="#{loginController.procesarCambioPassword()}"
-                                                 update=":loginForm:dlgContent :loginForm:btnValidar :loginForm:btnEnviar :growl"/>
+                                    <p:commandButton id="btnEnviar" value="Enviar" icon="pi pi-check"
+                                                     rendered="#{not loginController.campoVerificacionVisible}"
+                                                     action="#{loginController.procesarCambioPassword()}"
+                                                     update=":loginForm:dlgContent :loginForm:panel-botones :growl"/>
+                                </h:panelGroup>
                             </f:facet>
                         </p:dialog>
+
+                        <p:dialog header="Cambiar contraseña" widgetVar="dlgCambiarPassword"
+                                  minHeight="40" width="350" showEffect="fade">
+                            <p:outputPanel id="manage-reset" class="ui-fluid">
+                                <p:outputPanel>
+                                    <div class="field">
+                                        <p:outputLabel for="label">Nueva Contraseña</p:outputLabel>
+                                        <p:password id="label" value="#{loginController.newPassword}" />
+                                    </div>
+                                </p:outputPanel>
+                            </p:outputPanel>
+                            <f:facet name="footer">
+                                <p:commandButton class="ui-button-primary rounded-button"
+                                                 value="Guardar" icon="pi pi-check"
+                                                 oncomplete="PF('confirmarDialog').show()">
+                                </p:commandButton>
+                            </f:facet>
+                        </p:dialog>
+
+                        <!-- confirms -->
+                        <p:confirmDialog global="true" widgetVar="confirmarDialog" showEffect="fade" modal="false"
+                                         width="300" message="Esta seguro que desea resetear la contraseña?"
+                                         header="Confirmacion" >
+                            <p:commandButton value="Si" icon="pi pi-check" update=":growl"
+                                             actionListener="#{loginController.updatePasswordUserLogged()}"
+                                             oncomplete="PF('confirmarDialog').hide()" />
+                            <p:commandButton value="No" type="button" update=":loginForm"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('confirmarDialog').hide()" />
+                        </p:confirmDialog>
                     </div>
                 </div>
 

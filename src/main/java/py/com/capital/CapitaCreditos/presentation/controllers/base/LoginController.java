@@ -58,6 +58,10 @@ public class LoginController implements Serializable {
 
     private String token;
 
+    private String newPassword = "";
+
+    private String codUsuarioAResetear = "";
+
     /**
      * Propiedad de la logica de negocio inyectada con JSF y Spring.
      */
@@ -187,6 +191,29 @@ public class LoginController implements Serializable {
         this.token = token;
     }
 
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public BsResetPasswordTokenService getBsResetPasswordTokenServiceImpl() {
+        return bsResetPasswordTokenServiceImpl;
+    }
+
+    public void setBsResetPasswordTokenServiceImpl(BsResetPasswordTokenService bsResetPasswordTokenServiceImpl) {
+        this.bsResetPasswordTokenServiceImpl = bsResetPasswordTokenServiceImpl;
+    }
+
+    public String getCodUsuarioAResetear() {
+        return codUsuarioAResetear;
+    }
+
+    public void setCodUsuarioAResetear(String codUsuarioAResetear) {
+        this.codUsuarioAResetear = codUsuarioAResetear;
+    }
 
     // metodos
     public void login() {
@@ -271,23 +298,6 @@ public class LoginController implements Serializable {
         }
     }
 
-    public void prepararReset() {
-        this.campoVerificacionVisible = false;
-        this.correoParaRecuperacion = null;
-        this.token = null;
-    }
-
-    public void procesarCambioPassword() {
-        BsUsuario bsUsuario = bsUsuarioServiceImpl.buscarPorEmail(this.correoParaRecuperacion);
-        if (Objects.isNull(bsUsuario)) {
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                    "El correo " + this.correoParaRecuperacion + " no corresponde a ningun usuario");
-            return;
-        }
-        this.enviarEmail(bsUsuario);
-
-    }
-
     private String obtenerIpCliente() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance()
                 .getExternalContext().getRequest();
@@ -307,13 +317,30 @@ public class LoginController implements Serializable {
         return m + "m " + s + "s";
     }
 
+    public void prepararReset() {
+        this.campoVerificacionVisible = false;
+        this.correoParaRecuperacion = null;
+        this.token = null;
+        this.codUsuarioAResetear = null;
+    }
+
+    public void procesarCambioPassword() {
+        BsUsuario bsUsuario = bsUsuarioServiceImpl.buscarPorEmail(this.correoParaRecuperacion);
+        if (Objects.isNull(bsUsuario)) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+                    "El correo " + this.correoParaRecuperacion + " no corresponde a ningun usuario");
+            return;
+        }
+        this.enviarEmail(bsUsuario);
+
+    }
+
     private boolean enviarEmail(BsUsuario bsUsuario) {
         String hash = generarCodigo();
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("nombreEmpresa", "CapitalSys");
         modelo.put("nombreUsuario", bsUsuario.getBsPersona().getNombreCompleto());
         modelo.put("codigo", hash);
-
         boolean envioExitoso = emailService.sendEmail(generarRequest(bsUsuario.getBsPersona().getEmail(), modelo), "email-template.html");
         if (!envioExitoso) {
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "NO SE ENVIO",
@@ -325,6 +352,7 @@ public class LoginController implements Serializable {
                 "Revisa el codigo que llego a tu correo: " + this.correoParaRecuperacion);
         this.campoVerificacionVisible = true;
         this.guardarToken(bsUsuario.getCodUsuario(), hash);
+        this.codUsuarioAResetear = bsUsuario.getCodUsuario();
         return true;
     }
 
@@ -336,6 +364,7 @@ public class LoginController implements Serializable {
 
     private void guardarToken(String codUsuario, String hash) {
         BsResetPasswordToken resetPasswordToken = new BsResetPasswordToken();
+        resetPasswordToken.setUsuarioModificacion(codUsuario);
         resetPasswordToken.setCodUsuario(codUsuario);
         resetPasswordToken.setToken(hash);
         resetPasswordToken.setValidated("N");
@@ -357,6 +386,48 @@ public class LoginController implements Serializable {
                 Collections.emptyList(),//no enviamos ningun adjunto
                 modelo);
         return emaiRequest;
+    }
+
+    public void validarCodigoSeguridad() {
+        var tokens = this.bsResetPasswordTokenServiceImpl.findValidTokens(this.codUsuarioAResetear);
+        var tokenOpt = tokens.stream().findFirst();
+        if (tokenOpt.isPresent()) {
+            this.bsResetPasswordTokenServiceImpl.marcarUsado(tokenOpt.get().getId());
+            PrimeFaces.current().ajax().update(":loginForm", ":loginForm:manage-reset");
+            PrimeFaces.current().executeScript("PF('dlgCambiarPassword').show()");
+            return;
+        }
+        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+                "El codigo que ingresaste no es válido.");
+    }
+
+    public void updatePasswordUserLogged() {
+        if (this.newPassword != null && this.newPassword.length() < 6) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
+                    "La contraseña no puede ser nula y debe contener mas de 6 caracteres.");
+            return;
+        }
+        try {
+            BsUsuario usuarioConsultado = this.loginServiceImpl.findByUsuario(this.codUsuarioAResetear.toLowerCase());
+            usuarioConsultado.setPassword(newPassword);
+            if (!Objects.isNull(bsUsuarioServiceImpl.guardarConEncriptacionDePassword(usuarioConsultado))) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                        "La conraseña fue reseteado correctamente.");
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo reestablecer la contraseña.");
+            }
+            this.newPassword = "";
+            this.codUsuarioAResetear = "";
+            String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+            String url = contextPath + "/faces/pages/login.xhtml";
+
+            // ORDENAMOS AL NAVEGADOR QUE REDIRIJA
+            PrimeFaces.current().executeScript("window.location.href = '" + url + "';");
+        } catch (Exception e) {
+            LOGGER.error("Ocurrio un error al actulizar la contraseña ", System.err);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", e.getMessage().substring(0, e.getMessage().length()) + "...");
+        }
+
     }
 
 }

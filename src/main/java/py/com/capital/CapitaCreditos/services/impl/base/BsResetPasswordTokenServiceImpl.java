@@ -11,6 +11,7 @@ import py.com.capital.CapitaCreditos.repositories.base.BsResetPasswordTokenRepos
 import py.com.capital.CapitaCreditos.services.base.BsResetPasswordTokenService;
 import py.com.capital.CapitaCreditos.services.impl.CommonServiceImpl;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -43,13 +44,20 @@ public class BsResetPasswordTokenServiceImpl
     }
 
     @Override
+    @Transactional
     public int marcarUsado(Long id) {
         return this.repository.marcarUsado(id);
     }
 
     @Override
+    @Transactional
     public int purgeCaducados() {
         return this.repository.purgeCaducados();
+    }
+
+    @Override
+    public List<BsResetPasswordToken> findValidTokens(String codUsuario) {
+        return this.repository.findValidTokens(codUsuario);
     }
 
 }

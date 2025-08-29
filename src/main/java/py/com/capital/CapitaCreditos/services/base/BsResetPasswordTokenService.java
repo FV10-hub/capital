@@ -5,6 +5,7 @@ package py.com.capital.CapitaCreditos.services.base;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import py.com.capital.CapitaCreditos.entities.base.BsResetPasswordToken;
 import py.com.capital.CapitaCreditos.services.CommonService;
 
@@ -24,5 +25,7 @@ public interface BsResetPasswordTokenService extends CommonService<BsResetPasswo
     int marcarUsado(Long id);
 
     int purgeCaducados();
+
+    List<BsResetPasswordToken> findValidTokens(String codUsuario);
 
 }
