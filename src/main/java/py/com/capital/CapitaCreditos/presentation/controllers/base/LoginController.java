@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import py.com.capital.CapitaCreditos.dtos.EmaiRequest;
 import py.com.capital.CapitaCreditos.entities.base.BsAccessLog;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 import py.com.capital.CapitaCreditos.presentation.session.MenuBean;
@@ -15,6 +16,7 @@ import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.services.LoginService;
 import py.com.capital.CapitaCreditos.services.base.BsAccessLogService;
 import py.com.capital.CapitaCreditos.services.base.BsUsuarioService;
+import py.com.capital.CapitaCreditos.services.impl.EmailServiceImpl;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -23,6 +25,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -46,6 +51,12 @@ public class LoginController implements Serializable {
     private String username;
     private String password;
 
+    private String correoParaRecuperacion;
+
+    private Boolean campoVerificacionVisible = false;
+
+    private String token;
+
     /**
      * Propiedad de la logica de negocio inyectada con JSF y Spring.
      */
@@ -57,6 +68,9 @@ public class LoginController implements Serializable {
 
     @Autowired
     private BsUsuarioService bsUsuarioServiceImpl;
+
+    @Autowired
+    private EmailServiceImpl emailService;
 
 
     @Value("${security.login.max-attempts}")
@@ -74,89 +88,6 @@ public class LoginController implements Serializable {
 
     @Autowired
     private MenuBean menuBean;
-
-    // metodos
-    public void login() {
-        BsUsuario usuarioConsultado = this.loginServiceImpl.consultarUsuarioLogin(this.username, this.password);
-        if (!Objects.isNull(usuarioConsultado)) {
-            try {
-                this.sessionBean.setUsuarioLogueado(usuarioConsultado);
-                this.menuBean.setUsuarioLogueado(usuarioConsultado);
-                CommonUtils.redireccionar("/faces/pages/commons/dashboard.xhtml");
-            } catch (IOException e) {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
-                        "Formato incorrecto en cual se ingresa a la pantalla deseada.");
-            }
-        } else {
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡UPS!",
-                    "El usuario y/o contraseña son incorrectos");
-        }
-
-    }
-
-    public void loginEncrypt() {
-        String ip = obtenerIpCliente();
-        BsAccessLog accessLog = new BsAccessLog();
-        try {
-            BsUsuario usuarioConsultado = this.loginServiceImpl.findByUsuario(this.username.toLowerCase());
-
-            if (usuarioConsultado != null) {
-                if (usuarioConsultado.estaBloqueado()) {
-                    Duration bloqueadoHasta = Duration.between(LocalDateTime.now(), usuarioConsultado.getBloqueadoHasta());
-                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Cuenta bloqueada",
-                            "Intentá nuevamente en " + formatearBloqueadoHasta(bloqueadoHasta));
-                    return;
-                }
-                if (usuarioConsultado.checkPassword(this.password)) {
-                    this.sessionBean.setUsuarioLogueado(usuarioConsultado);
-                    this.menuBean.setUsuarioLogueado(usuarioConsultado);
-                    //registra log
-                    accessLog.setCodUsuario(this.username.toLowerCase());
-                    accessLog.setUsuarioModificacion(this.username.toLowerCase());
-                    accessLog.setIpAddress(ip);
-                    accessLog.setSuccess("S");
-                    this.bsAccessLogServiceImpl.save(accessLog);
-                    //actualiza intentos
-                    usuarioConsultado.registrarExito();
-                    this.bsUsuarioServiceImpl.save(usuarioConsultado);
-
-                    // CONSTRUIMOS LA URL DE REDIRECCIÓN
-                    String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-                    String url = contextPath + "/faces/pages/commons/dashboard.xhtml";
-
-                    // ORDENAMOS AL NAVEGADOR QUE REDIRIJA
-                    PrimeFaces.current().executeScript("window.location.href = '" + url + "';");
-                } else {
-                    //registra log
-                    accessLog.setCodUsuario(this.username.toLowerCase());
-                    accessLog.setUsuarioModificacion(this.username.toLowerCase());
-                    accessLog.setIpAddress(ip);
-                    accessLog.setSuccess("N");
-                    this.bsAccessLogServiceImpl.save(accessLog);
-                    //actualiza intentos
-                    usuarioConsultado.registrarFallo(maxAttempts, lockDuration);
-                    this.bsUsuarioServiceImpl.save(usuarioConsultado);
-                    LOGGER.warn("Intento de inicio de sesión fallido password: {}", this.username);
-                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡UPS!",
-                            "Las credenciales incorrectos intente de nuevo, tiene " + (maxAttempts - usuarioConsultado.getIntentosFallidos()) + " intentos ");
-                }
-
-
-            } else {
-                LOGGER.warn("Intento de inicio de sesión fallido para el usuario: {}", this.username);
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡UPS!",
-                        "El usuario y/o contraseña son incorrectos");
-            }
-        } catch (Exception e) {
-            accessLog.setCodUsuario(this.username.toLowerCase());
-            accessLog.setIpAddress(ip);
-            accessLog.setSuccess("N");
-            this.bsAccessLogServiceImpl.save(accessLog);
-            LOGGER.error("Error al intentar encontrar al usuario", e);
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
-                    "Error al intentar encontrar al usuario. Por favor, inténtelo de nuevo.");
-        }
-    }
 
 
     // getters y setters
@@ -218,6 +149,153 @@ public class LoginController implements Serializable {
 
     public void setBsAccessLogServiceImpl(BsAccessLogService bsAccessLogServiceImpl) {
         this.bsAccessLogServiceImpl = bsAccessLogServiceImpl;
+    }
+
+    public BsUsuarioService getBsUsuarioServiceImpl() {
+        return bsUsuarioServiceImpl;
+    }
+
+    public void setBsUsuarioServiceImpl(BsUsuarioService bsUsuarioServiceImpl) {
+        this.bsUsuarioServiceImpl = bsUsuarioServiceImpl;
+    }
+
+    public Boolean getCampoVerificacionVisible() {
+        return campoVerificacionVisible;
+    }
+
+    public void setCampoVerificacionVisible(Boolean campoVerificacionVisible) {
+        this.campoVerificacionVisible = campoVerificacionVisible;
+    }
+
+    public String getCorreoParaRecuperacion() {
+        return correoParaRecuperacion;
+    }
+
+    public void setCorreoParaRecuperacion(String correoParaRecuperacion) {
+        this.correoParaRecuperacion = correoParaRecuperacion;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+
+    // metodos
+    public void login() {
+        BsUsuario usuarioConsultado = this.loginServiceImpl.consultarUsuarioLogin(this.username, this.password);
+        if (!Objects.isNull(usuarioConsultado)) {
+            try {
+                this.sessionBean.setUsuarioLogueado(usuarioConsultado);
+                this.menuBean.setUsuarioLogueado(usuarioConsultado);
+                CommonUtils.redireccionar("/faces/pages/commons/dashboard.xhtml");
+            } catch (IOException e) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
+                        "Formato incorrecto en cual se ingresa a la pantalla deseada.");
+            }
+        } else {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡UPS!",
+                    "El usuario y/o contraseña son incorrectos");
+        }
+
+    }
+
+    public void loginEncrypt() {
+        String ip = obtenerIpCliente();
+        BsAccessLog accessLog = new BsAccessLog();
+        try {
+            BsUsuario usuarioConsultado = this.loginServiceImpl.findByUsuario(this.username.toLowerCase());
+
+            if (usuarioConsultado != null) {
+                if (usuarioConsultado.estaBloqueado()) {
+                    Duration bloqueadoHasta = Duration.between(LocalDateTime.now(), usuarioConsultado.getBloqueadoHasta());
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "Cuenta bloqueada",
+                            "Intentá nuevamente en " + formatearBloqueadoHasta(bloqueadoHasta));
+                    return;
+                }
+                if (bsUsuarioServiceImpl.validatePassword(this.password, usuarioConsultado.getPassword())) {
+                    this.sessionBean.setUsuarioLogueado(usuarioConsultado);
+                    this.menuBean.setUsuarioLogueado(usuarioConsultado);
+                    //registra log
+                    accessLog.setCodUsuario(this.username.toLowerCase());
+                    accessLog.setUsuarioModificacion(this.username.toLowerCase());
+                    accessLog.setIpAddress(ip);
+                    accessLog.setSuccess("S");
+                    this.bsAccessLogServiceImpl.save(accessLog);
+                    //actualiza intentos
+                    usuarioConsultado.registrarExito();
+                    this.bsUsuarioServiceImpl.save(usuarioConsultado);
+
+                    // CONSTRUIMOS LA URL DE REDIRECCIÓN
+                    String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+                    String url = contextPath + "/faces/pages/commons/dashboard.xhtml";
+
+                    // ORDENAMOS AL NAVEGADOR QUE REDIRIJA
+                    PrimeFaces.current().executeScript("window.location.href = '" + url + "';");
+                } else {
+                    //registra log
+                    accessLog.setCodUsuario(this.username.toLowerCase());
+                    accessLog.setUsuarioModificacion(this.username.toLowerCase());
+                    accessLog.setIpAddress(ip);
+                    accessLog.setSuccess("N");
+                    this.bsAccessLogServiceImpl.save(accessLog);
+                    //actualiza intentos
+                    usuarioConsultado.registrarFallo(maxAttempts, lockDuration);
+                    this.bsUsuarioServiceImpl.save(usuarioConsultado);
+                    LOGGER.warn("Intento de inicio de sesión fallido password: {}", this.username);
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡UPS!",
+                            "Las credenciales incorrectos intente de nuevo, tiene " + (maxAttempts - usuarioConsultado.getIntentosFallidos()) + " intentos ");
+                }
+
+
+            } else {
+                LOGGER.warn("Intento de inicio de sesión fallido para el usuario: {}", this.username);
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡UPS!",
+                        "El usuario y/o contraseña son incorrectos");
+            }
+        } catch (Exception e) {
+            accessLog.setCodUsuario(this.username.toLowerCase());
+            accessLog.setIpAddress(ip);
+            accessLog.setSuccess("N");
+            this.bsAccessLogServiceImpl.save(accessLog);
+            LOGGER.error("Error al intentar encontrar al usuario", e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_FATAL, "¡ERROR!",
+                    "Error al intentar encontrar al usuario. Por favor, inténtelo de nuevo.");
+        }
+    }
+
+    public void prepararReset() {
+        this.campoVerificacionVisible = false;
+        this.correoParaRecuperacion = null;
+        this.token = null;
+    }
+
+    public void enviarEmail() {
+        BsUsuario bsUsuario = bsUsuarioServiceImpl.buscarPorEmail(this.correoParaRecuperacion);
+        if (Objects.isNull(bsUsuario)) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+                    "El correo " + this.correoParaRecuperacion + " no corresponde a ningun usuario");
+            return;
+        }
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("nombreEmpresa","CapitalSys");
+        modelo.put("nombreUsuario", bsUsuario.getBsPersona().getNombreCompleto());
+        modelo.put("codigo", 1234567);
+        EmaiRequest emaiRequest = new EmaiRequest(
+                new String[]{(bsUsuario.getBsPersona().getEmail())},
+                "Reseta tu Password",
+                Collections.emptyList(),
+                modelo);
+        boolean envioExitoso = emailService.sendEmail(emaiRequest, "email-template.html");
+        if (envioExitoso) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "ENVIADO",
+                    "Revisa el codigo que llego a tu correo :" + this.correoParaRecuperacion);
+            this.campoVerificacionVisible = true;
+        }
+
     }
 
     private String obtenerIpCliente() {

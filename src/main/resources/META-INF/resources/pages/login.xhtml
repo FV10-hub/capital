@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:p="http://primefaces.org/ui">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
 <h:head>
-	<f:facet name="first">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<meta name="viewport"
-			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<link rel="icon" type="image/png" href="assets/pandora-layout/images/favicon-32x32.png" />
-	</f:facet>
+    <f:facet name="first">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <link rel="icon" type="image/png" href="assets/pandora-layout/images/favicon-32x32.png"/>
+    </f:facet>
 
-	<title>Login</title>
+    <title>Login</title>
 
-	<script type="text/javascript">
+    <script type="text/javascript">
 		$(function() {
 			var loginForms = $('.login-forms');
 			var login = $('.login');
@@ -40,49 +40,118 @@
 				e.preventDefault();
 			});
 		});
-	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
 </h:head>
 
 <h:body styleClass="login-body">
-	<p:growl id="growl" showDetail="true" />
-	<div class="login-wrapper">
-		<div class="login-panel">
-			<div class="login-title">
-				<h4>Login a Capitalsys-ERP</h4>
-				<span> Bienvenido, por favor usa el formulario para
+    <p:growl id="growl" showDetail="true"/>
+    <div class="login-wrapper">
+        <div class="login-panel">
+            <div class="login-title">
+                <h4>Login a Capitalsys-ERP</h4>
+                <span> Bienvenido, por favor usa el formulario para
 					loguearte. </span>
-			</div>
-			<h:form id="loginForm" class="login-forms-wrapper">
-				<div class="form-tabs">
-					<div class="tab tab-1 active-tab">LOGIN</div>
-				</div>
-				<div class="login-forms">
-					<div class="login-form login">
-						<div class="form-group">
-							<span>Usuario</span>
-							<p:inputText placeholder="username" autocomplete="off"
-								value="#{loginController.username}" />
-						</div>
-						<div class="form-group">
-							<span>Password</span>
-							<p:password placeholder="escribe tu password..."
-								value="#{loginController.password}" />
-						</div>
-						<div class="form-footer">
-							<p:commandButton value="INGRESAR"
-								action="#{loginController.loginEncrypt()}" update="growl" />
-						</div>
+            </div>
+            <h:form id="loginForm" class="login-forms-wrapper">
+                <div class="form-tabs">
+                    <div class="tab tab-1 active-tab">LOGIN</div>
+                </div>
+                <div class="login-forms">
+                    <div class="login-form login">
+                        <div class="form-group">
+                            <span>Usuario</span>
+                            <p:inputText placeholder="username" autocomplete="off"
+                                         value="#{loginController.username}"/>
+                        </div>
+                        <div class="form-group">
+                            <span>Password</span>
+                            <p:password placeholder="escribe tu password..."
+                                        value="#{loginController.password}"/>
+                        </div>
+                        <div class="form-footer">
+                            <p:commandButton value="INGRESAR"
+                                             action="#{loginController.loginEncrypt()}" update="growl"/>
+                            <p:commandButton
+                                    styleClass="ui-button-info ui-button-flat mr-2 mb-2"
+                                    action="#{loginController.prepararReset}"
+                                    update=":loginForm:manage-pass"
+                                    value="¿Olvidaste tu contraseña?" type="button"
+                                    onclick="PF('dlgResetearPassword').show()">
+                            </p:commandButton>
+                        </div>
+                        <p:dialog id="manage-pass" header="Resetear contraseña"
+                                  widgetVar="dlgResetearPassword" minHeight="40" width="550"
+                                  showEffect="fade" modal="true">
 
-					</div>
-				</div>
-			</h:form>
-		</div>
-		<div class="login-image"></div>
-	</div>
+                            <h:panelGroup id="dlgContent" class="ui-fluid">
+                                <!-- Sección correo -->
+                                <div class="field">
+                                    <p:outputLabel class="mb-5" rendered="#{not loginController.campoVerificacionVisible}">
+                                        Ingresa tu correo electronico
+                                    </p:outputLabel>
+                                    <p:inputText id="correo"
+                                                 style="margin-top: 2rem !important;"
+                                                 rendered="#{not loginController.campoVerificacionVisible}"
+                                                 required="true"
+                                                 validatorMessage="El formato del correo no es válido"
+                                                 value="#{loginController.correoParaRecuperacion}"
+                                                 placeholder="correo@correo.com" autocomplete="off">
+                                        <f:validateRegex
+                                                pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"/>
+                                    </p:inputText>
+                                    <p:message for="correo"/>
+                                </div>
 
-	<h:outputStylesheet
-		name="css/layout-#{guestPreferences.layoutPrimaryColor}.css"
-		library="pandora-layout" />
+                                <!-- Sección código -->
+                                <div class="field">
+                                    <p:outputLabel rendered="#{loginController.campoVerificacionVisible}">
+                                        Ingresa el codigo que recibiste
+                                    </p:outputLabel>
+                                    <p:inputText style="margin-top: 2rem !important;"
+                                                 rendered="#{loginController.campoVerificacionVisible}"
+                                                 value="#{loginController.token}"
+                                                 placeholder="escribe tu codigo de verificacion" autocomplete="off"/>
+
+                                </div>
+                            </h:panelGroup>
+
+                            <f:facet name="footer">
+                                <p:commandButton id="btnValidar" value="Validar" icon="pi pi-check"
+                                                 rendered="#{loginController.campoVerificacionVisible}"
+                                                 update=":loginForm :growl"
+                                                 oncomplete="PF('dlgResetearPassword').hide()"/>
+
+                                <p:commandButton id="btnEnviar" value="Enviar" icon="pi pi-check"
+                                                 rendered="#{not loginController.campoVerificacionVisible}"
+                                                 action="#{loginController.enviarEmail}"
+                                                 update=":loginForm:dlgContent :loginForm:btnValidar :loginForm:btnEnviar :growl"/>
+                            </f:facet>
+                        </p:dialog>
+                    </div>
+                </div>
+
+            </h:form>
+        </div>
+        <div class="login-image"></div>
+    </div>
+
+    <h:outputStylesheet
+            name="css/layout-#{guestPreferences.layoutPrimaryColor}.css"
+            library="pandora-layout"/>
 </h:body>
 
 </html>
