@@ -42,19 +42,6 @@
 		});
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     </script>
 </h:head>
 
@@ -73,18 +60,21 @@
                 </div>
                 <div class="login-forms">
                     <div class="login-form login">
-                        <div class="form-group">
-                            <span>Usuario</span>
-                            <p:inputText placeholder="username" autocomplete="off"
-                                         value="#{loginController.username}"/>
-                        </div>
-                        <div class="form-group">
-                            <span>Password</span>
-                            <p:password placeholder="escribe tu password..."
-                                        value="#{loginController.password}"/>
-                        </div>
+                        <h:panelGroup id="panel-login">
+                            <div class="form-group">
+                                <span>Usuario</span>
+                                <p:inputText placeholder="username" autocomplete="off"
+                                             value="#{loginController.username}"/>
+                            </div>
+                            <div class="form-group">
+                                <span>Password</span>
+                                <p:password placeholder="escribe tu password..."
+                                            value="#{loginController.password}"/>
+                            </div>
+                        </h:panelGroup>
                         <div class="form-footer">
                             <p:commandButton value="INGRESAR"
+                                             process="@this :loginForm:panel-login"
                                              action="#{loginController.loginEncrypt()}" update="growl"/>
                             <p:commandButton
                                     styleClass="ui-button-info ui-button-flat mr-2 mb-2"
@@ -94,6 +84,7 @@
                                     onclick="PF('dlgProcesarReseteo').show()">
                             </p:commandButton>
                         </div>
+
 
                         <p:dialog id="manage-pass" header="Solicitar Código de Verificación"
                                   widgetVar="dlgProcesarReseteo" minHeight="40" width="550"

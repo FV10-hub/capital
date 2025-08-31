@@ -198,7 +198,7 @@ public class LoginController implements Serializable {
     }
 
     public void setNewPassword(String newPassword) {
-        System.out.println("se escritio newPassword "+newPassword);
+        System.out.println("se escritio newPassword " + newPassword);
         this.newPassword = newPassword;
     }
 
@@ -223,7 +223,7 @@ public class LoginController implements Serializable {
     }
 
     public void setConfirmPassword(String confirmPassword) {
-        System.out.println("se escritio confirmPassword "+confirmPassword);
+        System.out.println("se escritio confirmPassword " + confirmPassword);
         this.confirmPassword = confirmPassword;
     }
 
@@ -435,19 +435,21 @@ public class LoginController implements Serializable {
         try {
             BsUsuario usuarioConsultado = this.loginServiceImpl.findByUsuario(this.codUsuarioAResetear.toLowerCase());
             usuarioConsultado.setPassword(newPassword);
-            if (!Objects.isNull(bsUsuarioServiceImpl.guardarConEncriptacionDePassword(usuarioConsultado))) {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                        "La conraseña fue reseteado correctamente.");
-            } else {
+            if (Objects.isNull(bsUsuarioServiceImpl.guardarConEncriptacionDePassword(usuarioConsultado))) {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo reestablecer la contraseña.");
+                return;
             }
+
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                    "La conraseña fue reseteado correctamente.");
             this.newPassword = "";
             this.codUsuarioAResetear = "";
             String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
             String url = contextPath + "/faces/pages/login.xhtml";
 
-            // ORDENAMOS AL NAVEGADOR QUE REDIRIJA
-            PrimeFaces.current().executeScript("window.location.href = '" + url + "';");
+            // espero 1 segundo para que se muestren los mensajes para redirigir
+            PrimeFaces.current().executeScript("setTimeout(function(){ window.location.href = '" + url + "'; }, 1000);");
+
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al actulizar la contraseña ", System.err);
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", e.getMessage().substring(0, e.getMessage().length()) + "...");

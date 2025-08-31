@@ -1,21 +1,21 @@
 version: '3.8'
 
 services:
-  postgres:
-    container_name: postgres
-    image: postgres:15.3
-    restart: always
-    ports:
-      - "5436:5432"
-    environment:
-      POSTGRES_USER: ${DB_USERNAME} # Usando variables del .env
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - ./postgres:/var/lib/postgresql/data
-    networks:
-      - app-network
-
+#  postgres:
+#    container_name: postgres
+#    image: postgres:15.3
+#    restart: always
+#    ports:
+#      - "5436:5432"
+#    environment:
+#      POSTGRES_USER: ${DB_USERNAME} # Usando variables del .env
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#      POSTGRES_DB: ${DB_NAME}
+#    volumes:
+#      - ./postgres:/var/lib/postgresql/data
+#    networks:
+#      - app-network
+#
   capital-app:
     build: .
     container_name: capital-app
@@ -24,8 +24,8 @@ services:
       - "9090:9090"
     env_file:
       - .env
-    depends_on:
-      - postgres
+#    depends_on:
+#      - postgres
     networks:
       - app-network
 
