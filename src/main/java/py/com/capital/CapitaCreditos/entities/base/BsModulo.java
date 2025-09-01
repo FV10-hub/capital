@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 * Aug 30, 2023-5:26:37 PM-fvazquez
 **/
 @Entity
-@Table(name = "bs_modulo", uniqueConstraints = @UniqueConstraint(name= "bs_modulo_unique_codigo" ,columnNames = {"codigo"}))
+@Table(name = "bs_modulo",
+		uniqueConstraints = @UniqueConstraint(name= "bs_modulo_unique_codigo_nombre" ,columnNames = {"codigo", "nombre"}))
 public class BsModulo extends Common {
 	
 	@Id

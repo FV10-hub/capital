@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
  * 
  */
 @Entity
-@Table(name = "bs_usuario")
+@Table(name = "bs_usuario",uniqueConstraints =
+@UniqueConstraint(name= "bs_usuario_unique_cod_pers_empresa" ,columnNames = {"cod_usuario","id_bs_persona","bs_empresa_id"}))
 public class BsUsuario extends Common {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

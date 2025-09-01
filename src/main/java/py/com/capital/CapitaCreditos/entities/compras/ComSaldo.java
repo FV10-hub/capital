@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 * 12 ene. 2024 - Elitebook
 */
 @Entity
-@Table(name = "com_saldos", uniqueConstraints = @UniqueConstraint(name = "cob_saldos_unique_persona_empresa", columnNames = {
+@Table(name = "com_saldos", uniqueConstraints = @UniqueConstraint(name = "com_saldos_unique_saldo", columnNames = {
 		"bs_empresa_id", "com_proveedor_id", "id_comprobante","tipo_comprobante", "nro_cuota" }))
 public class ComSaldo extends Common implements Serializable {
 

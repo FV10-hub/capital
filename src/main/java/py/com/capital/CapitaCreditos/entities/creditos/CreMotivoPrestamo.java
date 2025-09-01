@@ -11,7 +11,8 @@ import java.util.Objects;
 * 26 dic. 2023 - Elitebook
 */
 @Entity
-@Table(name = "cre_motivos_prestamos")
+@Table(name = "cre_motivos_prestamos",uniqueConstraints =
+@UniqueConstraint(name= "cre_motivos_prestamos_unique_codigo" ,columnNames = {"cod_motivo"}))
 public class CreMotivoPrestamo extends Common implements Serializable {
 
 	private static final long serialVersionUID = 1L;

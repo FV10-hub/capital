@@ -10,7 +10,8 @@ import java.util.Objects;
  * Aug 30, 2023-5:26:37 PM-fvazquez
  **/
 @Entity
-@Table(name = "bs_iva")
+@Table(name = "bs_iva", 
+		uniqueConstraints = @UniqueConstraint(name= "bs_iva_unique_codigo" ,columnNames = {"cod_iva"}))
 public class BsIva extends Common {
 
 	@Id

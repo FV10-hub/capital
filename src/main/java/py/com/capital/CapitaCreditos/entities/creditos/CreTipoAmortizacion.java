@@ -11,7 +11,8 @@ import java.util.Objects;
 * 26 dic. 2023 - Elitebook
 */
 @Entity
-@Table(name = "cre_tipo_amortizaciones")
+@Table(name = "cre_tipo_amortizaciones",uniqueConstraints =
+@UniqueConstraint(name= "cre_tipo_amortizaciones_unique_codigo" ,columnNames = {"cod_tipo"}))
 public class CreTipoAmortizacion extends Common implements Serializable {
 
 	private static final long serialVersionUID = 1L;

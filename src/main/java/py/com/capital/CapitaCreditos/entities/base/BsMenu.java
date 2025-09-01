@@ -9,7 +9,9 @@ import java.util.Set;
 * Aug 30, 2023-5:28:44 PM-fvazquez
 **/
 @Entity
-@Table(name = "bs_menu")
+@Table(name = "bs_menu",
+		uniqueConstraints = @UniqueConstraint(name= "bs_menu_unique_url" ,
+				columnNames = {"url"}))
 public class BsMenu implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

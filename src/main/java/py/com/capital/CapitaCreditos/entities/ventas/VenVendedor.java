@@ -13,7 +13,8 @@ import java.util.Objects;
 * 12 dic. 2023 - Elitebook
 */
 @Entity
-@Table(name = "ven_vendedores")
+@Table(name = "ven_vendedores",uniqueConstraints =
+@UniqueConstraint(name= "ven_vendedores_unique_codigo" ,columnNames = {"cod_vendedor","id_bs_persona", "bs_empresa_id"}))
 public class VenVendedor extends Common implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name = "bs_permiso_rol")
+@Table(name = "bs_permiso_rol",uniqueConstraints =
+@UniqueConstraint(name= "bs_permiso_rol_unique_codigo" ,columnNames = {"id_bs_rol","id_bs_menu"}))
 public class BsPermisoRol extends Common {
 	
 	@Id

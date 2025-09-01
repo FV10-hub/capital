@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 * 29 nov. 2023 - Elitebook
 */
 @Entity
-@Table(name = "bs_tipo_valor")
+@Table(name = "bs_tipo_valor",uniqueConstraints =
+@UniqueConstraint(name= "bs_tipo_valor_unique_cod_modulo" ,columnNames = {"cod_tipo","id_bs_modulo"}))
 public class BsTipoValor extends Common implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -15,7 +15,8 @@ import java.util.Objects;
 * 12 dic. 2023 - Elitebook
 */
 @Entity
-@Table(name = "sto_articulos")
+@Table(name = "sto_articulos",uniqueConstraints =
+@UniqueConstraint(name= "sto_articulos_unique_codigo" ,columnNames = {"cod_articulo","bs_empresa_id"}))
 public class StoArticulo extends Common implements Serializable {
 
 	private static final long serialVersionUID = 1L;

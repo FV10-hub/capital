@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 * 28 dic. 2023 - Elitebook
 */
 @Entity
-@Table(name = "cob_cajas")
+@Table(name = "cob_cajas",uniqueConstraints =
+@UniqueConstraint(name= "cob_cajas_unique_cod_usu_emp" ,columnNames = {"cod_caja","bs_usuario_id","bs_empresa_id"}))
 public class CobCaja extends Common implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

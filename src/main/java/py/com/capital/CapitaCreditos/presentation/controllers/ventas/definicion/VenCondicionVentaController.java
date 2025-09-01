@@ -2,6 +2,7 @@ package py.com.capital.CapitaCreditos.presentation.controllers.ventas.definicion
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.exception.ConstraintViolationException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,9 +158,24 @@ public class VenCondicionVentaController {
 			this.cleanFields();
 		} catch (Exception e) {
 			LOGGER.error("Ocurrio un error al Guardar", System.err);
-			//e.printStackTrace(System.err);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-					e.getMessage().substring(0, e.getMessage().length()) + "...");
+			e.printStackTrace(System.err);
+
+			Throwable cause = e.getCause();
+			while (cause != null) {
+				if (cause instanceof ConstraintViolationException) {
+					CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+							"La condicion de venta ya existe.");
+					break;
+				}
+				cause = cause.getCause();
+			}
+
+			if (cause == null) {
+				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+						e.getMessage().substring(0, e.getMessage().length()) + "...");
+			}
+
+			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		}
 		PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
 		PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
