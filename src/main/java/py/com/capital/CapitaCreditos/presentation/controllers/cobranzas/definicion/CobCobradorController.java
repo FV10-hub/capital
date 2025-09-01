@@ -82,6 +82,7 @@ public class CobCobradorController {
 	public CobCobrador getCobCobrador() {
 		if (Objects.isNull(cobCobrador)) {
 			this.cobCobrador = new CobCobrador();
+			this.cobCobrador.setEstado(Estado.ACTIVO.getEstado());
 			this.cobCobrador.setBsEmpresa(new BsEmpresa());
 			this.cobCobrador.setBsPersona(new BsPersona());
 		}
@@ -204,7 +205,7 @@ public class CobCobradorController {
 			try {
 				this.cobCobrador.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
 				this.cobCobrador.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
-				this.cobCobrador.setCodCobrador(this.cobCobrador.getBsPersona().getDocumento());
+				//this.cobCobrador.setCodCobrador(this.cobCobrador.getBsPersona().getDocumento());
 				if (!Objects.isNull(cobCobradorServiceImpl.save(this.cobCobrador))) {
 					CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
 							"El registro se guardo correctamente.");

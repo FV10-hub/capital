@@ -118,7 +118,7 @@
 
 									<div class="field">
 										<p:outputLabel for="estadolb">Estado</p:outputLabel>
-										<p:selectOneMenu id="estadolb"
+										<p:selectOneMenu id="estadolb" disabled="#{tesBancoController.esNuegoRegistro}"
 											value="#{tesBancoController.tesBanco.estado}">
 											<f:selectItem itemLabel="Seleccione un estado"
 												itemValue="#{null}" noSelectionOption="true" />

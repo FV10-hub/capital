@@ -95,7 +95,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="estadolb">Estado</p:outputLabel>
-										<p:selectOneMenu id="estadolb"
+										<p:selectOneMenu id="estadolb" disabled="#{venCondicionVentaController.esNuegoRegistro}"
 											value="#{venCondicionVentaController.venCondicionVenta.estado}">
 											<f:selectItem itemLabel="Seleccione un estado"
 												itemValue="#{null}" noSelectionOption="true" />

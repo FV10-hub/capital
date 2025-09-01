@@ -78,7 +78,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="motivolb">Estado</p:outputLabel>
-										<p:selectOneMenu id="motivolb"
+										<p:selectOneMenu id="motivolb" disabled="#{creMotivoPrestamoController.esNuegoRegistro}"
 											value="#{creMotivoPrestamoController.creMotivoPrestamo.estado}">
 											<f:selectItem itemLabel="Seleccione un estado"
 												itemValue="#{null}" noSelectionOption="true" />

@@ -86,6 +86,7 @@ public class BsMonedaController implements Serializable {
 	public BsMoneda getBsMoneda() {
 		if (Objects.isNull(bsMoneda)) {
 			this.bsMoneda = new BsMoneda();
+			this.bsMoneda.setEstado(Estado.ACTIVO.getEstado());
 		}
 		return bsMoneda;
 	}

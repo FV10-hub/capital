@@ -83,6 +83,7 @@ public class BsTipoValorController {
     public BsTipoValor getBsTipoValor() {
         if (Objects.isNull(bsTipoValor)) {
             this.bsTipoValor = new BsTipoValor();
+            this.bsTipoValor.setEstado(Estado.ACTIVO.getEstado());
             this.bsTipoValor.setBsEmpresa(new BsEmpresa());
             this.bsTipoValor.setBsModulo(new BsModulo());
         }

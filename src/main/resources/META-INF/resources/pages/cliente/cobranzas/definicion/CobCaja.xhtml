@@ -83,7 +83,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="cajalb">Estado</p:outputLabel>
-										<p:selectOneMenu id="cajalb"
+										<p:selectOneMenu id="cajalb" disabled="#{cobCajaController.esNuegoRegistro}"
 											value="#{cobCajaController.cobCaja.estado}">
 											<f:selectItem itemLabel="Seleccione un estado"
 												itemValue="#{null}" noSelectionOption="true" />

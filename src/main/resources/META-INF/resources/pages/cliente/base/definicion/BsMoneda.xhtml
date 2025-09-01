@@ -92,7 +92,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="monedalb">Estado</p:outputLabel>
-										<p:selectOneMenu id="monedalb"
+										<p:selectOneMenu id="monedalb" disabled="#{bsMonedaController.esNuegoRegistro}"
 											value="#{bsMonedaController.bsMoneda.estado}">
 											<f:selectItem itemLabel="Seleccione un estado"
 												itemValue="#{null}" noSelectionOption="true" />

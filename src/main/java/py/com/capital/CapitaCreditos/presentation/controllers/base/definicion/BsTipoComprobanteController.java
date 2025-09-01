@@ -83,6 +83,7 @@ public class BsTipoComprobanteController {
 	public BsTipoComprobante getBsTipoComprobante() {
 		if (Objects.isNull(bsTipoComprobante)) {
 			this.bsTipoComprobante = new BsTipoComprobante();
+			this.bsTipoComprobante.setEstado(Estado.ACTIVO.getEstado());
 			this.bsTipoComprobante.setBsEmpresa(new BsEmpresa());
 			this.bsTipoComprobante.setBsModulo(new BsModulo());
 		}

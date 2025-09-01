@@ -97,7 +97,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="modulolb">Estado</p:outputLabel>
-										<p:selectOneMenu id="modulolb"
+										<p:selectOneMenu id="modulolb" disabled="#{bsModuloController.esNuegoRegistro}"
 											value="#{bsModuloController.bsModulo.estado}">
 											<f:selectItem itemLabel="Seleccione un estado"
 												itemValue="#{null}" noSelectionOption="true" />

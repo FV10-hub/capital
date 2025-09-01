@@ -92,7 +92,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="ivalb">Estado</p:outputLabel>
-										<p:selectOneMenu id="ivalb"
+										<p:selectOneMenu id="ivalb" disabled="#{bsIvaController.esNuegoRegistro}"
 											value="#{bsIvaController.bsIva.estado}">
 											<f:selectItem itemLabel="Seleccione un estado"
 												itemValue="#{null}" noSelectionOption="true" />

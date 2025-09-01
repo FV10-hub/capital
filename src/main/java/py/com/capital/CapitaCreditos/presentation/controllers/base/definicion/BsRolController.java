@@ -72,6 +72,7 @@ public class BsRolController {
 	public BsRol getBsRol() {
 		if (Objects.isNull(bsRol)) {
 			this.bsRol = new BsRol();
+			this.bsRol.setEstado(Estado.ACTIVO.getEstado());
 		}
 		return bsRol;
 	}

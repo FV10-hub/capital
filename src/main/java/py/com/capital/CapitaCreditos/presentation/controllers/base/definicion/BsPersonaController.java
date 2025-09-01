@@ -79,6 +79,9 @@ public class BsPersonaController {
 
 		if (Objects.isNull(bsPersona)) {
 			this.bsPersona = new BsPersona();
+			this.bsPersona.setEstado(Estado.ACTIVO.getEstado());
+			this.bsPersona.setTipoPersona("JURIDICA");
+			this.bsPersona.setTipoDocumento("CI");
 		}
 		return bsPersona;
 	}

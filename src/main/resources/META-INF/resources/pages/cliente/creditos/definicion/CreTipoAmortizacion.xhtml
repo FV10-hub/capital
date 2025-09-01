@@ -78,7 +78,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="tipoAmortlb">Estado</p:outputLabel>
-										<p:selectOneMenu id="tipoAmortlb"
+										<p:selectOneMenu id="tipoAmortlb" disabled="#{creTipoAmortizacionController.esNuegoRegistro}"
 											value="#{creTipoAmortizacionController.creTipoAmortizacion.estado}">
 											<f:selectItem itemLabel="Seleccione un estado"
 												itemValue="#{null}" noSelectionOption="true" />

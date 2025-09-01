@@ -87,6 +87,7 @@ public class ComProveedorController {
 	public ComProveedor getComProveedor() {
 		if (Objects.isNull(comProveedor)) {
 			this.comProveedor = new ComProveedor();
+			this.comProveedor.setEstado(Estado.ACTIVO.getEstado());
 			this.comProveedor.setBsEmpresa(new BsEmpresa());
 			this.comProveedor.setBsPersona(new BsPersona());
 		}

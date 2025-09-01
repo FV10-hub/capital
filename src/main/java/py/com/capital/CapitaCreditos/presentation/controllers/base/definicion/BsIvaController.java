@@ -84,6 +84,7 @@ public class BsIvaController implements Serializable {
 	public BsIva getBsIva() {
 		if (Objects.isNull(bsIva)) {
 			this.bsIva = new BsIva();
+			this.bsIva.setEstado(Estado.ACTIVO.getEstado());
 		}
 		return bsIva;
 	}

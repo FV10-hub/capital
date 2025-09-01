@@ -70,6 +70,7 @@ public class BsModuloController {
 	public BsModulo getBsModulo() {
 		if (Objects.isNull(bsModulo)) {
 			this.bsModulo = new BsModulo();
+			this.bsModulo.setEstado(Estado.ACTIVO.getEstado());
 		}
 		return bsModulo;
 	}

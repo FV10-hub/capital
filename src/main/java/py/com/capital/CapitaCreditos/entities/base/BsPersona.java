@@ -51,6 +51,14 @@ public class BsPersona extends Common {
     @Column(name = "documento", length = 50)
     private String documento;
 
+    //JURIDICA O FISICA
+    @Column(name = "tipo_persona", length = 100)
+    private String tipoPersona;
+
+    //CI O RUC
+    @Column(name = "tipo_documento", length = 100)
+    private String tipoDocumento;
+
     public BsPersona() {
 
     }
@@ -137,6 +145,22 @@ public class BsPersona extends Common {
 
     public void setNombreCompleto(String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
+    }
+
+    public String getTipoPersona() {
+        return tipoPersona;
+    }
+
+    public void setTipoPersona(String tipoPersona) {
+        this.tipoPersona = tipoPersona;
+    }
+
+    public String getTipoDocumento() {
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
     }
 
     @Override
