@@ -24,6 +24,9 @@ import py.com.capital.CapitaCreditos.services.stock.StoArticuloService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
@@ -87,6 +90,7 @@ public class CreDesembolsoController {
 	/**
 	 * Propiedad de la logica de negocio inyectada con JSF y Spring.
 	 */
+	private boolean puedeCrear, puedeEditar, puedeEliminar = false;
 	@Autowired
 	private SessionBean sessionBean;
 
@@ -96,7 +100,10 @@ public class CreDesembolsoController {
 	@PostConstruct
 	public void init() {
 		this.cleanFields();
-
+		this.sessionBean.cargarPermisos();
+		puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
+		puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
+		puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
 	}
 
 	public void cleanFields() {
@@ -414,6 +421,30 @@ public class CreDesembolsoController {
 
 	public void setDetalleList(Set<CreDesembolsoDetalle> detalleList) {
 		this.detalleList = detalleList;
+	}
+
+	public boolean isPuedeCrear() {
+		return puedeCrear;
+	}
+
+	public void setPuedeCrear(boolean puedeCrear) {
+		this.puedeCrear = puedeCrear;
+	}
+
+	public boolean isPuedeEditar() {
+		return puedeEditar;
+	}
+
+	public void setPuedeEditar(boolean puedeEditar) {
+		this.puedeEditar = puedeEditar;
+	}
+
+	public boolean isPuedeEliminar() {
+		return puedeEliminar;
+	}
+
+	public void setPuedeEliminar(boolean puedeEliminar) {
+		this.puedeEliminar = puedeEliminar;
 	}
 
 	public void procesarCuotas() {
@@ -872,6 +903,17 @@ public class CreDesembolsoController {
 					e.getMessage().substring(0, e.getMessage().length()) + "...");
 		}
 
+	}
+
+	public String getPaginaActual() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		if (facesContext != null) {
+			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+			String uri = request.getRequestURI();
+			String pagina = uri.substring(uri.lastIndexOf("/") + 1);
+			return pagina;
+		}
+		return null;
 	}
 
 }

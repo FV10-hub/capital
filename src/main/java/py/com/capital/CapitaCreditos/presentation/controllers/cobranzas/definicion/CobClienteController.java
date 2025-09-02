@@ -21,6 +21,8 @@ import py.com.capital.CapitaCreditos.services.cobranzas.CobClienteService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,13 +59,17 @@ public class CobClienteController {
     /**
      * Propiedad de la logica de negocio inyectada con JSF y Spring.
      */
+    private boolean puedeCrear, puedeEditar, puedeEliminar = false;
     @Autowired
     private SessionBean sessionBean;
 
     @PostConstruct
     public void init() {
         this.cleanFields();
-
+        this.sessionBean.cargarPermisos();
+        puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
+        puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
+        puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
     }
 
     public void cleanFields() {
@@ -167,6 +173,30 @@ public class CobClienteController {
         this.bsPersonaSelected = bsPersonaSelected;
     }
 
+    public boolean isPuedeCrear() {
+        return puedeCrear;
+    }
+
+    public void setPuedeCrear(boolean puedeCrear) {
+        this.puedeCrear = puedeCrear;
+    }
+
+    public boolean isPuedeEditar() {
+        return puedeEditar;
+    }
+
+    public void setPuedeEditar(boolean puedeEditar) {
+        this.puedeEditar = puedeEditar;
+    }
+
+    public boolean isPuedeEliminar() {
+        return puedeEliminar;
+    }
+
+    public void setPuedeEliminar(boolean puedeEliminar) {
+        this.puedeEliminar = puedeEliminar;
+    }
+
     // LAZY
     public LazyDataModel<CobCliente> getLazyModel() {
         if (Objects.isNull(lazyModel)) {
@@ -252,6 +282,17 @@ public class CobClienteController {
                     e.getMessage().substring(0, e.getMessage().length()) + "...");
         }
 
+    }
+
+    public String getPaginaActual() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+            String uri = request.getRequestURI();
+            String pagina = uri.substring(uri.lastIndexOf("/") + 1);
+            return pagina;
+        }
+        return null;
     }
 
 }
