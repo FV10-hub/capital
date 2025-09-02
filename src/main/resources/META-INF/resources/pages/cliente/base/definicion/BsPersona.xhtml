@@ -166,7 +166,10 @@
                                         <p:outputLabel for="fehcaNacimiento">Fehca Nacimiento</p:outputLabel>
                                         <p:datePicker id="fehcaNacimiento"
                                                       value="#{bsPersonaController.bsPersona.fecNacimiento}"
-                                                      pattern="dd/MM/yyyy">
+                                                      pattern="dd/MM/yyyy"
+                                                      showButtonBar="true"
+                                                      mask="true"
+                                                      showOnFocus="false">
                                         </p:datePicker>
                                     </div>
                                     <div class="field">

@@ -74,7 +74,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="personalb">Estado</p:outputLabel>
-										<p:selectOneMenu id="personalb" disabled="#{bsRolController.esModificar}"
+										<p:selectOneMenu id="personalb" disabled="#{not bsRolController.esModificar}"
 											value="#{bsRolController.bsRol.estado}">
 											<f:selectItem itemLabel="Seleccione un estado"
 												itemValue="#{null}" noSelectionOption="true" />

@@ -59,6 +59,8 @@ public class MenuBean {
 	private int indexForIdAgrupador;
 	private int indexForIdAgrupadorItemSubMenu;
 	private int indexForIdAgrupadorItem;
+
+	private boolean ocultarModulosSinPermisos = true;
 	
 	@PreDestroy
 	private void destroy(){
@@ -161,7 +163,11 @@ public class MenuBean {
 				}
 
 			} else {
-				mainSubMenu.getElements().add(subMenuModulo);
+				//mainSubMenu.getElements().add(subMenuModulo);
+				//aca valido que si solo tiene menus hijos dibuje el modulo en el menu
+				if (!ocultarModulosSinPermisos) {
+					mainSubMenu.getElements().add(subMenuModulo);
+				}
 			}
 		});
 		this.model.getElements().add(mainSubMenu);
