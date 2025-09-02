@@ -13,6 +13,7 @@ import py.com.capital.CapitaCreditos.entities.cobranzas.CobCliente;
 import py.com.capital.CapitaCreditos.entities.creditos.*;
 import py.com.capital.CapitaCreditos.entities.stock.StoArticulo;
 import py.com.capital.CapitaCreditos.entities.ventas.VenVendedor;
+import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.*;
 import py.com.capital.CapitaCreditos.services.base.BsModuloService;
@@ -553,11 +554,11 @@ public class CreDesembolsoController {
 				PrimeFaces.current().ajax().update(":form:dt-detalle");
 			}
 		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", System.err);
-			e.printStackTrace(System.err);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-					e.getMessage().substring(0, e.getMessage().length()) + "...");
-			PrimeFaces.current().ajax().update(":form:messages");
+			LOGGER.error("Ocurrio un error al generar la cuota", e);
+			// e.printStackTrace(System.err);
+			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		}
 
 	}
@@ -897,10 +898,11 @@ public class CreDesembolsoController {
 			this.cleanFields();
 			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", System.err);
+			LOGGER.error("Ocurrio un error al eliminar", e);
 			// e.printStackTrace(System.err);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-					e.getMessage().substring(0, e.getMessage().length()) + "...");
+			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		}
 
 	}

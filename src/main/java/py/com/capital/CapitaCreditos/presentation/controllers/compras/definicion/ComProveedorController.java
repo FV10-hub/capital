@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.compras.ComProveedor;
+import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonsUtilitiesController;
@@ -261,10 +262,11 @@ public class ComProveedorController {
 			this.cleanFields();
 			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al eliminar", System.err);
-			//e.printStackTrace(System.err);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-					e.getMessage().substring(0, e.getMessage().length()) + "...");
+			LOGGER.error("Ocurrio un error al eliminar", e);
+			// e.printStackTrace(System.err);
+			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		}
 
 	}

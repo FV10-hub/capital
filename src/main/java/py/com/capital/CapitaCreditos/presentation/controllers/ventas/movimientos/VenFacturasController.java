@@ -22,6 +22,7 @@ import py.com.capital.CapitaCreditos.entities.ventas.VenCondicionVenta;
 import py.com.capital.CapitaCreditos.entities.ventas.VenFacturaCabecera;
 import py.com.capital.CapitaCreditos.entities.ventas.VenFacturaDetalle;
 import py.com.capital.CapitaCreditos.entities.ventas.VenVendedor;
+import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.*;
 import py.com.capital.CapitaCreditos.services.UtilsService;
@@ -1085,10 +1086,11 @@ public class VenFacturasController {
 			this.cleanFields();
 			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", System.err);
+			LOGGER.error("Ocurrio un error al eliminar", e);
 			// e.printStackTrace(System.err);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-					e.getMessage().substring(0, e.getMessage().length()) + "...");
+			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		}
 
 	}

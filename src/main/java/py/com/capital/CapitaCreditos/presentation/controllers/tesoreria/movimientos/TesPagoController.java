@@ -21,6 +21,7 @@ import py.com.capital.CapitaCreditos.entities.tesoreria.TesBanco;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoCabecera;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoComprobanteDetalle;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoValores;
+import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.*;
 import py.com.capital.CapitaCreditos.services.UtilsService;
@@ -841,10 +842,11 @@ public class TesPagoController {
 			this.cleanFields();
 			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", System.err);
-			e.printStackTrace(System.err);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-					e.getMessage().substring(0, e.getMessage().length()) + "...");
+			LOGGER.error("Ocurrio un error al eliminar", e);
+			// e.printStackTrace(System.err);
+			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		}
 	}
 	
