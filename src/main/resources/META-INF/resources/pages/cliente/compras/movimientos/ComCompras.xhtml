@@ -43,6 +43,7 @@
 
 
 
+
             </script>
             <div class="grid crud-demo">
                 <div class="col-12">
@@ -52,6 +53,7 @@
                                    rendered="#{not comFacturasController.esVisibleFormulario}">
                             <p:toolbarGroup>
                                 <p:commandButton value="Nuevo" icon="pi pi-plus" id="btnNuevo"
+                                                 disabled="#{not comFacturasController.puedeCrear}"
                                                  actionListener="#{comFacturasController.setEsVisibleFormulario(true)}"
                                                  update=":form" styleClass="ui-button-success"
                                                  style="margin-right: .5rem"/>
@@ -459,10 +461,10 @@
                                          header="Confirmacion" severity="warn">
                             <p:commandButton value="Si" icon="pi pi-check"
                                              actionListener="#{comFacturasController.eliminaDetalle}"
-                                             process="@this" oncomplete="PF('deleteDetalleDialog').hide()" />
+                                             process="@this" oncomplete="PF('deleteDetalleDialog').hide()"/>
                             <p:commandButton value="No" type="button"
                                              styleClass="ui-button-secondary" icon="pi pi-times"
-                                             onclick="PF('deleteDetalleDialog').hide()" />
+                                             onclick="PF('deleteDetalleDialog').hide()"/>
                         </p:confirmDialog>
                         <!-- confirms -->
                     </div>
@@ -511,6 +513,7 @@
 					};
 
             
+
 
 
 

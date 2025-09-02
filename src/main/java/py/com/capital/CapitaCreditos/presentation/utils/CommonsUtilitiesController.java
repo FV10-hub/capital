@@ -14,6 +14,7 @@ import py.com.capital.CapitaCreditos.services.cobranzas.CobCajaService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobHabilitacionCajaService;
 
 import java.util.List;
+import java.util.Objects;
 
 /*
 * 5 ene. 2024 - Elitebook
@@ -65,6 +66,9 @@ public class CommonsUtilitiesController {
 
 	public boolean validarSiTengaHabilitacionAbierta() {
 		this.cobCajaSelected = getCajaUsuarioLogueado();
+		if (Objects.isNull(this.cobCajaSelected)){
+			return true;
+		}
 		String valor = this.cobHabilitacionCajaServiceImpl
 				.validaHabilitacionAbierta(this.sessionBean.getUsuarioLogueado().getId(), this.cobCajaSelected.getId());
 

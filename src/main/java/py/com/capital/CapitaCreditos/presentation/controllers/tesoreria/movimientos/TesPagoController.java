@@ -35,6 +35,9 @@ import py.com.capital.CapitaCreditos.services.tesoreria.TesPagoService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
@@ -117,6 +120,7 @@ public class TesPagoController {
 	/**
 	 * Propiedad de la logica de negocio inyectada con JSF y Spring.
 	 */
+	private boolean puedeCrear, puedeEditar, puedeEliminar = false;
 	@Autowired
 	private SessionBean sessionBean;
 
@@ -132,7 +136,10 @@ public class TesPagoController {
 	@PostConstruct
 	public void init() {
 		this.cleanFields();
-
+		this.sessionBean.cargarPermisos();
+		puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
+		puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
+		puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
 	}
 
 	public void cleanFields() {
@@ -452,6 +459,30 @@ public class TesPagoController {
 
 	public void setParametrosReporte(ParametrosReporte parametrosReporte) {
 		this.parametrosReporte = parametrosReporte;
+	}
+
+	public boolean isPuedeCrear() {
+		return puedeCrear;
+	}
+
+	public void setPuedeCrear(boolean puedeCrear) {
+		this.puedeCrear = puedeCrear;
+	}
+
+	public boolean isPuedeEditar() {
+		return puedeEditar;
+	}
+
+	public void setPuedeEditar(boolean puedeEditar) {
+		this.puedeEditar = puedeEditar;
+	}
+
+	public boolean isPuedeEliminar() {
+		return puedeEliminar;
+	}
+
+	public void setPuedeEliminar(boolean puedeEliminar) {
+		this.puedeEliminar = puedeEliminar;
 	}
 
 	// LAZY
@@ -947,6 +978,17 @@ public class TesPagoController {
 		DateTimeFormatter formatToDateParam = DateTimeFormatter.ofPattern("dd/MM/yyy");
 		
 
+	}
+
+	public String getPaginaActual() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		if (facesContext != null) {
+			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+			String uri = request.getRequestURI();
+			String pagina = uri.substring(uri.lastIndexOf("/") + 1);
+			return pagina;
+		}
+		return null;
 	}
 	
 	

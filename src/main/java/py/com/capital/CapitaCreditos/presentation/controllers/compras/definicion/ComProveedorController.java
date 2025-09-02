@@ -21,6 +21,9 @@ import py.com.capital.CapitaCreditos.services.compras.ComProveedorService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -57,19 +60,22 @@ public class ComProveedorController {
 	@Autowired
 	private ComProveedorService comProveedorServiceImpl;
 
+	@Autowired
+	private CommonsUtilitiesController commonsUtilitiesController;
 	/**
 	 * Propiedad de la logica de negocio inyectada con JSF y Spring.
 	 */
+	private boolean puedeCrear, puedeEditar, puedeEliminar = false;
 	@Autowired
 	private SessionBean sessionBean;
-
-	@Autowired
-	private CommonsUtilitiesController commonsUtilitiesController;
 
 	@PostConstruct
 	public void init() {
 		this.cleanFields();
-
+		this.sessionBean.cargarPermisos();
+		puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
+		puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
+		puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
 	}
 
 	public void cleanFields() {
@@ -181,6 +187,31 @@ public class ComProveedorController {
 		this.commonsUtilitiesController = commonsUtilitiesController;
 	}
 
+
+	public boolean isPuedeCrear() {
+		return puedeCrear;
+	}
+
+	public void setPuedeCrear(boolean puedeCrear) {
+		this.puedeCrear = puedeCrear;
+	}
+
+	public boolean isPuedeEditar() {
+		return puedeEditar;
+	}
+
+	public void setPuedeEditar(boolean puedeEditar) {
+		this.puedeEditar = puedeEditar;
+	}
+
+	public boolean isPuedeEliminar() {
+		return puedeEliminar;
+	}
+
+	public void setPuedeEliminar(boolean puedeEliminar) {
+		this.puedeEliminar = puedeEliminar;
+	}
+
 	// LAZY
 	public LazyDataModel<ComProveedor> getLazyModel() {
 		if (Objects.isNull(lazyModel)) {
@@ -269,6 +300,17 @@ public class ComProveedorController {
 			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		}
 
+	}
+
+	public String getPaginaActual() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		if (facesContext != null) {
+			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+			String uri = request.getRequestURI();
+			String pagina = uri.substring(uri.lastIndexOf("/") + 1);
+			return pagina;
+		}
+		return null;
 	}
 
 }

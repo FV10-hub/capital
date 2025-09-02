@@ -53,6 +53,7 @@
 
 
 
+
         </script>
     </h:head>
     <ui:define name="title">Debitos y Creditos Bancarios</ui:define>
@@ -66,6 +67,7 @@
                                    rendered="#{not tesDebitoCreditoBancarioController.esVisibleFormulario}">
                             <p:toolbarGroup>
                                 <p:commandButton value="Nuevo" icon="pi pi-plus"
+                                                 disabled="#{not tesDebitoCreditoBancarioController.puedeCrear}"
                                                  actionListener="#{tesDebitoCreditoBancarioController.setEsVisibleFormulario(true)}"
                                                  update=":form" styleClass="ui-button-success"
                                                  style="margin-right: .5rem"/>
@@ -135,7 +137,7 @@
                                                                  target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancarioSelected}"/>
                                 </p:commandButton>
                                 <p:commandButton class="ui-button-danger rounded-button"
-                                                 icon="pi pi-trash" rendered="false"
+                                                 icon="pi pi-trash" disabled="#{not tesDebitoCreditoBancarioController.puedeCrear}"
                                                  oncomplete="PF('deleteDepositoDialog').show()">
                                     <f:setPropertyActionListener value="#{debcrebancario}"
                                                                  target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancarioSelected}"/>
@@ -250,7 +252,8 @@
                                                         <div class="col-12 md:col-6">
                                                             <p:inputNumber id="montoSaliente"
                                                                            value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.montoTotalSalida}">
-                                                                <p:ajax listener="#{tesDebitoCreditoBancarioController.seteaMismoValor}" event="keyup" update=":form:montoEntrante" />
+                                                                <p:ajax listener="#{tesDebitoCreditoBancarioController.seteaMismoValor}"
+                                                                        event="keyup" update=":form:montoEntrante"/>
                                                             </p:inputNumber>
                                                         </div>
 

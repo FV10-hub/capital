@@ -23,6 +23,8 @@ import py.com.capital.CapitaCreditos.services.cobranzas.CobHabilitacionCajaServi
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -68,13 +70,17 @@ public class CobHabilitacionCajaController {
     /**
      * Propiedad de la logica de negocio inyectada con JSF y Spring.
      */
+    private boolean puedeCrear, puedeEditar, puedeEliminar = false;
     @Autowired
     private SessionBean sessionBean;
 
     @PostConstruct
     public void init() {
         this.cleanFields();
-
+        this.sessionBean.cargarPermisos();
+        puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
+        puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
+        puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
     }
 
     public void cleanFields() {
@@ -232,6 +238,38 @@ public class CobHabilitacionCajaController {
         this.cobArqueosCajaServiceImpl = cobArqueosCajaServiceImpl;
     }
 
+    public CobCaja getCobCajaSelected() {
+        return cobCajaSelected;
+    }
+
+    public void setCobCajaSelected(CobCaja cobCajaSelected) {
+        this.cobCajaSelected = cobCajaSelected;
+    }
+
+    public boolean isPuedeCrear() {
+        return puedeCrear;
+    }
+
+    public void setPuedeCrear(boolean puedeCrear) {
+        this.puedeCrear = puedeCrear;
+    }
+
+    public boolean isPuedeEditar() {
+        return puedeEditar;
+    }
+
+    public void setPuedeEditar(boolean puedeEditar) {
+        this.puedeEditar = puedeEditar;
+    }
+
+    public boolean isPuedeEliminar() {
+        return puedeEliminar;
+    }
+
+    public void setPuedeEliminar(boolean puedeEliminar) {
+        this.puedeEliminar = puedeEliminar;
+    }
+
     // METODOS
     public void validarCajaDelUsuario(CobCaja caja) {
         if (Objects.isNull(caja)) {
@@ -253,7 +291,7 @@ public class CobHabilitacionCajaController {
     public void redireccionarACajas() {
         try {
             PrimeFaces.current().executeScript("PF('dlgNoTieneCaja').hide()");
-            CommonUtils.redireccionar("/pages/cliente/cobranzas/definicion/CobCaja.xhtml");
+            CommonUtils.redireccionar("/faces/pages/cliente/cobranzas/definicion/CobCaja.xhtml");
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error("Ocurrio un error al Guardar", System.err);
@@ -376,6 +414,17 @@ public class CobHabilitacionCajaController {
             PrimeFaces.current().ajax().update("form:messages", "form:dt-arqueos");
         }
 
+    }
+
+    public String getPaginaActual() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+            String uri = request.getRequestURI();
+            String pagina = uri.substring(uri.lastIndexOf("/") + 1);
+            return pagina;
+        }
+        return null;
     }
 
 

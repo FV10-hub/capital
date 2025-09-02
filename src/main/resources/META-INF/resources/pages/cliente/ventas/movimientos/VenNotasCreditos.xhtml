@@ -48,6 +48,7 @@
 
 
 
+            
             </script>
             <div class="grid crud-demo">
                 <div class="col-12">
@@ -57,6 +58,7 @@
                                    rendered="#{not venNotasCreditosController.esVisibleFormulario}">
                             <p:toolbarGroup>
                                 <p:commandButton value="Nuevo" icon="pi pi-plus" id="btnNuevo"
+                                                 disabled="#{not venNotasCreditosController.puedeCrear}"
                                                  actionListener="#{venNotasCreditosController.setEsVisibleFormulario(true)}"
                                                  update=":form" styleClass="ui-button-success"
                                                  style="margin-right: .5rem"/>
@@ -120,6 +122,7 @@
                                                                  target="#{venNotasCreditosController.venFacturaCabeceraSelected}"/>
                                 </p:commandButton>
                                 <p:commandButton class="ui-button-danger rounded-button"
+                                                 disabled="#{not venNotasCreditosController.puedeEliminar}"
                                                  icon="pi pi-trash" rendered="false"
                                                  oncomplete="PF('deleteFacturaDialog').show()">
                                     <f:setPropertyActionListener value="#{factura}"
@@ -539,6 +542,7 @@
 
 
 
+            
             </script>
         </h:form>
     </ui:define>

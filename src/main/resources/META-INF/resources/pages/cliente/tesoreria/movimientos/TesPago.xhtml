@@ -1,14 +1,14 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
-	<h:head>
-	</h:head>
-	<ui:define name="title">Pagos</ui:define>
-	<ui:define name="content">
-		<h:form id="form">
-		<script type="text/javascript">
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+    <h:head>
+    </h:head>
+    <ui:define name="title">Pagos</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <script type="text/javascript">
 				window.onload = function() {
 					// Esperar hasta que se complete la carga dinámica del botón
 					const observer = new MutationObserver(function(mutations) {
@@ -35,183 +35,196 @@
 					});
 
 				};
-			</script>
-			<div class="grid crud-demo">
-				<div class="col-12">
-					<div class="card">
-						<p:growl id="messages" showDetail="true" />
-						<p:toolbar styleClass="mb-4"
-							rendered="#{not tesPagoController.esVisibleFormulario}">
-							<p:toolbarGroup>
-								<p:commandButton value="Nuevo" icon="pi pi-plus"
-									actionListener="#{tesPagoController.setEsVisibleFormulario(true)}"
-									update=":form" styleClass="ui-button-success"
-									style="margin-right: .5rem" />
-							</p:toolbarGroup>
-						</p:toolbar>
-						<p:dataTable
-							rendered="#{not tesPagoController.esVisibleFormulario}"
-							id="dt-pagos" widgetVar="dtPago" var="pago"
-							value="#{tesPagoController.lazyModel}" reflow="true"
-							rowKey="#{pago.id}" paginator="true" rows="10"
-							rowSelectMode="add" paginatorPosition="bottom"
-							emptyMessage="No hay Registros">
-							<f:facet name="header">
-								<div class="products-table-header">
-									<span style="font-weight: bold">Administrar Pagos</span> <span
-										class="filter-container ui-input-icon-left"> <i
-										class="pi pi-search"></i> <p:inputText id="globalFilter"
-											onkeyup="PF('dtPago').filter()" placeholder="Buscar..." />
+
+            </script>
+            <div class="grid crud-demo">
+                <div class="col-12">
+                    <div class="card">
+                        <p:growl id="messages" showDetail="true"/>
+                        <p:toolbar styleClass="mb-4"
+                                   rendered="#{not tesPagoController.esVisibleFormulario}">
+                            <p:toolbarGroup>
+                                <p:commandButton value="Nuevo" icon="pi pi-plus"
+												 disabled="#{not tesPagoController.puedeCrear}"
+                                                 actionListener="#{tesPagoController.setEsVisibleFormulario(true)}"
+                                                 update=":form" styleClass="ui-button-success"
+                                                 style="margin-right: .5rem"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        <p:dataTable
+                                rendered="#{not tesPagoController.esVisibleFormulario}"
+                                id="dt-pagos" widgetVar="dtPago" var="pago"
+                                value="#{tesPagoController.lazyModel}" reflow="true"
+                                rowKey="#{pago.id}" paginator="true" rows="10"
+                                rowSelectMode="add" paginatorPosition="bottom"
+                                emptyMessage="No hay Registros">
+                            <f:facet name="header">
+                                <div class="products-table-header">
+                                    <span style="font-weight: bold">Administrar Pagos</span> <span
+                                        class="filter-container ui-input-icon-left"> <i
+                                        class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                               onkeyup="PF('dtPago').filter()"
+                                                                               placeholder="Buscar..."/>
 									</span>
-								</div>
-							</f:facet>
-							<p:column headerText="Beneficiario" sortBy="#{pago.beneficiario}"
-								filterBy="#{pago.beneficiario}">
-								<h:outputText value="#{pago.beneficiario}" />
-							</p:column>
-							<p:column headerText="Tipo Pago" sortBy="#{pago.tipoOperacion}"
-								filterBy="#{pago.tipoOperacion}">
-								<h:outputText value="#{pago.tipoOperacion}" />
-							</p:column>
-							<p:column>
-								<f:facet name="header">Fecha Pago</f:facet>
-								<h:outputText value="#{pago.fechaPago}"
-									converter="localDateConverter">
-								</h:outputText>
-							</p:column>
-							<p:column headerText="Nro. Pago" sortBy="#{pago.nroPagoCompleto}"
-								filterBy="#{pago.nroPagoCompleto}">
-								<h:outputText value="#{pago.nroPagoCompleto}" />
-							</p:column>
-							<p:column headerText="Monto Pago" sortBy="#{pago.montoTotalPago}">
-								<h:outputText value="#{pago.montoTotalPago}">
-									<f:convertNumber currencySymbol="Gs." pattern="###,###,###" />
-								</h:outputText>
-							</p:column>
-							<p:column>
-								<f:facet name="header">Impreso?</f:facet>
-								<p:toggleSwitch value="#{pago.indImpresoBoolean}"
-									disabled="true" />
-							</p:column>
-							<p:column headerText="Estado" sortBy="#{pago.estado}"
-								filterBy="#{pago.estado}">
-								<h:outputText value="#{pago.estado}" />
-							</p:column>
-							<p:column exportable="false" headerText="Acciones">
-								<p:commandButton icon="pi pi-eye" update=":form" process="@this"
-									title="Ver Registro"
-									styleClass="edit-button rounded-button ui-button-primary">
-									<f:setPropertyActionListener value="#{pago}"
-										target="#{tesPagoController.tesPagoCabeceraSelected}" />
-								</p:commandButton>
-								<p:commandButton class="ui-button-danger rounded-button"
-									icon="pi pi-trash" rendered="false"
-									oncomplete="PF('deleteFacturaDialog').show()">
-									<f:setPropertyActionListener value="#{pago}"
-										target="#{tesPagoController.tesPagoCabeceraSelected}" />
-								</p:commandButton>
-							</p:column>
-						</p:dataTable>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Beneficiario" sortBy="#{pago.beneficiario}"
+                                      filterBy="#{pago.beneficiario}">
+                                <h:outputText value="#{pago.beneficiario}"/>
+                            </p:column>
+                            <p:column headerText="Tipo Pago" sortBy="#{pago.tipoOperacion}"
+                                      filterBy="#{pago.tipoOperacion}">
+                                <h:outputText value="#{pago.tipoOperacion}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Fecha Pago</f:facet>
+                                <h:outputText value="#{pago.fechaPago}"
+                                              converter="localDateConverter">
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Nro. Pago" sortBy="#{pago.nroPagoCompleto}"
+                                      filterBy="#{pago.nroPagoCompleto}">
+                                <h:outputText value="#{pago.nroPagoCompleto}"/>
+                            </p:column>
+                            <p:column headerText="Monto Pago" sortBy="#{pago.montoTotalPago}">
+                                <h:outputText value="#{pago.montoTotalPago}">
+                                    <f:convertNumber currencySymbol="Gs." pattern="###,###,###"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">Impreso?</f:facet>
+                                <p:toggleSwitch value="#{pago.indImpresoBoolean}"
+                                                disabled="true"/>
+                            </p:column>
+                            <p:column headerText="Estado" sortBy="#{pago.estado}"
+                                      filterBy="#{pago.estado}">
+                                <h:outputText value="#{pago.estado}"/>
+                            </p:column>
+                            <p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-eye" update=":form" process="@this"
+                                                 title="Ver Registro"
+                                                 styleClass="edit-button rounded-button ui-button-primary">
+                                    <f:setPropertyActionListener value="#{pago}"
+                                                                 target="#{tesPagoController.tesPagoCabeceraSelected}"/>
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-danger rounded-button"
+                                                 icon="pi pi-trash" disabled="#{not tesPagoController.puedeEliminar}"
+                                                 oncomplete="PF('deleteFacturaDialog').show()">
+                                    <f:setPropertyActionListener value="#{pago}"
+                                                                 target="#{tesPagoController.tesPagoCabeceraSelected}"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
 
-						<p:panel id="manage-pago"
-							rendered="#{tesPagoController.esVisibleFormulario}">
-							<p:toolbar styleClass="mb-4" id="toolbarBotones">
-								<p:toolbarGroup>
-									<p:commandButton value="Guardar" icon="pi pi-save"
-										id="btnGuardar"
-										disabled="#{tesPagoController.tesPagoValoresList.size() == 0 || tesPagoController.tesPagoCabecera.indImpresoBoolean}"
-										actionListener="#{tesPagoController.guardar}" update=":form"
-										styleClass="ui-button-success" style="margin-right: .5rem" />
-									<p:commandButton value="Cancelar"
-										icon="pi pi-arrow-circle-left"
-										actionListener="#{tesPagoController.cleanFields}"
-										update=":form" styleClass="ui-button-info"
-										style="margin-right: .5rem" />
-									<p:commandButton
-										value="#{tesPagoController.estaAutorizado ? 'Imprimir' : 'Contrato'}"
-										id="btnImpContrato" disabled="#{tesPagoController.estaAutorizado}"
-										icon="pi pi-file-pdf"
-										onclick="PF('imprimirDialog').show()"
-										styleClass="ui-button-warning" style="margin-right: .5rem" />
-									<p:commandButton
-										value="#{tesPagoController.estaAutorizado ? 'Imprimir' : 'Pagare'}"
-										id="btnImpPagare" disabled="#{tesPagoController.tesPagoCabecera.indImpresoBoolean}"
-										icon="pi pi-file-pdf"
-										onclick="PF('imprimirPagareDialog').show()"
-										styleClass="ui-button-warning" style="margin-right: .5rem" />
-									<p:commandButton value="Eliminar" icon="pi pi-trash"
-										rendered="#{tesPagoController.tesPagoCabecera.id != null}"
-										disabled="#{tesPagoController.tesPagoCabecera.indImpresoBoolean}"
-										actionListener="#{tesPagoController.delete}" update=":form"
-										styleClass="ui-button-danger" style="margin-right: .5rem" />
+                        <p:panel id="manage-pago"
+                                 rendered="#{tesPagoController.esVisibleFormulario}">
+                            <p:toolbar styleClass="mb-4" id="toolbarBotones">
+                                <p:toolbarGroup>
+                                    <p:commandButton value="Guardar" icon="pi pi-save"
+                                                     id="btnGuardar"
+                                                     disabled="#{tesPagoController.tesPagoValoresList.size() == 0 || tesPagoController.tesPagoCabecera.indImpresoBoolean}"
+                                                     actionListener="#{tesPagoController.guardar}" update=":form"
+                                                     styleClass="ui-button-success" style="margin-right: .5rem"/>
+                                    <p:commandButton value="Cancelar"
+                                                     icon="pi pi-arrow-circle-left"
+                                                     actionListener="#{tesPagoController.cleanFields}"
+                                                     update=":form" styleClass="ui-button-info"
+                                                     style="margin-right: .5rem"/>
+                                    <p:commandButton
+                                            value="#{tesPagoController.estaAutorizado ? 'Imprimir' : 'Contrato'}"
+                                            id="btnImpContrato" disabled="#{tesPagoController.estaAutorizado}"
+                                            icon="pi pi-file-pdf"
+                                            onclick="PF('imprimirDialog').show()"
+                                            styleClass="ui-button-warning" style="margin-right: .5rem"/>
+                                    <p:commandButton
+                                            value="#{tesPagoController.estaAutorizado ? 'Imprimir' : 'Pagare'}"
+                                            id="btnImpPagare"
+                                            disabled="#{tesPagoController.tesPagoCabecera.indImpresoBoolean}"
+                                            icon="pi pi-file-pdf"
+                                            onclick="PF('imprimirPagareDialog').show()"
+                                            styleClass="ui-button-warning" style="margin-right: .5rem"/>
+                                    <p:commandButton value="Eliminar" icon="pi pi-trash"
+                                                     rendered="#{tesPagoController.tesPagoCabecera.id != null}"
+                                                     disabled="#{tesPagoController.tesPagoCabecera.indImpresoBoolean}"
+                                                     actionListener="#{tesPagoController.delete}" update=":form"
+                                                     styleClass="ui-button-danger" style="margin-right: .5rem"/>
 
-								</p:toolbarGroup>
-							</p:toolbar>
-							<div class="col-12">
-								<div class="card ui-fluid">
-									<h5>Pagos</h5>
-									<div class="ui-fluid formgrid ">
-										<div class="grid col-12 md:col-12">
-											<div class="col-5 md:col-5 flex flex-column">
-												<div class="field grid md:col-12 flex align-items-center">
-													<p:outputLabel for="nropagoLb"
-														styleClass="col-12 mb-2 md:col-6 mb-md-0">Nro pago</p:outputLabel>
-													<div class="col-12 md:col-6">
-														<p:inputText id="nropagoLb" disabled="true"
-															placeholder="generacion aut."
-															value="#{tesPagoController.tesPagoCabecera.nroPagoCompleto}" />
-													</div>
-												</div>
-												<div class="field grid md:col-12 flex align-items-center">
-													<p:outputLabel for="indAutLb"
-														styleClass="col-12 mb-2 md:col-6 mb-md-0">Impreso?</p:outputLabel>
-													<div class="col-12 md:col-6">
-														<p:toggleSwitch id="indAutLb" onIcon="pi pi-check"
-															offIcon="pi pi-times"
-															value="#{tesPagoController.tesPagoCabecera.indImpresoBoolean}" />
-													</div>
-												</div>
-												<div class="field grid md:col-12 flex align-items-center">
-													<p:outputLabel for="fechaOpLb"
-														styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Pago</p:outputLabel>
-													<div class="col-12 md:col-6">
-														<p:datePicker id="fechaOpLb" showIcon="true"
-															value="#{tesPagoController.tesPagoCabecera.fechaPago}"
-															pattern="dd/MM/yyyy">
-														</p:datePicker>
-													</div>
-												</div>
-												<div class="field grid md:col-12 flex align-items-center">
-													<p:outputLabel for="obsLb"
-														styleClass="col-12 mb-2 md:col-6 mb-md-0">Observacion</p:outputLabel>
-													<div class="col-12 md:col-6">
-														<p:inputTextarea rows="3" id="obsLb"
-															value="#{tesPagoController.tesPagoCabecera.observacion}" />
-													</div>
-												</div>
+                                </p:toolbarGroup>
+                            </p:toolbar>
+                            <div class="col-12">
+                                <div class="card ui-fluid">
+                                    <h5>Pagos</h5>
+                                    <div class="ui-fluid formgrid ">
+                                        <div class="grid col-12 md:col-12">
+                                            <div class="col-5 md:col-5 flex flex-column">
+                                                <div class="field grid md:col-12 flex align-items-center">
+                                                    <p:outputLabel for="nropagoLb"
+                                                                   styleClass="col-12 mb-2 md:col-6 mb-md-0">Nro pago
+                                                    </p:outputLabel>
+                                                    <div class="col-12 md:col-6">
+                                                        <p:inputText id="nropagoLb" disabled="true"
+                                                                     placeholder="generacion aut."
+                                                                     value="#{tesPagoController.tesPagoCabecera.nroPagoCompleto}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="field grid md:col-12 flex align-items-center">
+                                                    <p:outputLabel for="indAutLb"
+                                                                   styleClass="col-12 mb-2 md:col-6 mb-md-0">Impreso?
+                                                    </p:outputLabel>
+                                                    <div class="col-12 md:col-6">
+                                                        <p:toggleSwitch id="indAutLb" onIcon="pi pi-check"
+                                                                        offIcon="pi pi-times"
+                                                                        value="#{tesPagoController.tesPagoCabecera.indImpresoBoolean}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="field grid md:col-12 flex align-items-center">
+                                                    <p:outputLabel for="fechaOpLb"
+                                                                   styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Pago
+                                                    </p:outputLabel>
+                                                    <div class="col-12 md:col-6">
+                                                        <p:datePicker id="fechaOpLb" showIcon="true"
+                                                                      value="#{tesPagoController.tesPagoCabecera.fechaPago}"
+                                                                      pattern="dd/MM/yyyy">
+                                                        </p:datePicker>
+                                                    </div>
+                                                </div>
+                                                <div class="field grid md:col-12 flex align-items-center">
+                                                    <p:outputLabel for="obsLb"
+                                                                   styleClass="col-12 mb-2 md:col-6 mb-md-0">Observacion
+                                                    </p:outputLabel>
+                                                    <div class="col-12 md:col-6">
+                                                        <p:inputTextarea rows="3" id="obsLb"
+                                                                         value="#{tesPagoController.tesPagoCabecera.observacion}"/>
+                                                    </div>
+                                                </div>
 
-												<div class="field grid md:col-12 flex align-items-center">
-													<p:outputLabel for="tipoOperacionABuscarLb"
-														styleClass="col-12 mb-2 md:col-6 mb-md-0">Tipo Operacion</p:outputLabel>
-													<div class="col-12 md:col-6">
-														<p:selectOneMenu id="tipoOperacionABuscarLb"
-															value="#{tesPagoController.tipoSaldoAFiltrar}">
-															<f:selectItem itemLabel="FACTURAS" itemValue="FACTURA" />
-															<f:selectItem itemLabel="DESEMSOLSOS"
-																itemValue="DESEMBOLSO" />
-															<p:ajax
-																update=":form:beneficiarioLb :form:btnAddComprobante"></p:ajax>
-														</p:selectOneMenu>
-													</div>
-												</div>
-												<div class="field grid md:col-12 flex align-items-center">
-													<p:outputLabel for="beneficiarioLb"
-														styleClass="col-12 mb-2 md:col-6 mb-md-0">Beneficiario</p:outputLabel>
-													<div class="col-12 md:col-6">
-														<p:inputText id="beneficiarioLb"
-															placeholder="Pulse F9 para buscar" autocomplete="off"
-															value="#{tesPagoController.tesPagoCabecera.beneficiario}"
-															onkeydown="if (event.keyCode == 120) {
+                                                <div class="field grid md:col-12 flex align-items-center">
+                                                    <p:outputLabel for="tipoOperacionABuscarLb"
+                                                                   styleClass="col-12 mb-2 md:col-6 mb-md-0">Tipo
+                                                        Operacion
+                                                    </p:outputLabel>
+                                                    <div class="col-12 md:col-6">
+                                                        <p:selectOneMenu id="tipoOperacionABuscarLb"
+                                                                         value="#{tesPagoController.tipoSaldoAFiltrar}">
+                                                            <f:selectItem itemLabel="FACTURAS" itemValue="FACTURA"/>
+                                                            <f:selectItem itemLabel="DESEMSOLSOS"
+                                                                          itemValue="DESEMBOLSO"/>
+                                                            <p:ajax
+                                                                    update=":form:beneficiarioLb :form:btnAddComprobante"></p:ajax>
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                                <div class="field grid md:col-12 flex align-items-center">
+                                                    <p:outputLabel for="beneficiarioLb"
+                                                                   styleClass="col-12 mb-2 md:col-6 mb-md-0">
+                                                        Beneficiario
+                                                    </p:outputLabel>
+                                                    <div class="col-12 md:col-6">
+                                                        <p:inputText id="beneficiarioLb"
+                                                                     placeholder="Pulse F9 para buscar"
+                                                                     autocomplete="off"
+                                                                     value="#{tesPagoController.tesPagoCabecera.beneficiario}"
+                                                                     onkeydown="if (event.keyCode == 120) {
 																if (#{tesPagoController.tipoSaldoAFiltrar eq 'DESEMBOLSO'})
 																{
 																	PF('dlgCliente').show(); 
@@ -221,631 +234,643 @@
 					                                            	return false; 
 					                                            }
 															
-																}" />
-													</div>
-												</div>
+																}"/>
+                                                    </div>
+                                                </div>
 
-												<div class="field grid md:col-12 flex align-items-center">
-													<p:outputLabel for="talonarioLb"
-														styleClass="col-12 mb-2 md:col-6 mb-md-0">Talonario</p:outputLabel>
-													<div class="col-12 md:col-6">
-														<p:inputText id="talonarioLb"
-															placeholder="Pulse F9 para buscar" autocomplete="off"
-															value="#{tesPagoController.tesPagoCabecera.bsTalonario.bsTipoComprobante.descripcion}"
-															onkeydown="if (event.keyCode == 120) {
+                                                <div class="field grid md:col-12 flex align-items-center">
+                                                    <p:outputLabel for="talonarioLb"
+                                                                   styleClass="col-12 mb-2 md:col-6 mb-md-0">Talonario
+                                                    </p:outputLabel>
+                                                    <div class="col-12 md:col-6">
+                                                        <p:inputText id="talonarioLb"
+                                                                     placeholder="Pulse F9 para buscar"
+                                                                     autocomplete="off"
+                                                                     value="#{tesPagoController.tesPagoCabecera.bsTalonario.bsTipoComprobante.descripcion}"
+                                                                     onkeydown="if (event.keyCode == 120) {
 															PF('dlgTalonario').show()
-														}" />
-													</div>
-												</div>
-												<div class="field grid md:col-12 flex align-items-center">
-													<p:outputLabel for=""
-														styleClass="col-12 mb-2 md:col-6 mb-md-0">Estado</p:outputLabel>
-													<div class="col-12 md:col-6">
-														<p:selectOneMenu id="estadoLb"
-															value="#{tesPagoController.tesPagoCabecera.estado}">
-															<f:selectItem itemLabel="Seleccione un estado"
-																itemValue="#{null}" noSelectionOption="true" />
-															<f:selectItems value="#{tesPagoController.estadoList}" />
-														</p:selectOneMenu>
-													</div>
-												</div>
-											</div>
-											<div class="col-1">
-												<p:divider layout="vertical">
-												</p:divider>
-											</div>
-											<div class="col-6 md:col-6">
-												<h5 class="col-12 md:col-12">Detalle de Comprobantes</h5>
-												<div class="col-12 md:col-12 flex flex-row">
-													<div class="col-6 md:col-6">
-														<p:commandButton id="btnAddComprobante"
-															value="Agregar Comprobantes" icon="pi pi-sync"
-															disabled="#{tesPagoController.tesPagoCabecera.idBeneficiario == null ? true : false}"
-															onclick="if (#{tesPagoController.tipoSaldoAFiltrar == 'DESEMBOLSO'}){
+														}"/>
+                                                    </div>
+                                                </div>
+                                                <div class="field grid md:col-12 flex align-items-center">
+                                                    <p:outputLabel for=""
+                                                                   styleClass="col-12 mb-2 md:col-6 mb-md-0">Estado
+                                                    </p:outputLabel>
+                                                    <div class="col-12 md:col-6">
+                                                        <p:selectOneMenu id="estadoLb"
+                                                                         value="#{tesPagoController.tesPagoCabecera.estado}">
+                                                            <f:selectItem itemLabel="Seleccione un estado"
+                                                                          itemValue="#{null}" noSelectionOption="true"/>
+                                                            <f:selectItems value="#{tesPagoController.estadoList}"/>
+                                                        </p:selectOneMenu>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-1">
+                                                <p:divider layout="vertical">
+                                                </p:divider>
+                                            </div>
+                                            <div class="col-6 md:col-6">
+                                                <h5 class="col-12 md:col-12">Detalle de Comprobantes</h5>
+                                                <div class="col-12 md:col-12 flex flex-row">
+                                                    <div class="col-6 md:col-6">
+                                                        <p:commandButton id="btnAddComprobante"
+                                                                         value="Agregar Comprobantes" icon="pi pi-sync"
+                                                                         disabled="#{tesPagoController.tesPagoCabecera.idBeneficiario == null ? true : false}"
+                                                                         onclick="if (#{tesPagoController.tipoSaldoAFiltrar == 'DESEMBOLSO'}){
 																	PF('dlgDesembolso').show(); 
 																	return true;
 					                                            } else{ 
 					                                            	PF('dlgDesembolso').show(); 
 					                                            	return false; 
 					                                            }"
-															update=":form:dt-desembolso :form:btnLimpiar :form:btnGuardar"
-															styleClass="ui-button-info" style="margin-right: .5rem">
-														</p:commandButton>
-													</div>
-													<div class="col-6 md:col-6">
-														<p:commandButton value="Limpiar Comprobantes"
-															icon="pi pi-bolt" id="btnLimpiarComprobante"
-															actionListener="#{tesPagoController.limpiarDetalleComprobantes}"
-															disabled="#{tesPagoController.tesPagoComprobanteDetallesList.size() == 0}"
-															process="@this"
-															update=":form:dt-comprobantes :form:btnGuardar"
-															styleClass="ui-button-primary"
-															style="margin-right: .5rem" />
-													</div>
-												</div>
-												<div class="col-12 md:col-12">
-													<p:dataTable id="dt-comprobantes"
-														widgetVar="dtComprobantes" var="comprobante"
-														value="#{tesPagoController.tesPagoComprobanteDetallesList}"
-														reflow="true" paginator="true" rows="12" scrollable="true"
-														scrollHeight="300" paginatorPosition="bottom"
-														emptyMessage="No hay Registros">
+                                                                         update=":form:dt-desembolso :form:btnLimpiar :form:btnGuardar"
+                                                                         styleClass="ui-button-info"
+                                                                         style="margin-right: .5rem">
+                                                        </p:commandButton>
+                                                    </div>
+                                                    <div class="col-6 md:col-6">
+                                                        <p:commandButton value="Limpiar Comprobantes"
+                                                                         icon="pi pi-bolt" id="btnLimpiarComprobante"
+                                                                         actionListener="#{tesPagoController.limpiarDetalleComprobantes}"
+                                                                         disabled="#{tesPagoController.tesPagoComprobanteDetallesList.size() == 0}"
+                                                                         process="@this"
+                                                                         update=":form:dt-comprobantes :form:btnGuardar"
+                                                                         styleClass="ui-button-primary"
+                                                                         style="margin-right: .5rem"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 md:col-12">
+                                                    <p:dataTable id="dt-comprobantes"
+                                                                 widgetVar="dtComprobantes" var="comprobante"
+                                                                 value="#{tesPagoController.tesPagoComprobanteDetallesList}"
+                                                                 reflow="true" paginator="true" rows="12"
+                                                                 scrollable="true"
+                                                                 scrollHeight="300" paginatorPosition="bottom"
+                                                                 emptyMessage="No hay Registros">
 
-														<p:column headerText="Nro Orden">
-															<h:outputText value="#{comprobante.nroOrden}" />
-														</p:column>
-														<p:column headerText="Tipo Comprobante">
-															<h:outputText value="#{comprobante.tipoComprobante}" />
-														</p:column>
-														<p:column headerText="Monto Comprobante">
-															<f:facet name="footer">
-																<h:outputText
-																	value="#{tesPagoController.montoTotalPago}">
-																	<f:convertNumber pattern="###,###,###" />
-																</h:outputText>
-															</f:facet>
-															<h:outputText value="#{comprobante.montoPagado}">
-																<f:convertNumber currencySymbol="Gs."
-																	pattern="###,###,###" />
-															</h:outputText>
-														</p:column>
-													</p:dataTable>
+                                                        <p:column headerText="Nro Orden">
+                                                            <h:outputText value="#{comprobante.nroOrden}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Tipo Comprobante">
+                                                            <h:outputText value="#{comprobante.tipoComprobante}"/>
+                                                        </p:column>
+                                                        <p:column headerText="Monto Comprobante">
+                                                            <f:facet name="footer">
+                                                                <h:outputText
+                                                                        value="#{tesPagoController.montoTotalPago}">
+                                                                    <f:convertNumber pattern="###,###,###"/>
+                                                                </h:outputText>
+                                                            </f:facet>
+                                                            <h:outputText value="#{comprobante.montoPagado}">
+                                                                <f:convertNumber currencySymbol="Gs."
+                                                                                 pattern="###,###,###"/>
+                                                            </h:outputText>
+                                                        </p:column>
+                                                    </p:dataTable>
 
-												</div>
-											</div>
-										</div>
-										<h5 class="col-12 md:col-12">Detalle de Valores</h5>
-										<div class="col-12 md:col-12 flex flex-row">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h5 class="col-12 md:col-12">Detalle de Valores</h5>
+                                        <div class="col-12 md:col-12 flex flex-row">
 
-											<div class="col-4 md:col-2">
-												<p:commandButton id="btnAddDetalle" value="Agregar Valores"
-													icon="pi pi-sync"
-													disabled="#{tesPagoController.tesPagoComprobanteDetallesList.size() == 0}"
-													onclick="PF('dlgAddValores').show()"
-													update=":form:btnLimpiar :form:btnGuardar"
-													styleClass="ui-button-info" style="margin-right: .5rem" />
-											</div>
-											<div class="col-4 md:col-2">
-												<p:commandButton value="Limpiar Valores" icon="pi pi-bolt"
-													id="btnLimpiar"
-													actionListener="#{tesPagoController.limpiarDetalleValores}"
-													disabled="#{tesPagoController.tesPagoValoresList.size() == 0}"
-													process="@this" update=":form:dt-valores :form:btnGuardar"
-													styleClass="ui-button-primary" style="margin-right: .5rem" />
-											</div>
+                                            <div class="col-4 md:col-2">
+                                                <p:commandButton id="btnAddDetalle" value="Agregar Valores"
+                                                                 icon="pi pi-sync"
+                                                                 disabled="#{tesPagoController.tesPagoComprobanteDetallesList.size() == 0}"
+                                                                 onclick="PF('dlgAddValores').show()"
+                                                                 update=":form:btnLimpiar :form:btnGuardar"
+                                                                 styleClass="ui-button-info"
+                                                                 style="margin-right: .5rem"/>
+                                            </div>
+                                            <div class="col-4 md:col-2">
+                                                <p:commandButton value="Limpiar Valores" icon="pi pi-bolt"
+                                                                 id="btnLimpiar"
+                                                                 actionListener="#{tesPagoController.limpiarDetalleValores}"
+                                                                 disabled="#{tesPagoController.tesPagoValoresList.size() == 0}"
+                                                                 process="@this"
+                                                                 update=":form:dt-valores :form:btnGuardar"
+                                                                 styleClass="ui-button-primary"
+                                                                 style="margin-right: .5rem"/>
+                                            </div>
 
-										</div>
+                                        </div>
 
-										<div class="col-12 md:col-12">
-											<p:dataTable id="dt-valores" widgetVar="dtValores"
-												var="valor" value="#{tesPagoController.tesPagoValoresList}"
-												reflow="true" paginator="true" rows="12" scrollable="true"
-												scrollHeight="300" paginatorPosition="bottom"
-												emptyMessage="No hay Registros">
-												<p:column headerText="Nro Orden" sortBy="#{valor.nroOrden}"
-													filterBy="#{valor.nroOrden}">
-													<h:outputText value="#{valor.nroOrden}" />
-												</p:column>
-												<p:column headerText="Tipo Valor"
-													sortBy="#{valor.bsTipoValor.descripcion}"
-													filterBy="#{valor.bsTipoValor.descripcion}">
-													<h:outputText value="#{valor.bsTipoValor.descripcion}" />
-												</p:column>
-												<p:column headerText="Banco">
-													<h:outputText
-														value="#{valor.tesBanco.bsPersona.nombreCompleto}" />
-												</p:column>
-												<p:column headerText="Nro. Valor">
-													<h:outputText value="#{valor.nroValor}">
-														<f:convertNumber pattern="###,###,###" />
-													</h:outputText>
-												</p:column>
-												<p:column>
-													<f:facet name="header">Fecha Valor</f:facet>
-													<h:outputText value="#{valor.fechaValor}"
-														converter="localDateConverter">
-													</h:outputText>
-												</p:column>
-												<p:column>
-													<f:facet name="header">Fecha Vencimiento Valor</f:facet>
-													<div class="flex align-items-center flex-wrap">
-														<f:facet name="footer">
-															<h5 class="text-sm">Totale a Pagar:</h5>
-														</f:facet>
-														<h:outputText value="#{valor.fechaVencimiento}"
-															converter="localDateConverter">
-														</h:outputText>
-													</div>
-												</p:column>
-												<p:column headerText="Monto Valor">
-													<f:facet name="footer">
-														<h:outputText
-															value="#{tesPagoController.montoTotalPagoValores}">
-															<f:convertNumber pattern="###,###,###" />
-														</h:outputText>
-													</f:facet>
-													<h:outputText value="#{valor.montoValor}">
-														<f:convertNumber pattern="###,###,###" />
-													</h:outputText>
-												</p:column>
-												<p:column>
-													<f:facet name="header">Entregado?</f:facet>
-													<p:toggleSwitch value="#{valor.indEntregadoBoolean}"
-														disabled="true" />
-												</p:column>
-											</p:dataTable>
-										</div>
-									</div>
-								</div>
-							</div>
-						</p:panel>
+                                        <div class="col-12 md:col-12">
+                                            <p:dataTable id="dt-valores" widgetVar="dtValores"
+                                                         var="valor" value="#{tesPagoController.tesPagoValoresList}"
+                                                         reflow="true" paginator="true" rows="12" scrollable="true"
+                                                         scrollHeight="300" paginatorPosition="bottom"
+                                                         emptyMessage="No hay Registros">
+                                                <p:column headerText="Nro Orden" sortBy="#{valor.nroOrden}"
+                                                          filterBy="#{valor.nroOrden}">
+                                                    <h:outputText value="#{valor.nroOrden}"/>
+                                                </p:column>
+                                                <p:column headerText="Tipo Valor"
+                                                          sortBy="#{valor.bsTipoValor.descripcion}"
+                                                          filterBy="#{valor.bsTipoValor.descripcion}">
+                                                    <h:outputText value="#{valor.bsTipoValor.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="Banco">
+                                                    <h:outputText
+                                                            value="#{valor.tesBanco.bsPersona.nombreCompleto}"/>
+                                                </p:column>
+                                                <p:column headerText="Nro. Valor">
+                                                    <h:outputText value="#{valor.nroValor}">
+                                                        <f:convertNumber pattern="###,###,###"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column>
+                                                    <f:facet name="header">Fecha Valor</f:facet>
+                                                    <h:outputText value="#{valor.fechaValor}"
+                                                                  converter="localDateConverter">
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column>
+                                                    <f:facet name="header">Fecha Vencimiento Valor</f:facet>
+                                                    <div class="flex align-items-center flex-wrap">
+                                                        <f:facet name="footer">
+                                                            <h5 class="text-sm">Totale a Pagar:</h5>
+                                                        </f:facet>
+                                                        <h:outputText value="#{valor.fechaVencimiento}"
+                                                                      converter="localDateConverter">
+                                                        </h:outputText>
+                                                    </div>
+                                                </p:column>
+                                                <p:column headerText="Monto Valor">
+                                                    <f:facet name="footer">
+                                                        <h:outputText
+                                                                value="#{tesPagoController.montoTotalPagoValores}">
+                                                            <f:convertNumber pattern="###,###,###"/>
+                                                        </h:outputText>
+                                                    </f:facet>
+                                                    <h:outputText value="#{valor.montoValor}">
+                                                        <f:convertNumber pattern="###,###,###"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column>
+                                                    <f:facet name="header">Entregado?</f:facet>
+                                                    <p:toggleSwitch value="#{valor.indEntregadoBoolean}"
+                                                                    disabled="true"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:panel>
 
-						<!-- DIALOGOS -->
-						<p:dialog widgetVar="dlgCliente" header="Buscar Clientes"
-							width="650" showEffect="fade" modal="true">
-							<p:dataTable widgetVar="dtCliente" var="cliente"
-								value="#{tesPagoController.lazyModelCliente}" id="dt-cliente"
-								paginator="true" rows="10" paginatorPosition="bottom"
-								emptyMessage="No hay Registros">
-								<f:facet name="header">
-									<div class="products-table-header">
+                        <!-- DIALOGOS -->
+                        <p:dialog widgetVar="dlgCliente" header="Buscar Clientes"
+                                  width="650" showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtCliente" var="cliente"
+                                         value="#{tesPagoController.lazyModelCliente}" id="dt-cliente"
+                                         paginator="true" rows="10" paginatorPosition="bottom"
+                                         emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
 										<span class="filter-container ui-input-icon-left"> <i
-											class="pi pi-search"></i> <p:inputText id="globalFilter"
-												onkeyup="PF('dtCliente').filter()" placeholder="Buscar..." />
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtCliente').filter()"
+                                                                                       placeholder="Buscar..."/>
 										</span>
-									</div>
-								</f:facet>
-								<p:column style="width:3rem;text-align: center">
-									<p:commandButton oncomplete="PF('dlgCliente').hide()"
-										icon="pi pi-check-circle" title="Seleccionar"
-										update=":form:beneficiarioLb :form:btnAddComprobante :form:btnAddDetalle :form:dt-comprobantes">
-										<f:setPropertyActionListener value="#{cliente}"
-											target="#{tesPagoController.cobClienteSelected}" />
-									</p:commandButton>
-								</p:column>
-								<p:column headerText="Nombre"
-									sortBy="#{cliente.bsPersona.nombreCompleto}"
-									filterBy="#{cliente.bsPersona.nombreCompleto}"
-									filterStyle="display:none; visibility:hidden;"
-									filtarable="true" filterMatchMode="contains">
-									<h:outputText value="#{cliente.bsPersona.nombreCompleto}" />
-								</p:column>
-								<p:column headerText="Documento"
-									sortBy="#{cliente.bsPersona.documento}"
-									filterBy="#{cliente.bsPersona.documento}"
-									filterStyle="display:none; visibility:hidden;"
-									filtarable="true" filterMatchMode="contains">
-									<h:outputText value="#{cliente.bsPersona.documento}" />
-								</p:column>
-							</p:dataTable>
-						</p:dialog>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgCliente').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:beneficiarioLb :form:btnAddComprobante :form:btnAddDetalle :form:dt-comprobantes">
+                                        <f:setPropertyActionListener value="#{cliente}"
+                                                                     target="#{tesPagoController.cobClienteSelected}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Nombre"
+                                          sortBy="#{cliente.bsPersona.nombreCompleto}"
+                                          filterBy="#{cliente.bsPersona.nombreCompleto}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{cliente.bsPersona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Documento"
+                                          sortBy="#{cliente.bsPersona.documento}"
+                                          filterBy="#{cliente.bsPersona.documento}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{cliente.bsPersona.documento}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
 
-						<p:dialog widgetVar="dlgProveedor" header="Buscar Proveedores"
-							width="650" showEffect="fade" modal="true">
-							<p:dataTable widgetVar="dtProveedor" var="proveedor"
-								value="#{tesPagoController.lazyModelProveedor}"
-								id="dt-proveedor" paginator="true" rows="10"
-								paginatorPosition="bottom" emptyMessage="No hay Registros">
-								<f:facet name="header">
-									<div class="products-table-header">
+                        <p:dialog widgetVar="dlgProveedor" header="Buscar Proveedores"
+                                  width="650" showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtProveedor" var="proveedor"
+                                         value="#{tesPagoController.lazyModelProveedor}"
+                                         id="dt-proveedor" paginator="true" rows="10"
+                                         paginatorPosition="bottom" emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
 										<span class="filter-container ui-input-icon-left"> <i
-											class="pi pi-search"></i> <p:inputText id="globalFilter"
-												onkeyup="PF('dlgProveedor').filter()"
-												placeholder="Buscar..." />
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dlgProveedor').filter()"
+                                                                                       placeholder="Buscar..."/>
 										</span>
-									</div>
-								</f:facet>
-								<p:column style="width:3rem;text-align: center">
-									<p:commandButton oncomplete="PF('dlgCliente').hide()"
-										icon="pi pi-check-circle" title="Seleccionar"
-										update=":form:beneficiarioLb :form:btnAddComprobante :form:dt-comprobantes">
-										<f:setPropertyActionListener value="#{cliente}"
-											target="#{tesPagoController.comProveedorSelected}" />
-									</p:commandButton>
-								</p:column>
-								<p:column headerText="Nombre"
-									sortBy="#{proveedor.bsPersona.nombreCompleto}"
-									filterBy="#{proveedor.bsPersona.nombreCompleto}"
-									filterStyle="display:none; visibility:hidden;"
-									filtarable="true" filterMatchMode="contains">
-									<h:outputText value="#{proveedor.bsPersona.nombreCompleto}" />
-								</p:column>
-								<p:column headerText="Documento"
-									sortBy="#{proveedor.bsPersona.documento}"
-									filterBy="#{proveedor.bsPersona.documento}"
-									filterStyle="display:none; visibility:hidden;"
-									filtarable="true" filterMatchMode="contains">
-									<h:outputText value="#{proveedor.bsPersona.documento}" />
-								</p:column>
-							</p:dataTable>
-						</p:dialog>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgCliente').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:beneficiarioLb :form:btnAddComprobante :form:dt-comprobantes">
+                                        <f:setPropertyActionListener value="#{cliente}"
+                                                                     target="#{tesPagoController.comProveedorSelected}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Nombre"
+                                          sortBy="#{proveedor.bsPersona.nombreCompleto}"
+                                          filterBy="#{proveedor.bsPersona.nombreCompleto}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{proveedor.bsPersona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Documento"
+                                          sortBy="#{proveedor.bsPersona.documento}"
+                                          filterBy="#{proveedor.bsPersona.documento}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{proveedor.bsPersona.documento}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
 
-						<p:dialog widgetVar="dlgDesembolso" header="Buscar Desembolso"
-							width="950" showEffect="fade" modal="true">
-							<f:facet name="header">
-								<div class="field flex justify-content-start align-items-center">
-									<p:commandButton value="Agregar Comprobantes" icon="pi pi-plus"
-										class="ui-button-success"
-										oncomplete="PF('dlgDesembolso').hide()"
-										update=":form:dt-comprobantes :form:btnLimpiarComprobante :form:btnAddDetalle" />
-									<p:commandButton value="Cancelar" icon="pi pi-times"
-										actionListener="#{tesPagoController.limpiarDetalleComprobantes}"
-										class="ui-button-secondary ml-3"
-										oncomplete="PF('dlgDesembolso').hide()"
-										update=":form:dt-comprobantes :form:btnLimpiarComprobante" />
-								</div>
-							</f:facet>
-							<p:dataTable widgetVar="dtDesembolso" var="desembolso"
-								value="#{tesPagoController.lazyModelDesembolso}"
-								id="dt-desembolso" paginator="true" rows="10"
-								selection="#{tesPagoController.desembolsoList}"
-								rowKey="#{desembolso.id}" selectionPageOnly="false"
-								paginatorPosition="bottom" emptyMessage="No hay Registros">
-								<f:facet name="header">
-									<div class="products-table-header">
+                        <p:dialog widgetVar="dlgDesembolso" header="Buscar Desembolso"
+                                  width="950" showEffect="fade" modal="true">
+                            <f:facet name="header">
+                                <div class="field flex justify-content-start align-items-center">
+                                    <p:commandButton value="Agregar Comprobantes" icon="pi pi-plus"
+                                                     class="ui-button-success"
+                                                     oncomplete="PF('dlgDesembolso').hide()"
+                                                     update=":form:dt-comprobantes :form:btnLimpiarComprobante :form:btnAddDetalle"/>
+                                    <p:commandButton value="Cancelar" icon="pi pi-times"
+                                                     actionListener="#{tesPagoController.limpiarDetalleComprobantes}"
+                                                     class="ui-button-secondary ml-3"
+                                                     oncomplete="PF('dlgDesembolso').hide()"
+                                                     update=":form:dt-comprobantes :form:btnLimpiarComprobante"/>
+                                </div>
+                            </f:facet>
+                            <p:dataTable widgetVar="dtDesembolso" var="desembolso"
+                                         value="#{tesPagoController.lazyModelDesembolso}"
+                                         id="dt-desembolso" paginator="true" rows="10"
+                                         selection="#{tesPagoController.desembolsoList}"
+                                         rowKey="#{desembolso.id}" selectionPageOnly="false"
+                                         paginatorPosition="bottom" emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
 										<span class="filter-container ui-input-icon-left"> <i
-											class="pi pi-search"></i> <p:inputText id="globalFilter"
-												onkeyup="PF('dtDesembolso').filter()"
-												placeholder="Buscar..." />
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtDesembolso').filter()"
+                                                                                       placeholder="Buscar..."/>
 										</span>
-									</div>
-								</f:facet>
-								<p:ajax event="rowSelectCheckbox"
-									listener="#{tesPagoController.onRowSelect}" />
-								<p:ajax event="rowUnselectCheckbox"
-									listener="#{tesPagoController.onRowUnselect}" />
-								<p:column selectionMode="multiple"
-									style="width:16px;text-align:center" />
-								<p:column headerText="Nro. Desembolso"
-									sortBy="#{desembolso.nroDesembolso}"
-									filterBy="#{desembolso.nroDesembolso}">
-									<h:outputText value="#{desembolso.nroDesembolso}">
-										<f:convertNumber pattern="###,###,###" />
-									</h:outputText>
-								</p:column>
-								<p:column headerText="Cliente"
-									sortBy="#{desembolso.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}"
-									filterBy="#{desembolso.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}">
-									<h:outputText
-										value="#{desembolso.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}" />
-								</p:column>
-								<p:column headerText="Vendedor"
-									sortBy="#{desembolso.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}"
-									filterBy="#{desembolso.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}">
-									<h:outputText
-										value="#{desembolso.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}" />
-								</p:column>
-								<p:column>
-									<f:facet name="header">Fecha desembolso</f:facet>
-									<h:outputText value="#{desembolso.fechaDesembolso}"
-										converter="localDateConverter">
-									</h:outputText>
-								</p:column>
-								<p:column headerText="Monto Credito"
-									sortBy="#{desembolso.montoTotalCapital}">
-									<h:outputText value="#{desembolso.montoTotalCapital}">
-										<f:convertNumber currencySymbol="Gs." pattern="###,###,###" />
-									</h:outputText>
-								</p:column>
-							</p:dataTable>
-						</p:dialog>
+                                    </div>
+                                </f:facet>
+                                <p:ajax event="rowSelectCheckbox"
+                                        listener="#{tesPagoController.onRowSelect}"/>
+                                <p:ajax event="rowUnselectCheckbox"
+                                        listener="#{tesPagoController.onRowUnselect}"/>
+                                <p:column selectionMode="multiple"
+                                          style="width:16px;text-align:center"/>
+                                <p:column headerText="Nro. Desembolso"
+                                          sortBy="#{desembolso.nroDesembolso}"
+                                          filterBy="#{desembolso.nroDesembolso}">
+                                    <h:outputText value="#{desembolso.nroDesembolso}">
+                                        <f:convertNumber pattern="###,###,###"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Cliente"
+                                          sortBy="#{desembolso.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}"
+                                          filterBy="#{desembolso.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}">
+                                    <h:outputText
+                                            value="#{desembolso.creSolicitudCredito.cobCliente.bsPersona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Vendedor"
+                                          sortBy="#{desembolso.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}"
+                                          filterBy="#{desembolso.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}">
+                                    <h:outputText
+                                            value="#{desembolso.creSolicitudCredito.venVendedor.bsPersona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">Fecha desembolso</f:facet>
+                                    <h:outputText value="#{desembolso.fechaDesembolso}"
+                                                  converter="localDateConverter">
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Monto Credito"
+                                          sortBy="#{desembolso.montoTotalCapital}">
+                                    <h:outputText value="#{desembolso.montoTotalCapital}">
+                                        <f:convertNumber currencySymbol="Gs." pattern="###,###,###"/>
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
 
-						<p:dialog widgetVar="dlgTalonario" header="Buscar Talonario"
-							width="950" showEffect="fade" modal="true">
-							<p:dataTable widgetVar="dtTalonario" var="talonario"
-								value="#{tesPagoController.lazyModelTalonario}"
-								id="dt-talonario" paginator="true" rows="10"
-								paginatorPosition="bottom" emptyMessage="No hay Registros">
-								<f:facet name="header">
-									<div class="products-table-header">
+                        <p:dialog widgetVar="dlgTalonario" header="Buscar Talonario"
+                                  width="950" showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtTalonario" var="talonario"
+                                         value="#{tesPagoController.lazyModelTalonario}"
+                                         id="dt-talonario" paginator="true" rows="10"
+                                         paginatorPosition="bottom" emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
 										<span class="filter-container ui-input-icon-left"> <i
-											class="pi pi-search"></i> <p:inputText id="globalFilter"
-												onkeyup="PF('dtTalonario').filter()" placeholder="Buscar..." />
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtTalonario').filter()"
+                                                                                       placeholder="Buscar..."/>
 										</span>
-									</div>
-								</f:facet>
-								<p:column style="width:3rem;text-align: center">
-									<p:commandButton oncomplete="PF('dlgTalonario').hide()"
-										icon="pi pi-check-circle" title="Seleccionar"
-										update=":form:talonarioLb :form:btnGuardar">
-										<f:setPropertyActionListener value="#{talonario}"
-											target="#{tesPagoController.tesPagoCabecera.bsTalonario}" />
-									</p:commandButton>
-								</p:column>
-								<p:column headerText="Timbrado"
-									sortBy="#{talonario.bsTimbrado.nroTimbrado}"
-									filterBy="#{talonario.bsTimbrado.nroTimbrado}">
-									<h:outputText value="#{talonario.bsTimbrado.nroTimbrado}" />
-								</p:column>
-								<p:column headerText="Establecimiento"
-									sortBy="#{talonario.bsTimbrado.codEstablecimiento}"
-									filterBy="#{talonario.bsTimbrado.codEstablecimiento}">
-									<h:outputText
-										value="#{talonario.bsTimbrado.codEstablecimiento}" />
-								</p:column>
-								<p:column headerText="Expedicion"
-									sortBy="#{talonario.bsTimbrado.codExpedicion}"
-									filterBy="#{talonario.bsTimbrado.codExpedicion}">
-									<h:outputText value="#{talonario.bsTimbrado.codExpedicion}" />
-								</p:column>
-								<p:column headerText="Comprobante"
-									sortBy="#{talonario.bsTipoComprobante.descripcion}"
-									filterBy="#{talonario.bsTipoComprobante.descripcion}">
-									<h:outputText
-										value="#{talonario.bsTipoComprobante.descripcion}" />
-								</p:column>
-							</p:dataTable>
-						</p:dialog>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgTalonario').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:talonarioLb :form:btnGuardar">
+                                        <f:setPropertyActionListener value="#{talonario}"
+                                                                     target="#{tesPagoController.tesPagoCabecera.bsTalonario}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Timbrado"
+                                          sortBy="#{talonario.bsTimbrado.nroTimbrado}"
+                                          filterBy="#{talonario.bsTimbrado.nroTimbrado}">
+                                    <h:outputText value="#{talonario.bsTimbrado.nroTimbrado}"/>
+                                </p:column>
+                                <p:column headerText="Establecimiento"
+                                          sortBy="#{talonario.bsTimbrado.codEstablecimiento}"
+                                          filterBy="#{talonario.bsTimbrado.codEstablecimiento}">
+                                    <h:outputText
+                                            value="#{talonario.bsTimbrado.codEstablecimiento}"/>
+                                </p:column>
+                                <p:column headerText="Expedicion"
+                                          sortBy="#{talonario.bsTimbrado.codExpedicion}"
+                                          filterBy="#{talonario.bsTimbrado.codExpedicion}">
+                                    <h:outputText value="#{talonario.bsTimbrado.codExpedicion}"/>
+                                </p:column>
+                                <p:column headerText="Comprobante"
+                                          sortBy="#{talonario.bsTipoComprobante.descripcion}"
+                                          filterBy="#{talonario.bsTipoComprobante.descripcion}">
+                                    <h:outputText
+                                            value="#{talonario.bsTipoComprobante.descripcion}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
 
-						<p:dialog widgetVar="dlgNoTieneCaja" modal="true"
-							responsive="true" closable="false" width="400" showEffect="fade"
-							hideEffect="fade">
-							<div
-								class="flex flex-column align-items-center align-items-center">
-								<h4>¡Atención!</h4>
-								<i class="pi pi-info-circle ui-color-danger"
-									style="font-size: 5rem; color: #D32F2F;"></i>
-								<h5 class="mt-3">EL USUARIO NO HABILITACION</h5>
-								<p class="mb-0">¡POR FAVOR CREA UNA UNA HABILITACION PARA
-									ESTA OPERACION!</p>
-							</div>
+                        <p:dialog widgetVar="dlgNoTieneCaja" modal="true"
+                                  responsive="true" closable="false" width="400" showEffect="fade"
+                                  hideEffect="fade">
+                            <div
+                                    class="flex flex-column align-items-center align-items-center">
+                                <h4>¡Atención!</h4>
+                                <i class="pi pi-info-circle ui-color-danger"
+                                   style="font-size: 5rem; color: #D32F2F;"></i>
+                                <h5 class="mt-3">EL USUARIO NO HABILITACION</h5>
+                                <p class="mb-0">¡POR FAVOR CREA UNA UNA HABILITACION PARA
+                                    ESTA OPERACION!</p>
+                            </div>
 
-							<f:facet name="footer">
-								<p:commandButton value="Habilitar Caja"
-									icon="pi pi-angle-double-right"
-									styleClass="ui-button-outlined ui-button-info"
-									actionListener="#{tesPagoController.redireccionarAHabilitaciones}" />
-							</f:facet>
-						</p:dialog>
+                            <f:facet name="footer">
+                                <p:commandButton value="Habilitar Caja"
+                                                 icon="pi pi-angle-double-right"
+                                                 styleClass="ui-button-outlined ui-button-info"
+                                                 actionListener="#{tesPagoController.redireccionarAHabilitaciones}"/>
+                            </f:facet>
+                        </p:dialog>
 
-						<p:dialog showEffect="fade" modal="true" widgetVar="dlgAddValores"
-							responsive="true">
-							<p:outputPanel id="managePagoValor" class="ui-fluid">
-								<p:outputPanel>
-									<div class="field">
-										<p:outputLabel for="bancoLb">Banco</p:outputLabel>
-										<p:inputText id="bancoLb" placeholder="Pulse F9 para buscar"
-											value="#{tesPagoController.tesPagoValoresSelected.tesBanco.bsPersona.nombreCompleto}"
-											onkeydown="if (event.keyCode == 120) {
+                        <p:dialog showEffect="fade" modal="true" widgetVar="dlgAddValores"
+                                  responsive="true">
+                            <p:outputPanel id="managePagoValor" class="ui-fluid">
+                                <p:outputPanel>
+                                    <div class="field">
+                                        <p:outputLabel for="bancoLb">Banco</p:outputLabel>
+                                        <p:inputText id="bancoLb" placeholder="Pulse F9 para buscar"
+                                                     value="#{tesPagoController.tesPagoValoresSelected.tesBanco.bsPersona.nombreCompleto}"
+                                                     onkeydown="if (event.keyCode == 120) {
 												PF('dlgBanco').show()
-											}" />
-									</div>
-									<div class="field">
-										<p:outputLabel for="tipoValorLb">Tipo Valor</p:outputLabel>
-										<p:inputText id="tipoValorLb"
-											placeholder="Pulse F9 para buscar"
-											value="#{tesPagoController.tesPagoValoresSelected.bsTipoValor.descripcion}"
-											onkeydown="if (event.keyCode == 120) {
+											}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="tipoValorLb">Tipo Valor</p:outputLabel>
+                                        <p:inputText id="tipoValorLb"
+                                                     placeholder="Pulse F9 para buscar"
+                                                     value="#{tesPagoController.tesPagoValoresSelected.bsTipoValor.descripcion}"
+                                                     onkeydown="if (event.keyCode == 120) {
 												PF('dlgTipoValor').show()
-											}" />
-									</div>
-									<div class="field">
-										<p:outputLabel for="nroValorLb">Nro Valor</p:outputLabel>
-										<p:inputText id="nroValorLb"
-											value="#{tesPagoController.tesPagoValoresSelected.nroValor}" />
-									</div>
-									<div class="field">
-										<p:outputLabel for="montoValorLb">Monto Valor</p:outputLabel>
-										<p:inputNumber id="montoValorLb"
-											value="#{tesPagoController.tesPagoValoresSelected.montoValor}" />
-									</div>
-									<div class="field">
-										<p:outputLabel for="fechaValorLb">Fecha Valor</p:outputLabel>
-										<p:datePicker id="fechaValorLb" showIcon="true"
-											value="#{tesPagoController.tesPagoValoresSelected.fechaValor}"
-											pattern="dd/MM/yyyy">
-										</p:datePicker>
-									</div>
-									<div class="field">
-										<p:outputLabel for="fechaVencimientoLb">Fecha Vencimiento</p:outputLabel>
-										<p:datePicker id="fechaVencimientoLb" showIcon="true"
-											value="#{tesPagoController.tesPagoValoresSelected.fechaVencimiento}"
-											pattern="dd/MM/yyyy">
-										</p:datePicker>
-									</div>
-									<div class="field">
-										<p:outputLabel for="entregadoLb">Entregado</p:outputLabel>
-										<p:toggleSwitch id="entregadoLb"
-											value="#{tesPagoController.tesPagoValoresSelected.indEntregadoBoolean}">
-										</p:toggleSwitch>
-									</div>
-								</p:outputPanel>
-							</p:outputPanel>
-							<f:facet name="footer">
-								<p:commandButton value="Agregar" icon="pi pi-check"
-									actionListener="#{tesPagoController.addValorDetalle}"
-									update=":form:dt-valores :form:btnLimpiar :form:btnGuardar"
-									oncomplete="PF('dlgAddValores').hide()" />
-								<p:commandButton value="Cancelar" icon="pi pi-times"
-									actionListener="#{tesPagoController.setTesPagoValoresSelected(null)}"
-									update=":form:dt-valores :form:btnLimpiar :form:btnGuardar"
-									onclick="PF('dlgAddValores').hide()"
-									class="ui-button-secondary" />
-							</f:facet>
-						</p:dialog>
+											}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="nroValorLb">Nro Valor</p:outputLabel>
+                                        <p:inputText id="nroValorLb"
+                                                     value="#{tesPagoController.tesPagoValoresSelected.nroValor}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="montoValorLb">Monto Valor</p:outputLabel>
+                                        <p:inputNumber id="montoValorLb"
+                                                       value="#{tesPagoController.tesPagoValoresSelected.montoValor}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="fechaValorLb">Fecha Valor</p:outputLabel>
+                                        <p:datePicker id="fechaValorLb" showIcon="true"
+                                                      value="#{tesPagoController.tesPagoValoresSelected.fechaValor}"
+                                                      pattern="dd/MM/yyyy">
+                                        </p:datePicker>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="fechaVencimientoLb">Fecha Vencimiento</p:outputLabel>
+                                        <p:datePicker id="fechaVencimientoLb" showIcon="true"
+                                                      value="#{tesPagoController.tesPagoValoresSelected.fechaVencimiento}"
+                                                      pattern="dd/MM/yyyy">
+                                        </p:datePicker>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="entregadoLb">Entregado</p:outputLabel>
+                                        <p:toggleSwitch id="entregadoLb"
+                                                        value="#{tesPagoController.tesPagoValoresSelected.indEntregadoBoolean}">
+                                        </p:toggleSwitch>
+                                    </div>
+                                </p:outputPanel>
+                            </p:outputPanel>
+                            <f:facet name="footer">
+                                <p:commandButton value="Agregar" icon="pi pi-check"
+                                                 actionListener="#{tesPagoController.addValorDetalle}"
+                                                 update=":form:dt-valores :form:btnLimpiar :form:btnGuardar"
+                                                 oncomplete="PF('dlgAddValores').hide()"/>
+                                <p:commandButton value="Cancelar" icon="pi pi-times"
+                                                 actionListener="#{tesPagoController.setTesPagoValoresSelected(null)}"
+                                                 update=":form:dt-valores :form:btnLimpiar :form:btnGuardar"
+                                                 onclick="PF('dlgAddValores').hide()"
+                                                 class="ui-button-secondary"/>
+                            </f:facet>
+                        </p:dialog>
 
-						<p:dialog widgetVar="dlgBanco" header="Buscar Banco" width="650"
-							showEffect="fade" modal="true">
-							<p:dataTable widgetVar="dtBanco" var="banco"
-								value="#{tesPagoController.lazyModelBanco}" id="dt-banco"
-								paginator="true" rows="10" paginatorPosition="bottom"
-								emptyMessage="No hay Registros">
-								<f:facet name="header">
-									<div class="products-table-header">
+                        <p:dialog widgetVar="dlgBanco" header="Buscar Banco" width="650"
+                                  showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtBanco" var="banco"
+                                         value="#{tesPagoController.lazyModelBanco}" id="dt-banco"
+                                         paginator="true" rows="10" paginatorPosition="bottom"
+                                         emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
 										<span class="filter-container ui-input-icon-left"> <i
-											class="pi pi-search"></i> <p:inputText id="globalFilter"
-												onkeyup="PF('dtBanco').filter()" placeholder="Buscar..." />
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtBanco').filter()"
+                                                                                       placeholder="Buscar..."/>
 										</span>
-									</div>
-								</f:facet>
-								<p:column style="width:3rem;text-align: center">
-									<p:commandButton oncomplete="PF('dlgBanco').hide()"
-										icon="pi pi-check-circle" title="Seleccionar"
-										update=":form:bancoLb">
-										<f:setPropertyActionListener value="#{banco}"
-											target="#{tesPagoController.tesPagoValoresSelected.tesBanco}" />
-									</p:commandButton>
-								</p:column>
-								<p:column headerText="Nro. Cuenta" sortBy="#{banco.codBnaco}"
-									filterBy="#{banco.codBnaco}">
-									<h:outputText value="#{banco.codBnaco}" />
-								</p:column>
-								<p:column headerText="Nombre"
-									sortBy="#{banco.bsPersona.nombreCompleto}"
-									filterBy="#{banco.bsPersona.nombreCompleto}"
-									filterStyle="display:none; visibility:hidden;"
-									filtarable="true" filterMatchMode="contains">
-									<h:outputText value="#{banco.bsPersona.nombreCompleto}" />
-								</p:column>
-								<p:column headerText="Documento"
-									sortBy="#{banco.bsPersona.documento}"
-									filterBy="#{banco.bsPersona.documento}"
-									filterStyle="display:none; visibility:hidden;"
-									filtarable="true" filterMatchMode="contains">
-									<h:outputText value="#{banco.bsPersona.documento}" />
-								</p:column>
-								<p:column headerText="Moneda"
-									sortBy="#{banco.bsMoneda.codMoneda}"
-									filterBy="#{banco.bsMoneda.codMoneda}">
-									<h:outputText value="#{banco.bsMoneda.codMoneda}" />
-								</p:column>
-							</p:dataTable>
-						</p:dialog>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgBanco').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:bancoLb">
+                                        <f:setPropertyActionListener value="#{banco}"
+                                                                     target="#{tesPagoController.tesPagoValoresSelected.tesBanco}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Nro. Cuenta" sortBy="#{banco.codBnaco}"
+                                          filterBy="#{banco.codBnaco}">
+                                    <h:outputText value="#{banco.codBnaco}"/>
+                                </p:column>
+                                <p:column headerText="Nombre"
+                                          sortBy="#{banco.bsPersona.nombreCompleto}"
+                                          filterBy="#{banco.bsPersona.nombreCompleto}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{banco.bsPersona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Documento"
+                                          sortBy="#{banco.bsPersona.documento}"
+                                          filterBy="#{banco.bsPersona.documento}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{banco.bsPersona.documento}"/>
+                                </p:column>
+                                <p:column headerText="Moneda"
+                                          sortBy="#{banco.bsMoneda.codMoneda}"
+                                          filterBy="#{banco.bsMoneda.codMoneda}">
+                                    <h:outputText value="#{banco.bsMoneda.codMoneda}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
 
-						<p:dialog widgetVar="dlgTipoValor" header="Buscar Tipo Valor"
-							width="650" showEffect="fade" modal="true">
-							<p:dataTable id="dt-tipoValor" widgetVar="dtTipoValor"
-								var="tipoValor" value="#{tesPagoController.lazyModelTipoValor}"
-								paginator="true" rows="10" paginatorPosition="bottom"
-								emptyMessage="No hay Registros">
-								<f:facet name="header">
-									<div class="products-table-header">
+                        <p:dialog widgetVar="dlgTipoValor" header="Buscar Tipo Valor"
+                                  width="650" showEffect="fade" modal="true">
+                            <p:dataTable id="dt-tipoValor" widgetVar="dtTipoValor"
+                                         var="tipoValor" value="#{tesPagoController.lazyModelTipoValor}"
+                                         paginator="true" rows="10" paginatorPosition="bottom"
+                                         emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
 										<span class="filter-container ui-input-icon-left"> <i
-											class="pi pi-search"></i> <p:inputText id="globalFilter"
-												onkeyup="PF('dtTipoValor').filter()" placeholder="Buscar..." />
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtTipoValor').filter()"
+                                                                                       placeholder="Buscar..."/>
 										</span>
-									</div>
-								</f:facet>
-								<p:column style="width:3rem;text-align: center">
-									<p:commandButton oncomplete="PF('dlgTipoValor').hide()"
-										icon="pi pi-check-circle" title="Seleccionar"
-										update=":form:tipoValorLb">
-										<f:setPropertyActionListener value="#{tipoValor}"
-											target="#{tesPagoController.tesPagoValoresSelected.bsTipoValor}" />
-									</p:commandButton>
-								</p:column>
-								<p:column headerText="Modulo"
-									sortBy="#{tipoValor.bsModulo.nombre}"
-									filterBy="#{tipoValor.bsModulo.nombre}">
-									<h:outputText value="#{tipoValor.bsModulo.nombre}" />
-								</p:column>
-								<p:column headerText="Codigo" sortBy="#{tipoValor.codTipo}"
-									filterBy="#{tipoValor.codTipo}">
-									<h:outputText value="#{tipoValor.codTipo}" />
-								</p:column>
-								<p:column headerText="Descripcion"
-									sortBy="#{tipoValor.descripcion}"
-									filterBy="#{tipoValor.descripcion}">
-									<h:outputText value="#{tipoValor.descripcion}" />
-								</p:column>
-							</p:dataTable>
-						</p:dialog>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgTipoValor').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:tipoValorLb">
+                                        <f:setPropertyActionListener value="#{tipoValor}"
+                                                                     target="#{tesPagoController.tesPagoValoresSelected.bsTipoValor}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Modulo"
+                                          sortBy="#{tipoValor.bsModulo.nombre}"
+                                          filterBy="#{tipoValor.bsModulo.nombre}">
+                                    <h:outputText value="#{tipoValor.bsModulo.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Codigo" sortBy="#{tipoValor.codTipo}"
+                                          filterBy="#{tipoValor.codTipo}">
+                                    <h:outputText value="#{tipoValor.codTipo}"/>
+                                </p:column>
+                                <p:column headerText="Descripcion"
+                                          sortBy="#{tipoValor.descripcion}"
+                                          filterBy="#{tipoValor.descripcion}">
+                                    <h:outputText value="#{tipoValor.descripcion}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
 
-						<p:dialog widgetVar="dlgNoTieneCaja" modal="true"
-							responsive="true" closable="false" width="400" showEffect="fade"
-							hideEffect="fade">
-							<div
-								class="flex flex-column align-items-center align-items-center">
-								<h4>¡Atención!</h4>
-								<i class="pi pi-info-circle ui-color-danger"
-									style="font-size: 5rem; color: #D32F2F;"></i>
-								<h5 class="mt-3">EL USUARIO NO HABILITACION</h5>
-								<p class="mb-0">¡POR FAVOR CREA UNA UNA HABILITACION PARA
-									ESTA OPERACION!</p>
-							</div>
+                        <p:dialog widgetVar="dlgNoTieneCaja" modal="true"
+                                  responsive="true" closable="false" width="400" showEffect="fade"
+                                  hideEffect="fade">
+                            <div
+                                    class="flex flex-column align-items-center align-items-center">
+                                <h4>¡Atención!</h4>
+                                <i class="pi pi-info-circle ui-color-danger"
+                                   style="font-size: 5rem; color: #D32F2F;"></i>
+                                <h5 class="mt-3">EL USUARIO NO HABILITACION</h5>
+                                <p class="mb-0">¡POR FAVOR CREA UNA UNA HABILITACION PARA
+                                    ESTA OPERACION!</p>
+                            </div>
 
-							<f:facet name="footer">
-								<p:commandButton value="Habilitar Caja"
-									icon="pi pi-angle-double-right"
-									styleClass="ui-button-outlined ui-button-info"
-									actionListener="#{tesPagoController.redireccionarAHabilitaciones}" />
-							</f:facet>
-						</p:dialog>
+                            <f:facet name="footer">
+                                <p:commandButton value="Habilitar Caja"
+                                                 icon="pi pi-angle-double-right"
+                                                 styleClass="ui-button-outlined ui-button-info"
+                                                 actionListener="#{tesPagoController.redireccionarAHabilitaciones}"/>
+                            </f:facet>
+                        </p:dialog>
 
-						<!-- DIALOGOS -->
+                        <!-- DIALOGOS -->
 
-						<!-- confirms -->
-						<p:confirmDialog widgetVar="deleteDetalleDialog" showEffect="fade"
-							width="300" message="Esta seguro que desea eliminar el detalle?"
-							header="Confirmacion" severity="warn">
-							<p:commandButton value="Si" icon="pi pi-check"
-								actionListener="#{tesPagoController.eliminaDetalle}"
-								process="@this" oncomplete="PF('deleteDetalleDialog').hide()" />
-							<p:commandButton value="No" type="button"
-								styleClass="ui-button-secondary" icon="pi pi-times"
-								onclick="PF('deleteDetalleDialog').hide()" />
-						</p:confirmDialog>
+                        <!-- confirms -->
+                        <p:confirmDialog widgetVar="deleteDetalleDialog" showEffect="fade"
+                                         width="300" message="Esta seguro que desea eliminar el detalle?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             actionListener="#{tesPagoController.eliminaDetalle}"
+                                             process="@this" oncomplete="PF('deleteDetalleDialog').hide()"/>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('deleteDetalleDialog').hide()"/>
+                        </p:confirmDialog>
 
 
-						<p:confirmDialog widgetVar="deleteFacturaDialog" showEffect="fade"
-							width="300" message="Esta seguro que desea eliminar el registro?"
-							header="Confirmacion" severity="warn">
-							<p:commandButton value="Si" icon="pi pi-check"
-								actionListener="#{tesPagoController.delete}" process="@this"
-								oncomplete="PF('deleteFacturaDialog').hide()" />
-							<p:commandButton value="No" type="button"
-								styleClass="ui-button-secondary" icon="pi pi-times"
-								onclick="PF('deleteFacturaDialog').hide()" />
-						</p:confirmDialog>
-						
-						<p:confirmDialog widgetVar="imprimirDialog" showEffect="fade"
-							width="300" message="Esta seguro que desea Imprimir?"
-							header="Confirmacion" severity="warn">
-							<p:commandButton value="Si" icon="pi pi-check" ajax="false"
-								id="btnImprimirContratoReporte" onclick="handleImprimirButtonClick();"
-								actionListener="#{tesPagoController.imprimir('CONTRATO')}">
-							</p:commandButton>
-							<p:commandButton value="No" type="button"
-								styleClass="ui-button-secondary" icon="pi pi-times"
-								onclick="PF('imprimirDialog').hide()" />
-						</p:confirmDialog>
-						
-						<p:confirmDialog widgetVar="imprimirPagareDialog" showEffect="fade"
-							width="300" message="Esta seguro que desea Imprimir?"
-							header="Confirmacion" severity="warn">
-							<p:commandButton value="Si" icon="pi pi-check" ajax="false"
-								id="btnImprimirReporte" onclick="handleImprimirPagareButtonClick();"
-								actionListener="#{tesPagoController.imprimir('PAGARE')}">
-							</p:commandButton>
-							<p:commandButton value="No" type="button"
-								styleClass="ui-button-secondary" icon="pi pi-times"
-								onclick="PF('imprimirPagareDialog').hide()" />
-						</p:confirmDialog>
-						
-					</div>
-				</div>
-			</div>
-			<script>
+                        <p:confirmDialog widgetVar="deleteFacturaDialog" showEffect="fade"
+                                         width="300" message="Esta seguro que desea eliminar el registro?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             actionListener="#{tesPagoController.delete}" process="@this"
+                                             oncomplete="PF('deleteFacturaDialog').hide()"/>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('deleteFacturaDialog').hide()"/>
+                        </p:confirmDialog>
+
+                        <p:confirmDialog widgetVar="imprimirDialog" showEffect="fade"
+                                         width="300" message="Esta seguro que desea Imprimir?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
+                                             id="btnImprimirContratoReporte" onclick="handleImprimirButtonClick();"
+                                             actionListener="#{tesPagoController.imprimir('CONTRATO')}">
+                            </p:commandButton>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('imprimirDialog').hide()"/>
+                        </p:confirmDialog>
+
+                        <p:confirmDialog widgetVar="imprimirPagareDialog" showEffect="fade"
+                                         width="300" message="Esta seguro que desea Imprimir?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
+                                             id="btnImprimirReporte" onclick="handleImprimirPagareButtonClick();"
+                                             actionListener="#{tesPagoController.imprimir('PAGARE')}">
+                            </p:commandButton>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('imprimirPagareDialog').hide()"/>
+                        </p:confirmDialog>
+
+                    </div>
+                </div>
+            </div>
+            <script>
 				function handleImprimirButtonClick() {
 					setTimeout(function() {
 						PF('imprimirDialog').hide();
@@ -892,8 +917,9 @@
 						today : 'Hoy',
 						clear : 'Claro'
 					};
-			</script>
-		</h:form>
-	</ui:define>
+
+            </script>
+        </h:form>
+    </ui:define>
 
 </ui:composition>

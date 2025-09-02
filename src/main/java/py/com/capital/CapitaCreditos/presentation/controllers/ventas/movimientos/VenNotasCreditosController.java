@@ -1,7 +1,6 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.ventas.movimientos;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
@@ -33,6 +32,8 @@ import py.com.capital.CapitaCreditos.services.ventas.VenFacturasService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -106,6 +107,7 @@ public class VenNotasCreditosController {
     /**
      * Propiedad de la logica de negocio inyectada con JSF y Spring.
      */
+    private boolean puedeCrear, puedeEditar, puedeEliminar = false;
     @Autowired
     private SessionBean sessionBean;
 
@@ -121,7 +123,10 @@ public class VenNotasCreditosController {
     @PostConstruct
     public void init() {
         this.cleanFields();
-
+        this.sessionBean.cargarPermisos();
+        puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
+        puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
+        puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
     }
 
     public void cleanFields() {
@@ -556,6 +561,30 @@ public class VenNotasCreditosController {
         this.generarReporte = generarReporte;
     }
 
+    public boolean isPuedeCrear() {
+        return puedeCrear;
+    }
+
+    public void setPuedeCrear(boolean puedeCrear) {
+        this.puedeCrear = puedeCrear;
+    }
+
+    public boolean isPuedeEditar() {
+        return puedeEditar;
+    }
+
+    public void setPuedeEditar(boolean puedeEditar) {
+        this.puedeEditar = puedeEditar;
+    }
+
+    public boolean isPuedeEliminar() {
+        return puedeEliminar;
+    }
+
+    public void setPuedeEliminar(boolean puedeEliminar) {
+        this.puedeEliminar = puedeEliminar;
+    }
+
     // METODOS
     public void validarCajaDelUsuario(boolean tieneHab) {
         if (tieneHab) {
@@ -791,7 +820,7 @@ public class VenNotasCreditosController {
                     if (!Objects.isNull(this.cobSaldoServiceImpl.saveAll(saldosAsociados))) {
                         CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
                                 "El registro se guardo correctamente.");
-                    }else{
+                    } else {
                         CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
                                 "No se Pudieron actualizar los saldos.");
                     }
@@ -922,4 +951,16 @@ public class VenNotasCreditosController {
         this.parametrosReporte.getValores().add(this.venFacturaCabecera.getId());
 
     }
+
+    public String getPaginaActual() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+            String uri = request.getRequestURI();
+            String pagina = uri.substring(uri.lastIndexOf("/") + 1);
+            return pagina;
+        }
+        return null;
+    }
+
 }

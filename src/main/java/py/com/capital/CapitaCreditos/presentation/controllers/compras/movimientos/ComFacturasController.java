@@ -32,6 +32,8 @@ import py.com.capital.CapitaCreditos.services.stock.StoArticuloService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -85,6 +87,8 @@ public class ComFacturasController {
     @Autowired
     private StoArticuloService stoArticuloServiceImpl;
 
+    private boolean puedeCrear, puedeEditar, puedeEliminar = false;
+
     @Autowired
     private SessionBean sessionBean;
 
@@ -100,7 +104,10 @@ public class ComFacturasController {
     @PostConstruct
     public void init() {
         this.cleanFields();
-
+        this.sessionBean.cargarPermisos();
+        puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
+        puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
+        puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
     }
 
     public void cleanFields() {
@@ -232,6 +239,78 @@ public class ComFacturasController {
             this.comFacturaDetalle.setMontoLinea(stoArticuloSelected.getPrecioUnitario());
         }
         this.stoArticuloSelected = stoArticuloSelected;
+    }
+
+    public ComFacturasService getComFacturasServiceImpl() {
+        return comFacturasServiceImpl;
+    }
+
+    public void setComFacturasServiceImpl(ComFacturasService comFacturasServiceImpl) {
+        this.comFacturasServiceImpl = comFacturasServiceImpl;
+    }
+
+    public ComProveedorService getComProveedorServiceImpl() {
+        return comProveedorServiceImpl;
+    }
+
+    public void setComProveedorServiceImpl(ComProveedorService comProveedorServiceImpl) {
+        this.comProveedorServiceImpl = comProveedorServiceImpl;
+    }
+
+    public BsModuloService getBsModuloServiceImpl() {
+        return bsModuloServiceImpl;
+    }
+
+    public void setBsModuloServiceImpl(BsModuloService bsModuloServiceImpl) {
+        this.bsModuloServiceImpl = bsModuloServiceImpl;
+    }
+
+    public ComSaldoService getComSaldoServiceImpl() {
+        return comSaldoServiceImpl;
+    }
+
+    public void setComSaldoServiceImpl(ComSaldoService comSaldoServiceImpl) {
+        this.comSaldoServiceImpl = comSaldoServiceImpl;
+    }
+
+    public StoArticuloService getStoArticuloServiceImpl() {
+        return stoArticuloServiceImpl;
+    }
+
+    public void setStoArticuloServiceImpl(StoArticuloService stoArticuloServiceImpl) {
+        this.stoArticuloServiceImpl = stoArticuloServiceImpl;
+    }
+
+    public boolean isPuedeCrear() {
+        return puedeCrear;
+    }
+
+    public void setPuedeCrear(boolean puedeCrear) {
+        this.puedeCrear = puedeCrear;
+    }
+
+    public boolean isPuedeEditar() {
+        return puedeEditar;
+    }
+
+    public void setPuedeEditar(boolean puedeEditar) {
+        this.puedeEditar = puedeEditar;
+    }
+
+    public boolean isPuedeEliminar() {
+        return puedeEliminar;
+    }
+
+    public void setPuedeEliminar(boolean puedeEliminar) {
+        this.puedeEliminar = puedeEliminar;
+    }
+
+    public SessionBean getSessionBean() {
+        return sessionBean;
+    }
+
+    public void setSessionBean(SessionBean sessionBean) {
+        this.sessionBean = sessionBean;
     }
 
     //lazy
@@ -438,6 +517,17 @@ public class ComFacturasController {
                     e.getMessage().substring(0, e.getMessage().length()) + "...");
         }
 
+    }
+
+    public String getPaginaActual() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+            String uri = request.getRequestURI();
+            String pagina = uri.substring(uri.lastIndexOf("/") + 1);
+            return pagina;
+        }
+        return null;
     }
 
 

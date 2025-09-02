@@ -47,6 +47,8 @@
 
 
 
+
+
         </script>
     </h:head>
     <ui:define name="title">Habilitaciones de Caja por Usuario</ui:define>
@@ -114,6 +116,7 @@
                             </p:column>
                             <p:column exportable="false" headerText="Acciones">
                                 <p:commandButton icon="pi pi-pencil"
+                                                 disabled="#{not cobHabilitacionCajaController.puedeEditar}"
                                                  update=":form:manage-habilitacion :form:headerLb :form:btnGuardar"
                                                  process="@this"
                                                  oncomplete="PF('manageHabilitacionDialog').show()"
@@ -122,6 +125,7 @@
                                                                  target="#{cobHabilitacionCajaController.cobHabilitacionCajaSelected}"/>
                                 </p:commandButton>
                                 <p:commandButton class="ui-button-danger rounded-button"
+                                                 disabled="#{not cobHabilitacionCajaController.puedeEliminar}"
                                                  icon="pi pi-trash" process="@this"
                                                  oncomplete="PF('deleteHabilitacionDialog').show()">
                                     <f:setPropertyActionListener value="#{habilitacion}"
@@ -283,7 +287,7 @@
                                                  disabled="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean
                                                         ? cobHabilitacionCajaController.arqueosCajasList.size() == 0
                                                         : false}"
-                                                   value="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean ? 'Cerrar' : 'Abrir'}"
+                                                 value="#{cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean ? 'Cerrar' : 'Abrir'}"
                                                  icon="pi pi-check"
                                                  actionListener="#{cobHabilitacionCajaController.guardar}"
                                                  update=":form:manage-habilitacion"/>

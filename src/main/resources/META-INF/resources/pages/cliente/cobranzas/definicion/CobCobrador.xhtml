@@ -1,168 +1,174 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
 
-	<ui:define name="title">Cobradores</ui:define>
-	<ui:define name="content">
-		<h:form id="form">
-			<div class="grid crud-demo">
-				<div class="col-12">
-					<div class="card">
-						<p:growl id="messages" showDetail="true" />
-						<p:toolbar styleClass="mb-4">
-							<p:toolbarGroup>
-								<p:commandButton value="Nuevo" icon="pi pi-plus"
-									actionListener="#{cobCobradorController.cleanFields}"
-									update="manage-cobrador"
-									onclick="PF('manageCobradorDialog').show()"
-									styleClass="ui-button-success" style="margin-right: .5rem" />
-							</p:toolbarGroup>
-						</p:toolbar>
-						<p:dataTable id="dt-cobrador" widgetVar="dtCobCobrador"
-							var="cobrador" value="#{cobCobradorController.lazyModel}"
-							reflow="true"
-							selection="#{cobCobradorController.cobCobradorSelected}"
-							rowKey="#{cobrador.id}" paginator="true" rows="10"
-							rowSelectMode="add" paginatorPosition="bottom"
-							emptyMessage="No hay Registros">
-							<f:facet name="header">
-								<div class="products-table-header">
-									<span style="font-weight: bold">Administrar Cobradores</span> <span class="filter-container ui-input-icon-left">
+    <ui:define name="title">Cobradores</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <div class="grid crud-demo">
+                <div class="col-12">
+                    <div class="card">
+                        <p:growl id="messages" showDetail="true"/>
+                        <p:toolbar styleClass="mb-4">
+                            <p:toolbarGroup>
+                                <p:commandButton value="Nuevo" icon="pi pi-plus"
+												 disabled="#{not cobCobradorController.puedeCrear}"
+                                                 actionListener="#{cobCobradorController.cleanFields}"
+                                                 update="manage-cobrador"
+                                                 onclick="PF('manageCobradorDialog').show()"
+                                                 styleClass="ui-button-success" style="margin-right: .5rem"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        <p:dataTable id="dt-cobrador" widgetVar="dtCobCobrador"
+                                     var="cobrador" value="#{cobCobradorController.lazyModel}"
+                                     reflow="true"
+                                     selection="#{cobCobradorController.cobCobradorSelected}"
+                                     rowKey="#{cobrador.id}" paginator="true" rows="10"
+                                     rowSelectMode="add" paginatorPosition="bottom"
+                                     emptyMessage="No hay Registros">
+                            <f:facet name="header">
+                                <div class="products-table-header">
+                                    <span style="font-weight: bold">Administrar Cobradores</span> <span
+                                        class="filter-container ui-input-icon-left">
 										<i class="pi pi-search"></i> <p:inputText id="globalFilter"
-											onkeyup="PF('dtCobCobrador').filter()" placeholder="Buscar..." />
+                                                                                  onkeyup="PF('dtCobCobrador').filter()"
+                                                                                  placeholder="Buscar..."/>
 									</span>
-								</div>
-							</f:facet>
-							<p:column headerText="Codigo" sortBy="#{cobrador.codCobrador}"
-								filterBy="#{cobrador.codCobrador}">
-								<h:outputText value="#{cobrador.codCobrador}" />
-							</p:column>
-							<p:column headerText="Nombre"
-								sortBy="#{cobrador.bsPersona.nombreCompleto}"
-								filterBy="#{cobrador.bsPersona.nombreCompleto}" 
-								filterStyle="display:none; visibility:hidden;"
-								filtarable="true"
-								filterMatchMode="contains">
-								<h:outputText value="#{cobrador.bsPersona.nombreCompleto}" />
-							</p:column>
-							<p:column headerText="Documento"
-								sortBy="#{cobrador.bsPersona.documento}"
-								filterBy="#{cobrador.bsPersona.documento}" 
-								filterStyle="display:none; visibility:hidden;"
-								filtarable="true"
-								filterMatchMode="contains">
-								<h:outputText value="#{cobrador.bsPersona.documento}" />
-							</p:column>
-							<p:column exportable="false" headerText="Acciones">
-								<p:commandButton icon="pi pi-pencil"
-									update=":form:manage-cobrador :form:lbHeader" process="@this"
-									oncomplete="PF('manageCobradorDialog').show()"
-									styleClass="edit-button rounded-button ui-button-warning">
-									<f:setPropertyActionListener value="#{cobrador}"
-										target="#{cobCobradorController.cobCobradorSelected}" />
-								</p:commandButton>
-								<p:commandButton class="ui-button-danger rounded-button"
-									icon="pi pi-trash" process="@this"
-									oncomplete="PF('deleteClienteDialog').show()">
-									<f:setPropertyActionListener value="#{cobrador}"
-										target="#{cobCobradorController.cobCobradorSelected}" />
-								</p:commandButton>
-							</p:column>
-						</p:dataTable>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Codigo" sortBy="#{cobrador.codCobrador}"
+                                      filterBy="#{cobrador.codCobrador}">
+                                <h:outputText value="#{cobrador.codCobrador}"/>
+                            </p:column>
+                            <p:column headerText="Nombre"
+                                      sortBy="#{cobrador.bsPersona.nombreCompleto}"
+                                      filterBy="#{cobrador.bsPersona.nombreCompleto}"
+                                      filterStyle="display:none; visibility:hidden;"
+                                      filtarable="true"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{cobrador.bsPersona.nombreCompleto}"/>
+                            </p:column>
+                            <p:column headerText="Documento"
+                                      sortBy="#{cobrador.bsPersona.documento}"
+                                      filterBy="#{cobrador.bsPersona.documento}"
+                                      filterStyle="display:none; visibility:hidden;"
+                                      filtarable="true"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{cobrador.bsPersona.documento}"/>
+                            </p:column>
+                            <p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-pencil"
+												 disabled="#{not cobCobradorController.puedeEditar}"
+                                                 update=":form:manage-cobrador :form:lbHeader" process="@this"
+                                                 oncomplete="PF('manageCobradorDialog').show()"
+                                                 styleClass="edit-button rounded-button ui-button-warning">
+                                    <f:setPropertyActionListener value="#{cobrador}"
+                                                                 target="#{cobCobradorController.cobCobradorSelected}"/>
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-danger rounded-button"
+												 disabled="#{not cobCobradorController.puedeEliminar}"
+                                                 icon="pi pi-trash" process="@this"
+                                                 oncomplete="PF('deleteClienteDialog').show()">
+                                    <f:setPropertyActionListener value="#{cobrador}"
+                                                                 target="#{cobCobradorController.cobCobradorSelected}"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
 
-						<!-- Dialogos -->
-						<p:dialog showEffect="fade" modal="true"
-							widgetVar="manageCobradorDialog" responsive="true">
-							<f:facet name="header">
-								<p:outputLabel id="lbHeader"
-									value="#{cobCobradorController.esNuegoRegistro ? 'Nuevo' : 'Editar'}" />
-							</f:facet>
-							<p:outputPanel id="manage-cobrador" class="ui-fluid">
-								<p:outputPanel>
-									<div class="field">
-										<p:outputLabel for="label">Codigo</p:outputLabel>
-										<p:inputText id="label" disabled="true"
-											value="#{cobCobradorController.cobCobrador.codCobrador}" />
-									</div>
-									<div class="field">
-										<p:outputLabel for="personalb">Persona</p:outputLabel>
-										<p:inputText id="personalb" placeholder="Pulse F9 para buscar"
-											value="#{cobCobradorController.cobCobrador.bsPersona.nombreCompleto}"
-											onkeydown="if (event.keyCode == 120) {
+                        <!-- Dialogos -->
+                        <p:dialog showEffect="fade" modal="true"
+                                  widgetVar="manageCobradorDialog" responsive="true">
+                            <f:facet name="header">
+                                <p:outputLabel id="lbHeader"
+                                               value="#{cobCobradorController.esNuegoRegistro ? 'Nuevo' : 'Editar'}"/>
+                            </f:facet>
+                            <p:outputPanel id="manage-cobrador" class="ui-fluid">
+                                <p:outputPanel>
+                                    <div class="field">
+                                        <p:outputLabel for="label">Codigo</p:outputLabel>
+                                        <p:inputText id="label" disabled="true"
+                                                     value="#{cobCobradorController.cobCobrador.codCobrador}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="personalb">Persona</p:outputLabel>
+                                        <p:inputText id="personalb" placeholder="Pulse F9 para buscar"
+                                                     value="#{cobCobradorController.cobCobrador.bsPersona.nombreCompleto}"
+                                                     onkeydown="if (event.keyCode == 120) {
                                              PF('dlgPersona').show()
-                                         }" />
-									</div>
-									<div class="field">
-										<p:outputLabel for="documentolb">Documento</p:outputLabel>
-										<p:inputText id="documentolb"
-											value="#{cobCobradorController.cobCobrador.bsPersona.documento}" />
-									</div>
-									<div class="field">
-										<p:outputLabel for="estadolb">Estado</p:outputLabel>
-										<p:selectOneMenu id="estadolb" disabled="#{cobCobradorController.esNuegoRegistro}"
-											value="#{cobCobradorController.cobCobrador.estado}">
-											<f:selectItem itemLabel="Seleccione un estado"
-												itemValue="#{null}" noSelectionOption="true" />
-											<f:selectItems value="#{cobCobradorController.estadoList}" />
-										</p:selectOneMenu>
-									</div>
-								</p:outputPanel>
-							</p:outputPanel>
+                                         }"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="documentolb">Documento</p:outputLabel>
+                                        <p:inputText id="documentolb"
+                                                     value="#{cobCobradorController.cobCobrador.bsPersona.documento}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="estadolb">Estado</p:outputLabel>
+                                        <p:selectOneMenu id="estadolb"
+                                                         disabled="#{cobCobradorController.esNuegoRegistro}"
+                                                         value="#{cobCobradorController.cobCobrador.estado}">
+                                            <f:selectItem itemLabel="Seleccione un estado"
+                                                          itemValue="#{null}" noSelectionOption="true"/>
+                                            <f:selectItems value="#{cobCobradorController.estadoList}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                </p:outputPanel>
+                            </p:outputPanel>
 
-							<f:facet name="footer">
-								<p:commandButton value="Guardar" icon="pi pi-check"
-									actionListener="#{cobCobradorController.guardar}"
-									update=":form :form:manage-cobrador" />
-								<p:commandButton value="Cancelar" icon="pi pi-times"
-									actionListener="#{cobCobradorController.cleanFields}"
-									update=":form" onclick="PF('manageCobradorDialog').hide()"
-									class="ui-button-secondary" />
-							</f:facet>
-						</p:dialog>
+                            <f:facet name="footer">
+                                <p:commandButton value="Guardar" icon="pi pi-check"
+                                                 actionListener="#{cobCobradorController.guardar}"
+                                                 update=":form :form:manage-cobrador"/>
+                                <p:commandButton value="Cancelar" icon="pi pi-times"
+                                                 actionListener="#{cobCobradorController.cleanFields}"
+                                                 update=":form" onclick="PF('manageCobradorDialog').hide()"
+                                                 class="ui-button-secondary"/>
+                            </f:facet>
+                        </p:dialog>
 
-						<p:dialog widgetVar="dlgPersona" header="Buscar Persona"
-							width="650" showEffect="fade" modal="true">
-							<p:dataTable widgetVar="wdlgPersona" var="persona"
-								value="#{cobCobradorController.lazyPersonaList}" id="dt-persona"
-								paginator="true" rows="10" paginatorPosition="bottom"
-								emptyMessage="No hay Registros">
-								<p:column style="width:3rem;text-align: center">
-									<p:commandButton oncomplete="PF('dlgPersona').hide()"
-										icon="pi pi-check-circle" title="Seleccionar"
-										update=":form:personalb :form:documentolb">
-										<f:setPropertyActionListener value="#{persona}"
-											target="#{cobCobradorController.bsPersonaSelected}" />
-									</p:commandButton>
-								</p:column>
-								<p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
-									filterBy="#{persona.nombreCompleto}">
-									<h:outputText value="#{persona.nombreCompleto}" />
-								</p:column>
-								<p:column headerText="Documento" sortBy="#{persona.documento}"
-									filterBy="#{persona.documento}">
-									<h:outputText value="#{persona.documento}" />
-								</p:column>
-							</p:dataTable>
-						</p:dialog>
+                        <p:dialog widgetVar="dlgPersona" header="Buscar Persona"
+                                  width="650" showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="wdlgPersona" var="persona"
+                                         value="#{cobCobradorController.lazyPersonaList}" id="dt-persona"
+                                         paginator="true" rows="10" paginatorPosition="bottom"
+                                         emptyMessage="No hay Registros">
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgPersona').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:personalb :form:documentolb">
+                                        <f:setPropertyActionListener value="#{persona}"
+                                                                     target="#{cobCobradorController.bsPersonaSelected}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
+                                          filterBy="#{persona.nombreCompleto}">
+                                    <h:outputText value="#{persona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Documento" sortBy="#{persona.documento}"
+                                          filterBy="#{persona.documento}">
+                                    <h:outputText value="#{persona.documento}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
 
-						<!-- confirms -->
-						<p:confirmDialog widgetVar="deleteClienteDialog"
-							showEffect="fade" width="300"
-							message="Esta seguro que desea eliminar el registro?"
-							header="Confirmacion" severity="warn">
-							<p:commandButton value="Si" icon="pi pi-check"
-								actionListener="#{cobCobradorController.delete}" process="@this"
-								oncomplete="PF('deleteClienteDialog').hide()" />
-							<p:commandButton value="No" type="button"
-								styleClass="ui-button-secondary" icon="pi pi-times"
-								onclick="PF('deleteClienteDialog').hide()" />
-						</p:confirmDialog>
-					</div>
-				</div>
-			</div>
-		</h:form>
-	</ui:define>
+                        <!-- confirms -->
+                        <p:confirmDialog widgetVar="deleteClienteDialog"
+                                         showEffect="fade" width="300"
+                                         message="Esta seguro que desea eliminar el registro?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             actionListener="#{cobCobradorController.delete}" process="@this"
+                                             oncomplete="PF('deleteClienteDialog').hide()"/>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('deleteClienteDialog').hide()"/>
+                        </p:confirmDialog>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
 
 </ui:composition>
