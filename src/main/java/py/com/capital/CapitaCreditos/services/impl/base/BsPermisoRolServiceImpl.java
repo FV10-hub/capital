@@ -11,24 +11,29 @@ import py.com.capital.CapitaCreditos.services.impl.CommonServiceImpl;
 import java.util.List;
 
 @Service
-public class BsPermisoRolServiceImpl extends CommonServiceImpl<BsPermisoRol, BsPermisoRolRepository> implements BsPermisoRolService  {
+public class BsPermisoRolServiceImpl extends CommonServiceImpl<BsPermisoRol, BsPermisoRolRepository> implements BsPermisoRolService {
 
 
-	private final BsPermisoRolRepository repository;
+    private final BsPermisoRolRepository repository;
 
-	public BsPermisoRolServiceImpl(BsPermisoRolRepository repository) {
-		super(repository);
-		this.repository = repository;
-	}
+    public BsPermisoRolServiceImpl(BsPermisoRolRepository repository) {
+        super(repository);
+        this.repository = repository;
+    }
 
-	@Override
-	public Page<BsPermisoRol> listarTodos(Pageable pageable) {
-		return repository.findAll(pageable);
-	}
+    @Override
+    public Page<BsPermisoRol> listarTodos(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
 
-	@Override
-	public List<BsPermisoRol> buscarTodosLista() {
-		return repository.buscarTodosLista();
-	}
+    @Override
+    public List<BsPermisoRol> buscarTodosLista() {
+        return repository.buscarTodosLista();
+    }
+
+    @Override
+    public List<BsPermisoRol> buscarPorRol(Long rolId) {
+        return this.repository.buscarPorRol(rolId);
+    }
 
 }

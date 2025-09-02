@@ -3,6 +3,8 @@ package py.com.capital.CapitaCreditos.entities.base;
 * Aug 30, 2023-5:34:18 PM-fvazquez
 **/
 
+import py.com.capital.CapitaCreditos.entities.converter.SiNoBooleanConverter;
+
 import javax.persistence.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +22,18 @@ public class BsPermisoRol extends Common {
 	
 	@Column(name = "descripcion")
     private String descripcion;
+
+	@Convert(converter = SiNoBooleanConverter.class)
+	@Column(name = "puede_crear", nullable = false, length = 1)
+	private Boolean puedeCrear;
+
+	@Convert(converter = SiNoBooleanConverter.class)
+	@Column(name = "puede_editar", nullable = false, length = 1)
+	private Boolean puedeEditar;
+
+	@Convert(converter = SiNoBooleanConverter.class)
+	@Column(name = "puede_eliminar", nullable = false, length = 1)
+	private Boolean puedeEliminar;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_bs_rol")
@@ -31,6 +45,7 @@ public class BsPermisoRol extends Common {
 	
 	@PrePersist
 	private void preInsert() {
+		this.setEstado("ACTIVO");
 		this.setFechaCreacion(LocalDateTime.now());
 		this.setFechaActualizacion(LocalDateTime.now());
 	}
@@ -71,7 +86,28 @@ public class BsPermisoRol extends Common {
 	public void setBsMenu(BsMenu bsMenu) {
 		this.bsMenu = bsMenu;
 	}
-	
-	
 
+	public Boolean getPuedeCrear() {
+		return puedeCrear;
+	}
+
+	public void setPuedeCrear(Boolean puedeCrear) {
+		this.puedeCrear = puedeCrear;
+	}
+
+	public Boolean getPuedeEditar() {
+		return puedeEditar;
+	}
+
+	public void setPuedeEditar(Boolean puedeEditar) {
+		this.puedeEditar = puedeEditar;
+	}
+
+	public Boolean getPuedeEliminar() {
+		return puedeEliminar;
+	}
+
+	public void setPuedeEliminar(Boolean puedeEliminar) {
+		this.puedeEliminar = puedeEliminar;
+	}
 }

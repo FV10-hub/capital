@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import py.com.capital.CapitaCreditos.entities.base.BsMenu;
 import py.com.capital.CapitaCreditos.entities.base.BsPermisoRol;
 import py.com.capital.CapitaCreditos.entities.base.BsRol;
+import py.com.capital.CapitaCreditos.entities.cobranzas.CobSaldo;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.presentation.utils.GenericLazyDataModel;
@@ -23,10 +24,16 @@ import py.com.capital.CapitaCreditos.services.base.BsRolService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.springframework.stereotype.Component;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * descomentar si por algun motivo se necesita trabajar directo con spring
@@ -52,7 +59,6 @@ public class BsPermisoRolController {
 	private static final String DT_DIALOG_NAME = "managePermisoDialog";
 
 	@Autowired
-	// @Autowired
 	private BsPermisoRolService bsPermisoRolServiceImpl;
 
 	@Autowired
@@ -60,6 +66,8 @@ public class BsPermisoRolController {
 
 	@Autowired
 	private BsRolService bsRolServiceImpl;
+
+	private boolean puedeCrear, puedeEditar, puedeEliminar = false;
 	
 	/**
 	 * Propiedad de la logica de negocio inyectada con JSF y Spring.
@@ -70,7 +78,10 @@ public class BsPermisoRolController {
 	@PostConstruct
 	public void init() {
 		this.cleanFields();
-
+		this.sessionBean.cargarPermisos();
+		puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
+		puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
+		puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
 	}
 
 	public void cleanFields() {
@@ -87,6 +98,9 @@ public class BsPermisoRolController {
 		if (Objects.isNull(bsPermisoRol)) {
 			bsPermisoRol = new BsPermisoRol();
 			bsPermisoRol.setDescripcion("PERMISOS");
+			bsPermisoRol.setPuedeCrear(false);
+			bsPermisoRol.setPuedeEditar(false);
+			bsPermisoRol.setPuedeEliminar(false);
 			bsPermisoRol.setBsMenu(new BsMenu());
 			bsPermisoRol.setRol(new BsRol());
 		}
@@ -116,7 +130,11 @@ public class BsPermisoRolController {
 
 	public LazyDataModel<BsPermisoRol> getLazyModel() {
 		if (Objects.isNull(lazyModel)) {
-			lazyModel = new GenericLazyDataModel<BsPermisoRol>(this.bsPermisoRolServiceImpl.buscarTodosLista());
+			//ordeno de forma descendente
+			lazyModel = new GenericLazyDataModel<BsPermisoRol>(this.bsPermisoRolServiceImpl.buscarTodosLista()
+					.stream()
+					.sorted(Comparator.comparing(BsPermisoRol::getId).reversed())
+					.collect(Collectors.toList()));
 		}
 		return lazyModel;
 	}
@@ -185,6 +203,30 @@ public class BsPermisoRolController {
 
 	public void setSessionBean(SessionBean sessionBean) {
 		this.sessionBean = sessionBean;
+	}
+
+	public boolean isPuedeCrear() {
+		return puedeCrear;
+	}
+
+	public void setPuedeCrear(boolean puedeCrear) {
+		this.puedeCrear = puedeCrear;
+	}
+
+	public boolean isPuedeEditar() {
+		return puedeEditar;
+	}
+
+	public void setPuedeEditar(boolean puedeEditar) {
+		this.puedeEditar = puedeEditar;
+	}
+
+	public boolean isPuedeEliminar() {
+		return puedeEliminar;
+	}
+
+	public void setPuedeEliminar(boolean puedeEliminar) {
+		this.puedeEliminar = puedeEliminar;
 	}
 
 	// METODOS
@@ -260,6 +302,17 @@ public class BsPermisoRolController {
 			PrimeFaces.current().executeScript("PF('dlgRol').hide()");
 
 		}
+	}
+
+	public String getPaginaActual() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		if (facesContext != null) {
+			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+			String uri = request.getRequestURI();
+			String pagina = uri.substring(uri.lastIndexOf("/") + 1);
+			return pagina;
+		}
+		return null;
 	}
 
 }

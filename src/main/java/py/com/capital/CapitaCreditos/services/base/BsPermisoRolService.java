@@ -18,5 +18,7 @@ public interface BsPermisoRolService  extends CommonService<BsPermisoRol> {
 	Page<BsPermisoRol> listarTodos(Pageable pageable);
 	
 	List<BsPermisoRol> buscarTodosLista();
+
+	List<BsPermisoRol> buscarPorRol(Long rolId);
 	
 }
