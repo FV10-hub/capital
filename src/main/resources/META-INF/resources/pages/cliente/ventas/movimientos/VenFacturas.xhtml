@@ -177,6 +177,7 @@
                                             </p:outputLabel>
                                             <div class="col-12 md:col-6">
                                                 <p:inputText id="nroDesembolsoLb"
+                                                             rendered="#{venFacturasController.venFacturaCabecera.idComprobate != null}"
                                                              placeholder="Pulse F9 para buscar"
                                                              value="#{venFacturasController.venFacturaCabecera.idComprobate}"
                                                              onkeydown="if (event.keyCode == 120) {

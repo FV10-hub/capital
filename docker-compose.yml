@@ -29,6 +29,28 @@ services:
     networks:
       - app-network
 
+  capital-reportes:
+    build:
+      context: ../reportes-spring
+      dockerfile: Dockerfile
+    container_name: capitalsys-reportes
+    env_file:
+      - ./.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - reportes-data:/app/jasper
+    networks:
+      - app-network
+
+volumes:
+  reportes-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: D:\reportes
+
 networks:
   app-network:
     driver: bridge

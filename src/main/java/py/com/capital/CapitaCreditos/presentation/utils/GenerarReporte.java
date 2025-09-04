@@ -1,5 +1,6 @@
 package py.com.capital.CapitaCreditos.presentation.utils;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
@@ -10,9 +11,19 @@ import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 import py.com.capital.CapitaCreditos.services.client.ReportesServiceClient;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,135 +44,49 @@ public class GenerarReporte {
 	 */
 	private static final Logger LOGGER = LogManager.getLogger(GenerarReporte.class);
 
-	//@Autowired
-	private ReportesServiceClient reportesServiceClientImpl;
+	@Autowired
+	private ReportesServiceClient reportesServiceClient;
 
 	public void descargarReporte(ParametrosReporte params) {
-		/*
-		 * params.setCodModulo("BASE"); params.setFormato("PDF");
-		 * params.setReporte("StoArticulos"); params.setParametros(new
-		 * ArrayList<String>()); params.setValores(new ArrayList<Object>());
-		 */
+		try {
+			// Llama al servicio y obtén la respuesta con Spring RestTemplate
+			ResponseEntity<Resource> response = this.reportesServiceClient.generarReporte(params);
 
-		// Llama al servicio y obtén la respuesta
-		Response response = this.reportesServiceClientImpl.generarReporte(params);
+			if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+				// Configura las cabeceras de la respuesta JSF
+				ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+				externalContext.responseReset();
 
-		if (response.getStatus() == 200) {
+				String contentType = response.getHeaders().getContentType().toString();
+				String contentDisposition = response.getHeaders()
+						.getFirst("Content-Disposition");
 
-			configureResponseForDownload(response);
+				externalContext.setResponseContentType(contentType);
+				externalContext.setResponseHeader("Content-Disposition", contentDisposition);
 
-			// Obtiene el contexto externo de JSF
-			ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+				// Transfiere el stream del Resource
+				InputStream inputStream = response.getBody().getInputStream();
+				OutputStream outputStream = externalContext.getResponseOutputStream();
 
-			// Obtiene el flujo de entrada del cuerpo de la respuesta
-			InputStream inputStream = (InputStream) response.getEntity();
-
-			// Obtener el valor del encabezado Content-Type
-			String contentType = response.getHeaderString("Content-Type");
-			System.out.println("Content-Type: " + contentType);
-
-			// Obtener el valor del encabezado Content-Disposition
-			String contentDisposition = response.getHeaderString("Content-Disposition");
-			System.out.println("Content-Disposition: " + contentDisposition);
-
-			// Configura las cabeceras de la respuesta JSF para la descarga
-			externalContext.responseReset();
-			externalContext.setResponseContentType(contentType);
-			externalContext.setResponseContentLength(response.getLength());
-			externalContext.setResponseHeader("Content-Disposition", contentDisposition);
-
-			// Obtén el flujo de salida de la respuesta
-			OutputStream outputStream;
-			try {
-				outputStream = externalContext.getResponseOutputStream();
 				byte[] buffer = new byte[1024];
-				int length;
-				while ((length = inputStream.read(buffer)) > 0) {
-					outputStream.write(buffer, 0, length);
+				int bytesRead;
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, bytesRead);
 				}
 
 				inputStream.close();
 				outputStream.flush();
 				outputStream.close();
+
 				FacesContext.getCurrentInstance().responseComplete();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				LOGGER.error("Ocurrio un error al procesar el flujo de bytes", e.getMessage());
+			} else {
+				LOGGER.error("Error en la solicitud: " + response.getStatusCode());
+				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Error al generar el reporte");
 			}
-
-			// Copia los bytes del flujo de entrada al flujo de salida
-
-			FacesContext.getCurrentInstance().responseComplete();
-		} else {
-			System.out.println("LA RESPUESTA FUE::::::: " + response);
-			System.out.println("Error en la solicitud: " + response.getStatus());
-			LOGGER.error("Error en la solicitud: " + response.getStatus());
+		} catch (IOException e) {
+			LOGGER.error("Ocurrió un error al procesar el flujo de bytes", e);
+			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Error interno al descargar el reporte");
 		}
 	}
-
-	private void configureResponseForDownload(Response response) {
-		// Configura la respuesta del servicio para la descarga
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		HttpServletResponse servletResponse = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-
-		// Obtiene los encabezados de la respuesta del servicio
-		MultivaluedMap<String, Object> headers = response.getHeaders();
-
-		// Configura los encabezados de la respuesta del servicio en la respuesta del
-		// servlet
-		for (Map.Entry<String, List<Object>> entry : headers.entrySet()) {
-			String headerName = entry.getKey();
-			List<Object> headerValues = entry.getValue();
-			for (Object headerValue : headerValues) {
-				servletResponse.addHeader(headerName, headerValue.toString());
-			}
-		}
-
-		// Establece el código de estado de la respuesta del servicio en la respuesta
-		// del servlet
-		servletResponse.setStatus(response.getStatus());
-	}
-
-	public StreamedContent getFileToDownload(ParametrosReporte params) {
-
-		Response response = this.reportesServiceClientImpl.generarReporte(params);
-		if (response.getStatus() == 200) {
-			configureResponseForDownload(response);
-			// Obtiene el contexto externo de JSF
-			ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-
-			// Lógica para generar el archivo y obtener el InputStream
-			InputStream inputStream = (InputStream) response.getEntity();
-
-			// Obtener el valor del encabezado Content-Type
-			String contentType = response.getHeaderString("Content-Type");
-
-			// Obtener el valor del encabezado Content-Disposition
-			String contentDisposition = response.getHeaderString("Content-Disposition");
-			String filename = extractFilename(contentDisposition);
-
-			// Configura el StreamedContent
-			return DefaultStreamedContent
-					.builder()
-					.name(filename)
-					.contentType(contentType)
-					.stream(() -> inputStream).build();
-
-		}
-		return null;
-
-	}
-	
-	private static String extractFilename(String contentDisposition) {
-        Pattern pattern = Pattern.compile("filename=\"(.*?)\"");
-        Matcher matcher = pattern.matcher(contentDisposition);
-
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-
-        return null; 
-    }
 
 }
