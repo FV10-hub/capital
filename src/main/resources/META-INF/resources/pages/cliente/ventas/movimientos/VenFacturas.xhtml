@@ -177,9 +177,8 @@
                                             </p:outputLabel>
                                             <div class="col-12 md:col-6">
                                                 <p:inputText id="nroDesembolsoLb"
-                                                             rendered="#{venFacturasController.venFacturaCabecera.idComprobate != null}"
                                                              placeholder="Pulse F9 para buscar"
-                                                             value="#{venFacturasController.venFacturaCabecera.idComprobate}"
+                                                             value="#{venFacturasController.venFacturaCabecera.idComprobante}"
                                                              onkeydown="if (event.keyCode == 120) {
 						                                             PF('dlgDesembolso').show()
 						                                         }">
@@ -316,7 +315,7 @@
                                             <div class="col-4 md:col-2">
                                                 <p:commandButton id="btnAddDetalle" value="Agregar Detalle"
                                                                  icon="pi pi-sync"
-                                                                 disabled="#{venFacturasController.venFacturaCabecera.idComprobate != null}"
+                                                                 disabled="#{venFacturasController.venFacturaCabecera.idComprobante != null}"
                                                                  onclick="PF('dlgAddDetalle').show()"
                                                                  actionListener="#{venFacturasController.abrirDialogoAddDetalle}"
                                                                  update=":form:manageDetalle :form:btnLimpiar :form:btnGuardar"

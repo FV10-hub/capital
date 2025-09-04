@@ -29,7 +29,7 @@ public class CobCobrosValores extends Common implements Serializable {
 	private Long id;
 	
 	@Column(name = "id_comprobante")
-	private Long idComprobate;
+	private Long idComprobante;
 
 	// RECIBO, FACTURA
 	@Column(name = "tipo_comprobante")
@@ -100,12 +100,12 @@ public class CobCobrosValores extends Common implements Serializable {
 		this.id = id;
 	}
 
-	public Long getIdComprobate() {
-		return idComprobate;
+	public Long getIdComprobante() {
+		return idComprobante;
 	}
 
-	public void setIdComprobate(Long idComprobate) {
-		this.idComprobate = idComprobate;
+	public void setIdComprobante(Long idComprobante) {
+		this.idComprobante = idComprobante;
 	}
 
 	public String getTipoComprobante() {
@@ -241,7 +241,7 @@ public class CobCobrosValores extends Common implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((idComprobate == null) ? 0 : idComprobate.hashCode());
+		result = prime * result + ((idComprobante == null) ? 0 : idComprobante.hashCode());
 		result = prime * result + ((nroValor == null) ? 0 : nroValor.hashCode());
 		result = prime * result + ((bsTipoValor == null) ? 0 : bsTipoValor.hashCode());
 		result = prime * result + ((bsEmpresa == null) ? 0 : bsEmpresa.hashCode());
@@ -262,10 +262,10 @@ public class CobCobrosValores extends Common implements Serializable {
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (idComprobate == null) {
-			if (other.idComprobate != null)
+		if (idComprobante == null) {
+			if (other.idComprobante != null)
 				return false;
-		} else if (!idComprobate.equals(other.idComprobate))
+		} else if (!idComprobante.equals(other.idComprobante))
 			return false;
 		if (nroValor == null) {
 			if (other.nroValor != null)

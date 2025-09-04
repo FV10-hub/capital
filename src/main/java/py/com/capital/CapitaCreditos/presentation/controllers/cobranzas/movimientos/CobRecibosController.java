@@ -913,7 +913,7 @@ public class CobRecibosController {
 					}
 					this.cobrosValoresList = cobrosValoresList.stream().map(cobro -> {
 						cobro.setUsuarioModificacion(reciboGuardado.getUsuarioModificacion());
-						cobro.setIdComprobate(reciboGuardado.getId());
+						cobro.setIdComprobante(reciboGuardado.getId());
 						cobro.setNroComprobanteCompleto(reciboGuardado.getNroReciboCompleto());
 						cobro.setTipoComprobante("RECIBO");
 						return cobro;

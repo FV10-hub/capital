@@ -431,7 +431,7 @@ public class ComFacturasController {
         if (!Objects.isNull(this.comFacturaCabecera)) {
             ComSaldo saldo = new ComSaldo();
 
-            saldo.setIdComprobate(comFacturaCabecera.getId());
+            saldo.setIdComprobante(comFacturaCabecera.getId());
             saldo.setTipoComprobante("FACTURA");
             saldo.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
             saldo.setNroComprobanteCompleto(this.comFacturaCabecera.getNroFacturaCompleto());

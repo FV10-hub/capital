@@ -26,7 +26,7 @@ public class ComSaldo extends Common implements Serializable {
 	private Long id;
 	
 	@Column(name = "id_comprobante")
-	private Long idComprobate;
+	private Long idComprobante;
 
 	// NCR(nota de credito) O FACTURA NORMAL
 	@Column(name = "tipo_comprobante")
@@ -75,12 +75,12 @@ public class ComSaldo extends Common implements Serializable {
 		this.id = id;
 	}
 
-	public Long getIdComprobate() {
-		return idComprobate;
+	public Long getIdComprobante() {
+		return idComprobante;
 	}
 
-	public void setIdComprobate(Long idComprobate) {
-		this.idComprobate = idComprobate;
+	public void setIdComprobante(Long idComprobante) {
+		this.idComprobante = idComprobante;
 	}
 
 	public String getTipoComprobante() {

@@ -888,7 +888,7 @@ public class VenFacturasController {
 			desembolso.getCreDesembolsoDetalleList().forEach(detalle -> {
 				CobSaldo saldo = new CobSaldo();
 
-				saldo.setIdComprobate(desembolso.getId());
+				saldo.setIdComprobante(desembolso.getId());
 				saldo.setTipoComprobante("DESEMBOLSO");
 				saldo.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
 				saldo.setNroComprobanteCompleto(desembolso.getNroDesembolso().toString());
@@ -919,7 +919,7 @@ public class VenFacturasController {
 				 * TODO: COMENTADO POR QUE FACTURAS AL CONTADO NO VAN A GENERAR SALDOY SE VAN A
 				 * COBRAR AL MOMENTO CobSaldo saldo = new CobSaldo();
 				 * 
-				 * saldo.setIdComprobate(factura.getId()); saldo.setTipoComprobante("FACTURA");
+				 * saldo.setIdComprobante(factura.getId()); saldo.setTipoComprobante("FACTURA");
 				 * saldo.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario()
 				 * ); saldo.setNroComprobanteCompleto(factura.getNroFacturaCompleto());
 				 * 
@@ -943,7 +943,7 @@ public class VenFacturasController {
 				for (int i = 1; i <= plazo; i++) {
 					CobSaldo saldo = new CobSaldo();
 
-					saldo.setIdComprobate(factura.getId());
+					saldo.setIdComprobante(factura.getId());
 					saldo.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
 					saldo.setTipoComprobante("FACTURA");
 					saldo.setNroComprobanteCompleto(factura.getNroFacturaCompleto());
@@ -1048,7 +1048,7 @@ public class VenFacturasController {
 					}
 					this.cobrosValoresList = cobrosValoresList.stream().map(cobro -> {
 						cobro.setUsuarioModificacion(facturaGuardada.getUsuarioModificacion());
-						cobro.setIdComprobate(facturaGuardada.getId());
+						cobro.setIdComprobante(facturaGuardada.getId());
 						cobro.setNroComprobanteCompleto(facturaGuardada.getNroFacturaCompleto());
 						cobro.setTipoComprobante("FACTURA");
 						return cobro;

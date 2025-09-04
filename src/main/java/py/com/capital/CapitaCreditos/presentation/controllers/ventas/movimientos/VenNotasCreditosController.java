@@ -682,7 +682,7 @@ public class VenNotasCreditosController {
                  * TODO: COMENTADO POR QUE FACTURAS AL CONTADO NO VAN A GENERAR SALDOY SE VAN A
                  * COBRAR AL MOMENTO CobSaldo saldo = new CobSaldo();
                  *
-                 * saldo.setIdComprobate(factura.getId()); saldo.setTipoComprobante("FACTURA");
+                 * saldo.setIdComprobante(factura.getId()); saldo.setTipoComprobante("FACTURA");
                  * saldo.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario()
                  * ); saldo.setNroComprobanteCompleto(factura.getNroFacturaCompleto());
                  *
@@ -706,7 +706,7 @@ public class VenNotasCreditosController {
                 for (int i = 1; i <= plazo; i++) {
                     CobSaldo saldo = new CobSaldo();
 
-                    saldo.setIdComprobate(factura.getIdComprobante());
+                    saldo.setIdComprobante(factura.getIdComprobante());
                     saldo.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
                     saldo.setTipoComprobante("NCR");
                     saldo.setNroComprobanteCompleto(factura.getNroFacturaCompleto());
