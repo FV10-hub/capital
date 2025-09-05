@@ -1,5 +1,8 @@
 package py.com.capital.CapitaCreditos.services.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.Resource;
@@ -27,7 +30,7 @@ public class ReportesServiceClientImpl implements ReportesServiceClient {
     }
 
     @Override
-        public ResponseEntity<Resource> generarReporte(ParametrosReporte params) {
+    public ResponseEntity<Resource> generarReporte(ParametrosReporte params) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
@@ -40,6 +43,45 @@ public class ReportesServiceClientImpl implements ReportesServiceClient {
                 request,
                 Resource.class
         );
+    }
+
+    @Override
+    public String openAndPrintReportWithJS(ParametrosReporte params) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(params);
+            json = json.replace("\\", "\\\\").replace("\"", "\\\"");
+            String script = String.format(
+                    "openAndPrintReport(\"%s\", JSON.parse(\"%s\"));",
+                    urlReportesWS,
+                    json
+            );
+
+            return script;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String downloadReportWithJS(ParametrosReporte params, String fileName) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(params);
+            //json = json.replace("\\", "\\\\").replace("\"", "\\\"");
+
+            String jsonEscaped   = StringEscapeUtils.escapeEcmaScript(json);
+            String script = String.format(
+                    "downloadReport(\"%s\", JSON.parse(\"%s\"), \"%s\");",
+                    urlReportesWS,
+                    jsonEscaped,
+                    fileName
+            );
+
+            return script;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

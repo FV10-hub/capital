@@ -8,27 +8,32 @@
 
 <h:head>
     <f:facet name="first">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
 
         <link rel="icon" type="image/png" sizes="32x32" href="#{resource['pandora-layout:images/favicon-32x32.png']}"/>
     </f:facet>
 
-    <meta http-equiv="refresh" content="#{facesContext.externalContext.sessionMaxInactiveInterval};url=#{request.contextPath}/faces/pages/login.xhtml"/>
+    <meta http-equiv="refresh"
+          content="#{facesContext.externalContext.sessionMaxInactiveInterval};url=#{request.contextPath}/faces/pages/login.xhtml"/>
 
-    <title><ui:insert name="title">CapitalSys-ERP</ui:insert></title>
+    <title>
+        <ui:insert name="title">CapitalSys-ERP</ui:insert>
+    </title>
 
-    <h:outputScript name="js/layout.js" library="pandora-layout" />
+    <h:outputScript name="js/layout.js" library="pandora-layout"/>
     <h:outputScript name="js/prism.js" library="pandora-layout"/>
-    <h:outputScript name="js/sections.js" library="demo" />
+    <h:outputScript name="js/sections.js" library="demo"/>
+
+    <h:outputScript library="js" name="report-utils.js" target="head"/>
 
     <ui:insert name="head"/>
 </h:head>
 
 <h:body styleClass="#{guestPreferences.inputStyleClass}">
-    <div class="layout-wrapper #{guestPreferences.layoutConfig}" >
+    <div class="layout-wrapper #{guestPreferences.layoutConfig}">
 
         <ui:include src="./menu.xhtml"/>
         <div class="layout-main">
@@ -53,8 +58,8 @@
     <h:outputStylesheet name="css/primeicons.css" library="pandora-layout"/>
     <h:outputStylesheet name="css/primeflex.min.css" library="pandora-layout"/>
     <h:outputStylesheet name="css/demo.css" library="demo"/>
-    <h:outputStylesheet name="css/#{guestPreferences.layout}.css" library="pandora-layout" />
-    <h:outputStylesheet name="global.css" library="global" />
+    <h:outputStylesheet name="css/#{guestPreferences.layout}.css" library="pandora-layout"/>
+    <h:outputStylesheet name="global.css" library="global"/>
 </h:body>
 
 </html>

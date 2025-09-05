@@ -6,8 +6,12 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +91,14 @@ public class GenerarReporte {
 			LOGGER.error("Ocurrió un error al procesar el flujo de bytes", e);
 			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Error interno al descargar el reporte");
 		}
+	}
+
+	public String openAndPrintReportWithJS(ParametrosReporte params){
+		return this.reportesServiceClient.openAndPrintReportWithJS(params);
+	}
+
+	public String downloadReportWithJS(ParametrosReporte params, String fileName){
+		return this.reportesServiceClient.downloadReportWithJS(params,fileName);
 	}
 
 }
