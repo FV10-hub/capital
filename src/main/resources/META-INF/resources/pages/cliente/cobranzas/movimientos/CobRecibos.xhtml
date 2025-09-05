@@ -39,6 +39,7 @@
 				};
 
 
+
             </script>
             <div class="grid crud-demo">
                 <div class="col-12">
@@ -169,9 +170,12 @@
                                                            styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Recibo
                                             </p:outputLabel>
                                             <div class="col-12 md:col-6">
-                                                <p:datePicker id="fechaOpLb" showIcon="true"
+                                                <p:datePicker id="fechaOpLb" autocomplete="off" showIcon="true"
                                                               value="#{cobRecibosController.cobReciboCabecera.fechaRecibo}"
-                                                              pattern="dd/MM/yyyy">
+                                                              pattern="dd/MM/yyyy"
+                                                              showButtonBar="true"
+                                                              mask="true"
+                                                              showOnFocus="false">
                                                 </p:datePicker>
                                             </div>
                                         </div>
@@ -703,16 +707,22 @@
                                     </div>
                                     <div class="field">
                                         <p:outputLabel for="fechaValorLb">Fecha Valor</p:outputLabel>
-                                        <p:datePicker id="fechaValorLb" showIcon="true"
+                                        <p:datePicker id="fechaValorLb" autocomplete="off" showIcon="true"
                                                       value="#{cobRecibosController.cobCobrosValoresSelected.fechaValor}"
-                                                      pattern="dd/MM/yyyy">
+                                                      pattern="dd/MM/yyyy"
+                                                      showButtonBar="true"
+                                                      mask="true"
+                                                      showOnFocus="false">
                                         </p:datePicker>
                                     </div>
                                     <div class="field">
                                         <p:outputLabel for="fechaVencimientoLb">Fecha Vencimiento</p:outputLabel>
-                                        <p:datePicker id="fechaVencimientoLb" showIcon="true"
+                                        <p:datePicker id="fechaVencimientoLb" autocomplete="off" showIcon="true"
                                                       value="#{cobRecibosController.cobCobrosValoresSelected.fechaVencimiento}"
-                                                      pattern="dd/MM/yyyy">
+                                                      pattern="dd/MM/yyyy"
+                                                      showButtonBar="true"
+                                                      mask="true"
+                                                      showOnFocus="false">
                                         </p:datePicker>
                                     </div>
                                 </p:outputPanel>
@@ -872,6 +882,7 @@
 					today : 'Hoy',
 					clear : 'Claro'
 				};
+
 
 
             </script>

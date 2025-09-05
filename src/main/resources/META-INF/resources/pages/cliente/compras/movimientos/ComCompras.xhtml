@@ -44,6 +44,7 @@
 
 
 
+
             </script>
             <div class="grid crud-demo">
                 <div class="col-12">
@@ -161,9 +162,12 @@
                                                                styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Factura
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
-                                                    <p:datePicker id="fechaSolLb" showIcon="true"
+                                                    <p:datePicker id="fechaSolLb" autocomplete="off" showIcon="true"
                                                                   value="#{comFacturasController.comFacturaCabecera.fechaFactura}"
-                                                                  pattern="dd/MM/yyyy">
+                                                                  pattern="dd/MM/yyyy"
+                                                                  showButtonBar="true"
+                                                                  mask="true"
+                                                                  showOnFocus="false">
                                                     </p:datePicker>
                                                 </div>
                                             </div>
@@ -513,6 +517,7 @@
 					};
 
             
+
 
 
 

@@ -54,6 +54,7 @@
 
 
 
+
         </script>
     </h:head>
     <ui:define name="title">Debitos y Creditos Bancarios</ui:define>
@@ -137,7 +138,8 @@
                                                                  target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancarioSelected}"/>
                                 </p:commandButton>
                                 <p:commandButton class="ui-button-danger rounded-button"
-                                                 icon="pi pi-trash" disabled="#{not tesDebitoCreditoBancarioController.puedeCrear}"
+                                                 icon="pi pi-trash"
+                                                 disabled="#{not tesDebitoCreditoBancarioController.puedeCrear}"
                                                  oncomplete="PF('deleteDepositoDialog').show()">
                                     <f:setPropertyActionListener value="#{debcrebancario}"
                                                                  target="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancarioSelected}"/>
@@ -177,9 +179,12 @@
                                                                styleClass="col-12 mb-2 md:col-4 mb-md-0">Fecha Operacion
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-4">
-                                                    <p:datePicker id="fechaOpLb" showIcon="true"
+                                                    <p:datePicker id="fechaOpLb" autocomplete="off" showIcon="true"
                                                                   value="#{tesDebitoCreditoBancarioController.tesDebitoCreditoBancario.fechaDebito}"
-                                                                  pattern="dd/MM/yyyy">
+                                                                  pattern="dd/MM/yyyy"
+                                                                  showButtonBar="true"
+                                                                  mask="true"
+                                                                  showOnFocus="false">
                                                     </p:datePicker>
                                                 </div>
                                             </div>

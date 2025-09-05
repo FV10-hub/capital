@@ -40,6 +40,8 @@
 				clear : 'Claro'
 			};
 
+
+
         </script>
     </h:head>
     <ui:define name="title">Desembolsos de Creditos</ui:define>
@@ -53,7 +55,7 @@
                                    rendered="#{not creDesembolsoController.esVisibleFormulario}">
                             <p:toolbarGroup>
                                 <p:commandButton value="Nuevo" icon="pi pi-plus"
-												 disabled="#{not creDesembolsoController.puedeCrear}"
+                                                 disabled="#{not creDesembolsoController.puedeCrear}"
                                                  actionListener="#{creDesembolsoController.setEsVisibleFormulario(true)}"
                                                  update=":form" styleClass="ui-button-success"
                                                  style="margin-right: .5rem"/>
@@ -120,7 +122,7 @@
                                                                  target="#{creDesembolsoController.creDesembolsoCabeceraSelected}"/>
                                 </p:commandButton>
                                 <p:commandButton class="ui-button-danger rounded-button"
-												 disabled="#{not creDesembolsoController.puedeEliminar}"
+                                                 disabled="#{not creDesembolsoController.puedeEliminar}"
                                                  icon="pi pi-trash"
                                                  oncomplete="PF('deleteModuloDialog').show()">
                                     <f:setPropertyActionListener value="#{desembolso}"
@@ -197,9 +199,12 @@
                                                                styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Solicitud
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
-                                                    <p:datePicker id="fechaSolLb" disabled="true"
+                                                    <p:datePicker id="fechaSolLb" disabled="true" autocomplete="off" showIcon="true"
                                                                   value="#{creDesembolsoController.creDesembolsoCabecera.creSolicitudCredito.fechaSolicitud}"
-                                                                  pattern="dd/MM/yyyy">
+                                                                  pattern="dd/MM/yyyy"
+                                                                  showButtonBar="true"
+                                                                  mask="true"
+                                                                  showOnFocus="false">
                                                     </p:datePicker>
                                                 </div>
                                             </div>
@@ -209,9 +214,12 @@
                                                     Vencimiento
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
-                                                    <p:datePicker id="fechaPrimLb" disabled="true"
+                                                    <p:datePicker id="fechaPrimLb" disabled="true" autocomplete="off" showIcon="true"
                                                                   value="#{creDesembolsoController.creDesembolsoCabecera.creSolicitudCredito.primerVencimiento}"
-                                                                  pattern="dd/MM/yyyy">
+                                                                  pattern="dd/MM/yyyy"
+                                                                  showButtonBar="true"
+                                                                  mask="true"
+                                                                  showOnFocus="false">
                                                     </p:datePicker>
                                                 </div>
                                             </div>
@@ -245,9 +253,12 @@
                                                     Desembolso
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
-                                                    <p:datePicker id="fechaDesembolsoLb" showIcon="true"
+                                                    <p:datePicker id="fechaDesembolsoLb" autocomplete="off" showIcon="true"
                                                                   value="#{creDesembolsoController.creDesembolsoCabecera.fechaDesembolso}"
-                                                                  pattern="dd/MM/yyyy">
+                                                                  pattern="dd/MM/yyyy"
+                                                                  showButtonBar="true"
+                                                                  mask="true"
+                                                                  showOnFocus="false">
                                                     </p:datePicker>
                                                 </div>
                                             </div>

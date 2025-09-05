@@ -40,6 +40,8 @@
 				clear : 'Claro'
 			};
 
+
+
         </script>
     </h:head>
     <ui:define name="title">Solicitudes de Creditos</ui:define>
@@ -52,7 +54,7 @@
                         <p:toolbar styleClass="mb-4">
                             <p:toolbarGroup>
                                 <p:commandButton value="Nuevo" icon="pi pi-plus"
-												 disabled="#{not creSolicitudCreditoController.puedeCrear}"
+                                                 disabled="#{not creSolicitudCreditoController.puedeCrear}"
                                                  actionListener="#{creSolicitudCreditoController.cleanFields}"
                                                  update=":form:manage-solicitud :form:headerLb"
                                                  onclick="PF('manageSolicitudDialog').show()"
@@ -200,9 +202,12 @@
                                                         Solicitud
                                                     </p:outputLabel>
                                                     <div class="col-12 md:col-6">
-                                                        <p:datePicker id="fechaSolLb"
+                                                        <p:datePicker id="fechaSolLb" autocomplete="off" showIcon="true"
                                                                       value="#{creSolicitudCreditoController.creSolicitudCredito.fechaSolicitud}"
-                                                                      pattern="dd/MM/yyyy">
+                                                                      pattern="dd/MM/yyyy"
+                                                                      showButtonBar="true"
+                                                                      mask="true"
+                                                                      showOnFocus="false">
                                                         </p:datePicker>
                                                     </div>
                                                 </div>
@@ -212,9 +217,12 @@
                                                         Vencimiento
                                                     </p:outputLabel>
                                                     <div class="col-12 md:col-6">
-                                                        <p:datePicker id="fechaPrimLb"
+                                                        <p:datePicker id="fechaPrimLb" autocomplete="off" showIcon="true"
                                                                       value="#{creSolicitudCreditoController.creSolicitudCredito.primerVencimiento}"
-                                                                      pattern="dd/MM/yyyy">
+                                                                      pattern="dd/MM/yyyy"
+                                                                      showButtonBar="true"
+                                                                      mask="true"
+                                                                      showOnFocus="false">
                                                         </p:datePicker>
                                                     </div>
                                                 </div>

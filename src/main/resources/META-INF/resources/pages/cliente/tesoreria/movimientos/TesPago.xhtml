@@ -36,6 +36,8 @@
 
 				};
 
+
+
             </script>
             <div class="grid crud-demo">
                 <div class="col-12">
@@ -45,7 +47,7 @@
                                    rendered="#{not tesPagoController.esVisibleFormulario}">
                             <p:toolbarGroup>
                                 <p:commandButton value="Nuevo" icon="pi pi-plus"
-												 disabled="#{not tesPagoController.puedeCrear}"
+                                                 disabled="#{not tesPagoController.puedeCrear}"
                                                  actionListener="#{tesPagoController.setEsVisibleFormulario(true)}"
                                                  update=":form" styleClass="ui-button-success"
                                                  style="margin-right: .5rem"/>
@@ -182,9 +184,12 @@
                                                                    styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Pago
                                                     </p:outputLabel>
                                                     <div class="col-12 md:col-6">
-                                                        <p:datePicker id="fechaOpLb" showIcon="true"
+                                                        <p:datePicker id="fechaOpLb" autocomplete="off" showIcon="true"
                                                                       value="#{tesPagoController.tesPagoCabecera.fechaPago}"
-                                                                      pattern="dd/MM/yyyy">
+                                                                      pattern="dd/MM/yyyy"
+                                                                      showButtonBar="true"
+                                                                      mask="true"
+                                                                      showOnFocus="false">
                                                         </p:datePicker>
                                                     </div>
                                                 </div>
@@ -674,16 +679,22 @@
                                     </div>
                                     <div class="field">
                                         <p:outputLabel for="fechaValorLb">Fecha Valor</p:outputLabel>
-                                        <p:datePicker id="fechaValorLb" showIcon="true"
+                                        <p:datePicker id="fechaValorLb" autocomplete="off" showIcon="true"
                                                       value="#{tesPagoController.tesPagoValoresSelected.fechaValor}"
-                                                      pattern="dd/MM/yyyy">
+                                                      pattern="dd/MM/yyyy"
+                                                      showButtonBar="true"
+                                                      mask="true"
+                                                      showOnFocus="false">
                                         </p:datePicker>
                                     </div>
                                     <div class="field">
                                         <p:outputLabel for="fechaVencimientoLb">Fecha Vencimiento</p:outputLabel>
-                                        <p:datePicker id="fechaVencimientoLb" showIcon="true"
+                                        <p:datePicker id="fechaVencimientoLb" autocomplete="off" showIcon="true"
                                                       value="#{tesPagoController.tesPagoValoresSelected.fechaVencimiento}"
-                                                      pattern="dd/MM/yyyy">
+                                                      pattern="dd/MM/yyyy"
+                                                      showButtonBar="true"
+                                                      mask="true"
+                                                      showOnFocus="false">
                                         </p:datePicker>
                                     </div>
                                     <div class="field">
@@ -917,6 +928,8 @@
 						today : 'Hoy',
 						clear : 'Claro'
 					};
+
+
 
             </script>
         </h:form>

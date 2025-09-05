@@ -165,10 +165,13 @@
                                                            styleClass="col-12 md:col-4">Fecha Apertura
                                             </p:outputLabel>
                                             <div class="col-12 md:col-6">
-                                                <p:datePicker id="fechaAperturaLb"
+                                                <p:datePicker id="fechaAperturaLb" autocomplete="off" showIcon="true"
                                                               disabled="#{not cobHabilitacionCajaController.cobHabilitacionCaja.indCerradoBoolean}"
                                                               value="#{cobHabilitacionCajaController.cobHabilitacionCaja.fechaApertura}"
-                                                              pattern="dd/MM/yyyy">
+                                                              pattern="dd/MM/yyyy"
+                                                              showButtonBar="true"
+                                                              mask="true"
+                                                              showOnFocus="false">
                                                 </p:datePicker>
                                             </div>
                                         </div>

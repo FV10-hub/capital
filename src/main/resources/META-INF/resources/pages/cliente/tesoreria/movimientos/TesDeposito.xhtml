@@ -41,6 +41,7 @@
 			};
 
 
+
         </script>
     </h:head>
     <ui:define name="title">Depositos</ui:define>
@@ -153,9 +154,12 @@
                                                                styleClass="col-12 mb-2 md:col-4 mb-md-0">Fecha Deposito
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-4">
-                                                    <p:datePicker id="fechaOpLb" showIcon="true"
+                                                    <p:datePicker id="fechaOpLb" autocomplete="off" showIcon="true"
                                                                   value="#{tesDepositoController.tesDeposito.fechaDeposito}"
-                                                                  pattern="dd/MM/yyyy">
+                                                                  pattern="dd/MM/yyyy"
+                                                                  showButtonBar="true"
+                                                                  mask="true"
+                                                                  showOnFocus="false">
                                                     </p:datePicker>
                                                 </div>
                                             </div>

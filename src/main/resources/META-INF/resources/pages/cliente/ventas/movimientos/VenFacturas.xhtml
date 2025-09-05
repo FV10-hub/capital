@@ -220,9 +220,12 @@
                                                                styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Factura
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
-                                                    <p:datePicker id="fechaSolLb" showIcon="true"
+                                                    <p:datePicker id="fechaSolLb" autocomplete="off" showIcon="true"
                                                                   value="#{venFacturasController.venFacturaCabecera.fechaFactura}"
-                                                                  pattern="dd/MM/yyyy">
+                                                                  pattern="dd/MM/yyyy"
+                                                                  showButtonBar="true"
+                                                                  mask="true"
+                                                                  showOnFocus="false">
                                                     </p:datePicker>
                                                 </div>
                                             </div>
@@ -865,16 +868,22 @@
                                     </div>
                                     <div class="field">
                                         <p:outputLabel for="fechaValorLb">Fecha Valor</p:outputLabel>
-                                        <p:datePicker id="fechaValorLb" showIcon="true"
+                                        <p:datePicker id="fechaValorLb" autocomplete="off" showIcon="true"
                                                       value="#{venFacturasController.cobCobrosValoresSelected.fechaValor}"
-                                                      pattern="dd/MM/yyyy">
+                                                      pattern="dd/MM/yyyy"
+                                                      showButtonBar="true"
+                                                      mask="true"
+                                                      showOnFocus="false">
                                         </p:datePicker>
                                     </div>
                                     <div class="field">
                                         <p:outputLabel for="fechaVencimientoLb">Fecha Vencimiento</p:outputLabel>
-                                        <p:datePicker id="fechaVencimientoLb" showIcon="true"
+                                        <p:datePicker id="fechaVencimientoLb" autocomplete="off" showIcon="true"
                                                       value="#{venFacturasController.cobCobrosValoresSelected.fechaVencimiento}"
-                                                      pattern="dd/MM/yyyy">
+                                                      pattern="dd/MM/yyyy"
+                                                      showButtonBar="true"
+                                                      mask="true"
+                                                      showOnFocus="false">
                                         </p:datePicker>
                                     </div>
                                 </p:outputPanel>
