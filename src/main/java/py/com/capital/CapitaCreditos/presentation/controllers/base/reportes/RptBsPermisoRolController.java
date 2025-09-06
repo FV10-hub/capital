@@ -14,6 +14,7 @@ import py.com.capital.CapitaCreditos.presentation.utils.GenerarReporte;
 import py.com.capital.CapitaCreditos.presentation.utils.Modulos;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -110,10 +111,18 @@ public class RptBsPermisoRolController {
             PrimeFaces.current().executeScript(scriptJs);
          */
 
-        /* si usamos JSF
-        this.generarReporte.descargarReporte(parametrosReporte);
-        FacesContext.getCurrentInstance().responseComplete();
-        */
+        // si usamos JSF
+        if(this.generarReporte.procesarReporte(parametrosReporte)){
+            //FacesContext.getCurrentInstance().responseComplete();
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                    "Se imprimio correctamente.");
+        }else{
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡NO!",
+                    "No se pudo imprimir.");
+        }
+        PrimeFaces.current().ajax().update("form:messages");
+
+        /*
         String scriptJs = "";
         if (parametrosReporte.getFormato() == null) {
             if (parametrosReporte.getFormato().equalsIgnoreCase("PDF")) {
@@ -122,7 +131,7 @@ public class RptBsPermisoRolController {
                 scriptJs = this.generarReporte.downloadReportWithJS(parametrosReporte, parametrosReporte.getReporte());
             }
         }
-        PrimeFaces.current().executeScript(scriptJs);
+        PrimeFaces.current().executeScript(scriptJs);*/
     }
 
     /*

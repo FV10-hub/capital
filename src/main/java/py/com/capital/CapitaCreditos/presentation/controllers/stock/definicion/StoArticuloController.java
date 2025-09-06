@@ -209,7 +209,7 @@ public class StoArticuloController {
             }
             this.cleanFields();
         } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", System.err);
+            LOGGER.error("Ocurrio un error al Guardar", e);
             e.printStackTrace(System.err);
 
             Throwable cause = e.getCause();

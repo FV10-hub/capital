@@ -350,7 +350,7 @@ public class CreSolicitudCreditoController {
             PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", System.err);
+            LOGGER.error("Ocurrio un error al Guardar", e);
             // e.printStackTrace(System.err);
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
                     e.getMessage().substring(0, e.getMessage().length()) + "...");
@@ -370,7 +370,7 @@ public class CreSolicitudCreditoController {
             this.cleanFields();
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", System.err);
+            LOGGER.error("Ocurrio un error al Guardar", e);
             // e.printStackTrace(System.err);
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
                     e.getMessage().substring(0, e.getMessage().length()) + "...");

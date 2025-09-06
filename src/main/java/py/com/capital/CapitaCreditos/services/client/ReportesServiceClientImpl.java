@@ -38,10 +38,24 @@ public class ReportesServiceClientImpl implements ReportesServiceClient {
         HttpEntity<ParametrosReporte> request = new HttpEntity<>(params, headers);
 
         return restTemplate.exchange(
-                urlReportesWS,
+                urlReportesWS+"/downloadReport",
                 HttpMethod.POST,
                 request,
                 Resource.class
+        );
+    }
+
+    @Override
+    public ResponseEntity<String> impresionDirecta(ParametrosReporte params) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+        HttpEntity<ParametrosReporte> request = new HttpEntity<>(params, headers);
+
+        return restTemplate.exchange(
+                urlReportesWS+"/directPrint",
+                HttpMethod.POST,
+                request,
+                String.class
         );
     }
 

@@ -150,7 +150,7 @@ public class CreTipoAmortizacionController {
 			PrimeFaces.current().executeScript("PF('manageTipoAmortizacionDialog').hide()");
 			PrimeFaces.current().ajax().update("form:messages", "form:dt-tipoAmortizacion");
 		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", System.err);
+			LOGGER.error("Ocurrio un error al Guardar", e);
 			e.printStackTrace(System.err);
 
 			Throwable cause = e.getCause();

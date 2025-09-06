@@ -786,7 +786,7 @@ public class CobRecibosController {
 			CommonUtils.redireccionar("/pages/cliente/cobranzas/definicion/CobHabilitacionCaja.xhtml");
 		} catch (IOException e) {
 			e.printStackTrace();
-			LOGGER.error("Ocurrio un error al Guardar", System.err);
+			LOGGER.error("Ocurrio un error al Guardar", e);
 		}
 	}
 
@@ -864,7 +864,7 @@ public class CobRecibosController {
 							this.cobReciboCabecera.getNroRecibo()));
 
 				} catch (Exception e) {
-					LOGGER.error("Ocurrio un error al Guardar", System.err);
+					LOGGER.error("Ocurrio un error al Guardar", e);
 					e.printStackTrace(System.err);
 
 					Throwable cause = e.getCause();
@@ -933,7 +933,7 @@ public class CobRecibosController {
 			this.cleanFields();
 			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", System.err);
+			LOGGER.error("Ocurrio un error al Guardar", e);
 			e.printStackTrace(System.err);
 
 			Throwable cause = e.getCause();
@@ -987,7 +987,7 @@ public class CobRecibosController {
 			if (!(Objects.isNull(parametrosReporte) && Objects.isNull(parametrosReporte.getFormato()))
 					&& CollectionUtils.isNotEmpty(this.parametrosReporte.getParametros())
 					&& CollectionUtils.isNotEmpty(this.parametrosReporte.getValores())) {
-				this.generarReporte.descargarReporte(parametrosReporte);
+				this.generarReporte.procesarReporte(parametrosReporte);
 				if (this.utilsService.actualizarRegistro("cob_recibos_cabecera", "ind_impreso = 'S'",
 						" bs_empresa_id = " + commonsUtilitiesController.getIdEmpresaLogueada() + " and id = "	+ this.cobReciboCabecera.getId())) {
 				} else {

@@ -318,7 +318,7 @@ public class StoAjusteInventarioCabeceraController {
             this.cleanFields();
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", System.err);
+            LOGGER.error("Ocurrio un error al Guardar", e);
             e.printStackTrace(System.err);
 
             Throwable cause = e.getCause();
@@ -357,7 +357,7 @@ public class StoAjusteInventarioCabeceraController {
             this.cleanFields();
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", System.err);
+            LOGGER.error("Ocurrio un error al Guardar", e);
             e.printStackTrace(System.err);
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
                     e.getMessage().substring(0, e.getMessage().length()) + "...");

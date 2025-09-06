@@ -164,7 +164,7 @@ public class RptCreDesembolsoPorFechaClienteController {
 		if (!(Objects.isNull(parametrosReporte) && Objects.isNull(parametrosReporte.getFormato()))
 				&& CollectionUtils.isNotEmpty(this.parametrosReporte.getParametros())
 				&& CollectionUtils.isNotEmpty(this.parametrosReporte.getValores())) {
-			this.generarReporte.descargarReporte(parametrosReporte);
+			this.generarReporte.procesarReporte(parametrosReporte);
 			this.cleanFields();
 		} else {
 			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",

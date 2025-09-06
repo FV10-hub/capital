@@ -178,7 +178,7 @@ public class BsPersonaController {
             PrimeFaces.current().executeScript("PF('managePersonaDialog').hide()");
             PrimeFaces.current().ajax().update("form:messages", "form:dt-persona");
         } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", System.err);
+            LOGGER.error("Ocurrio un error al Guardar", e);
             e.printStackTrace(System.err);
 
             Throwable cause = e.getCause();

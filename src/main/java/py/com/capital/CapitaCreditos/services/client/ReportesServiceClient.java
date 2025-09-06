@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response;
 public interface ReportesServiceClient {
 	ResponseEntity<Resource> generarReporte(ParametrosReporte params);
 
+	ResponseEntity<String> impresionDirecta(ParametrosReporte params);
+
 	String openAndPrintReportWithJS(ParametrosReporte params);
 
 	String downloadReportWithJS(ParametrosReporte params, String fileName);

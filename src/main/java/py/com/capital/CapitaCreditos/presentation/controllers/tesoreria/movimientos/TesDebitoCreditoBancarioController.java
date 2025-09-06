@@ -323,7 +323,7 @@ public class TesDebitoCreditoBancarioController {
             CommonUtils.redireccionar("/pages/cliente/cobranzas/definicion/CobHabilitacionCaja.xhtml");
         } catch (IOException e) {
             e.printStackTrace();
-            LOGGER.error("Ocurrio un error al Guardar", System.err);
+            LOGGER.error("Ocurrio un error al Guardar", e);
         }
     }
 
@@ -372,7 +372,7 @@ public class TesDebitoCreditoBancarioController {
             this.cleanFields();
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", System.err);
+            LOGGER.error("Ocurrio un error al Guardar", e);
             e.printStackTrace(System.err);
 
             Throwable cause = e.getCause();
@@ -407,7 +407,7 @@ public class TesDebitoCreditoBancarioController {
             this.cleanFields();
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", System.err);
+            LOGGER.error("Ocurrio un error al Guardar", e);
             e.printStackTrace(System.err);
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
                     e.getMessage().substring(0, e.getMessage().length()) + "...");

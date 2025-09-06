@@ -235,7 +235,7 @@ public class BsMenuController {
 				String pathAbsoluto = construirPathAbsoluto(bsMenu);
 				bsMenu.setUrl(pathAbsoluto);
 			} catch (NullPointerException e) {
-				LOGGER.error("Ocurrio un error al Guardar", System.err);
+				LOGGER.error("Ocurrio un error al Guardar", e);
 				e.printStackTrace(System.err);
 				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "El path no se puede construir.");
 				return;
@@ -251,7 +251,7 @@ public class BsMenuController {
 			PrimeFaces.current().executeScript("PF('manageMenutDialog').hide()");
 			PrimeFaces.current().ajax().update("form:messages", "form:dt-menu");
 		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", System.err);
+			LOGGER.error("Ocurrio un error al Guardar", e);
 			e.printStackTrace(System.err);
 			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
 					e.getMessage().substring(0, e.getMessage().length()) + "...");
