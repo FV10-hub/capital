@@ -157,29 +157,17 @@ public class VenCondicionVentaController {
 				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo insertar el registro.");
 			}
 			this.cleanFields();
+			PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
+			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		} catch (Exception e) {
 			LOGGER.error("Ocurrio un error al Guardar", e);
-			e.printStackTrace(System.err);
-
-			Throwable cause = e.getCause();
-			while (cause != null) {
-				if (cause instanceof ConstraintViolationException) {
-					CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-							"La condicion de venta ya existe.");
-					break;
-				}
-				cause = cause.getCause();
-			}
-
-			if (cause == null) {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-						e.getMessage().substring(0, e.getMessage().length()) + "...");
-			}
+			// e.printStackTrace(System.err);
+			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
 
 			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
 		}
-		PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
-		PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+
 
 	}
 

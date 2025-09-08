@@ -252,9 +252,10 @@ public class BsMenuController {
 			PrimeFaces.current().ajax().update("form:messages", "form:dt-menu");
 		} catch (Exception e) {
 			LOGGER.error("Ocurrio un error al Guardar", e);
-			e.printStackTrace(System.err);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-					e.getMessage().substring(0, e.getMessage().length()) + "...");
+			// e.printStackTrace(System.err);
+			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+			PrimeFaces.current().ajax().update("form:messages", "form:dt-menu");
 		}
 
 	}

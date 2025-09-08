@@ -2,11 +2,12 @@ package py.com.capital.CapitaCreditos.presentation.controllers.base.definicion;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.exception.ConstraintViolationException;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
@@ -19,232 +20,216 @@ import py.com.capital.CapitaCreditos.services.base.BsPersonaService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import org.joinfaces.autoconfigure.viewscope.ViewScope;
-import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
 /*
-* 24 nov. 2023 - Elitebook
-*/
+ * 24 nov. 2023 - Elitebook
+ */
 @Component
 @Scope(ViewScope.SCOPE_VIEW)
 public class BsEmpresaController {
 
-	/**
-	 * Objeto que permite mostrar los mensajes de LOG en la consola del servidor o
-	 * en un archivo externo.
-	 */
-	private static final Logger LOGGER = LogManager.getLogger(BsEmpresaController.class);
+    /**
+     * Objeto que permite mostrar los mensajes de LOG en la consola del servidor o
+     * en un archivo externo.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(BsEmpresaController.class);
 
-	private BsEmpresa bsEmpresa, bsEmpresaSelected;
-	private LazyDataModel<BsEmpresa> lazyModel;
-	private LazyDataModel<BsPersona> lazyPersonaList;
-	private BsPersona personaSelected;
-	private boolean esNuegoRegistro;
+    private BsEmpresa bsEmpresa, bsEmpresaSelected;
+    private LazyDataModel<BsEmpresa> lazyModel;
+    private LazyDataModel<BsPersona> lazyPersonaList;
+    private BsPersona personaSelected;
+    private boolean esNuegoRegistro;
 
-	private List<String> estadoList;
+    private List<String> estadoList;
 
-	private static final String DT_NAME = "dt-empresa";
-	private static final String DT_DIALOG_NAME = "manageEmpresaDialog";
+    private static final String DT_NAME = "dt-empresa";
+    private static final String DT_DIALOG_NAME = "manageEmpresaDialog";
 
-	@Autowired
-	private BsEmpresaService bsEmpresaServiceImpl;
+    @Autowired
+    private BsEmpresaService bsEmpresaServiceImpl;
 
-	@Autowired
-	private BsPersonaService bsPersonaServiceImpl;
-	
-	/**
-	 * Propiedad de la logica de negocio inyectada con JSF y Spring.
-	 */
-	@Autowired
-	private SessionBean sessionBean;
+    @Autowired
+    private BsPersonaService bsPersonaServiceImpl;
 
-	@PostConstruct
-	public void init() {
-		this.cleanFields();
+    /**
+     * Propiedad de la logica de negocio inyectada con JSF y Spring.
+     */
+    @Autowired
+    private SessionBean sessionBean;
 
-	}
+    @PostConstruct
+    public void init() {
+        this.cleanFields();
 
-	public void cleanFields() {
-		this.bsEmpresa = null;
-		this.bsEmpresaSelected = null;
-		this.personaSelected = null;
-		this.esNuegoRegistro = true;
+    }
 
-		this.lazyModel = null;
-		this.lazyPersonaList = null;
+    public void cleanFields() {
+        this.bsEmpresa = null;
+        this.bsEmpresaSelected = null;
+        this.personaSelected = null;
+        this.esNuegoRegistro = true;
 
-		this.estadoList = List.of(Estado.ACTIVO.getEstado(), Estado.INACTIVO.getEstado());
-	}
+        this.lazyModel = null;
+        this.lazyPersonaList = null;
 
-	// GETTERS Y SETTERS
-	public BsEmpresa getBsEmpresa() {
-		if (Objects.isNull(bsEmpresa)) {
-			this.bsEmpresa = new BsEmpresa();
-			this.bsEmpresa.setBsPersona(new BsPersona());
-		}
-		return bsEmpresa;
-	}
+        this.estadoList = List.of(Estado.ACTIVO.getEstado(), Estado.INACTIVO.getEstado());
+    }
 
-	public void setBsEmpresa(BsEmpresa bsEmpresa) {
-		this.bsEmpresa = bsEmpresa;
-	}
+    // GETTERS Y SETTERS
+    public BsEmpresa getBsEmpresa() {
+        if (Objects.isNull(bsEmpresa)) {
+            this.bsEmpresa = new BsEmpresa();
+            this.bsEmpresa.setBsPersona(new BsPersona());
+        }
+        return bsEmpresa;
+    }
 
-	public BsEmpresa getBsEmpresaSelected() {
-		if (Objects.isNull(bsEmpresaSelected)) {
-			this.bsEmpresaSelected = new BsEmpresa();
-			this.bsEmpresaSelected.setBsPersona(new BsPersona());
-		}
-		return bsEmpresaSelected;
-	}
+    public void setBsEmpresa(BsEmpresa bsEmpresa) {
+        this.bsEmpresa = bsEmpresa;
+    }
 
-	public void setBsEmpresaSelected(BsEmpresa bsEmpresaSelected) {
-		if (!Objects.isNull(bsEmpresaSelected)) {
-			this.bsEmpresa = bsEmpresaSelected;
-			this.esNuegoRegistro = false;
-		}
-		this.bsEmpresaSelected = bsEmpresaSelected;
-	}
+    public BsEmpresa getBsEmpresaSelected() {
+        if (Objects.isNull(bsEmpresaSelected)) {
+            this.bsEmpresaSelected = new BsEmpresa();
+            this.bsEmpresaSelected.setBsPersona(new BsPersona());
+        }
+        return bsEmpresaSelected;
+    }
 
-	public BsPersona getPersonaSelected() {
-		if (Objects.isNull(personaSelected)) {
-			personaSelected = new BsPersona();
-		}
-		return personaSelected;
-	}
+    public void setBsEmpresaSelected(BsEmpresa bsEmpresaSelected) {
+        if (!Objects.isNull(bsEmpresaSelected)) {
+            this.bsEmpresa = bsEmpresaSelected;
+            this.esNuegoRegistro = false;
+        }
+        this.bsEmpresaSelected = bsEmpresaSelected;
+    }
 
-	public void setPersonaSelected(BsPersona personaSelected) {
-		if (!Objects.isNull(personaSelected.getId())) {
-			this.bsEmpresa.setBsPersona(personaSelected);
-			personaSelected = null;
-		}
-		this.personaSelected = personaSelected;
-	}
+    public BsPersona getPersonaSelected() {
+        if (Objects.isNull(personaSelected)) {
+            personaSelected = new BsPersona();
+        }
+        return personaSelected;
+    }
 
-	public boolean isEsNuegoRegistro() {
-		return esNuegoRegistro;
-	}
+    public void setPersonaSelected(BsPersona personaSelected) {
+        if (!Objects.isNull(personaSelected.getId())) {
+            this.bsEmpresa.setBsPersona(personaSelected);
+            personaSelected = null;
+        }
+        this.personaSelected = personaSelected;
+    }
 
-	public void setEsNuegoRegistro(boolean esNuegoRegistro) {
-		this.esNuegoRegistro = esNuegoRegistro;
-	}
+    public boolean isEsNuegoRegistro() {
+        return esNuegoRegistro;
+    }
 
-	public List<String> getEstadoList() {
-		return estadoList;
-	}
+    public void setEsNuegoRegistro(boolean esNuegoRegistro) {
+        this.esNuegoRegistro = esNuegoRegistro;
+    }
 
-	public void setEstadoList(List<String> estadoList) {
-		this.estadoList = estadoList;
-	}
+    public List<String> getEstadoList() {
+        return estadoList;
+    }
 
-	public BsEmpresaService getBsEmpresaServiceImpl() {
-		return bsEmpresaServiceImpl;
-	}
+    public void setEstadoList(List<String> estadoList) {
+        this.estadoList = estadoList;
+    }
 
-	public void setBsEmpresaServiceImpl(BsEmpresaService bsEmpresaServiceImpl) {
-		this.bsEmpresaServiceImpl = bsEmpresaServiceImpl;
-	}
+    public BsEmpresaService getBsEmpresaServiceImpl() {
+        return bsEmpresaServiceImpl;
+    }
 
-	public BsPersonaService getBsPersonaServiceImpl() {
-		return bsPersonaServiceImpl;
-	}
+    public void setBsEmpresaServiceImpl(BsEmpresaService bsEmpresaServiceImpl) {
+        this.bsEmpresaServiceImpl = bsEmpresaServiceImpl;
+    }
 
-	public void setBsPersonaServiceImpl(BsPersonaService bsPersonaServiceImpl) {
-		this.bsPersonaServiceImpl = bsPersonaServiceImpl;
-	}
-	
-	public SessionBean getSessionBean() {
-		return sessionBean;
-	}
+    public BsPersonaService getBsPersonaServiceImpl() {
+        return bsPersonaServiceImpl;
+    }
 
-	public void setSessionBean(SessionBean sessionBean) {
-		this.sessionBean = sessionBean;
-	}
+    public void setBsPersonaServiceImpl(BsPersonaService bsPersonaServiceImpl) {
+        this.bsPersonaServiceImpl = bsPersonaServiceImpl;
+    }
 
-	// lazy
-	public LazyDataModel<BsEmpresa> getLazyModel() {
-		if (Objects.isNull(lazyModel)) {
-			lazyModel = new GenericLazyDataModel<BsEmpresa>((List<BsEmpresa>) bsEmpresaServiceImpl.findAll());
-		}
-		return lazyModel;
-	}
+    public SessionBean getSessionBean() {
+        return sessionBean;
+    }
 
-	public void setLazyModel(LazyDataModel<BsEmpresa> lazyModel) {
-		this.lazyModel = lazyModel;
-	}
+    public void setSessionBean(SessionBean sessionBean) {
+        this.sessionBean = sessionBean;
+    }
 
-	public LazyDataModel<BsPersona> getLazyPersonaList() {
-		if (Objects.isNull(lazyPersonaList)) {
-			lazyPersonaList = new GenericLazyDataModel<BsPersona>(bsPersonaServiceImpl.buscarTodosLista());
-		}
-		return lazyPersonaList;
-	}
+    // lazy
+    public LazyDataModel<BsEmpresa> getLazyModel() {
+        if (Objects.isNull(lazyModel)) {
+            lazyModel = new GenericLazyDataModel<BsEmpresa>((List<BsEmpresa>) bsEmpresaServiceImpl.findAll());
+        }
+        return lazyModel;
+    }
 
-	public void setLazyPersonaList(LazyDataModel<BsPersona> lazyPersonaList) {
-		this.lazyPersonaList = lazyPersonaList;
-	}
+    public void setLazyModel(LazyDataModel<BsEmpresa> lazyModel) {
+        this.lazyModel = lazyModel;
+    }
 
-	// METODOS
-	public void guardar() {
-		if (Objects.isNull(bsEmpresa.getBsPersona()) || Objects.isNull(bsEmpresa.getBsPersona().getId())) {
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar una Persona.");
-			return;
-		}
-		try {
-			this.bsEmpresa.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
-			if (!Objects.isNull(bsEmpresaServiceImpl.save(this.bsEmpresa))) {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-						"El registro se guardo correctamente.");
-			} else {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo insertar el registro.");
-			}
-			this.cleanFields();
-			PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", e);
-			e.printStackTrace(System.err);
+    public LazyDataModel<BsPersona> getLazyPersonaList() {
+        if (Objects.isNull(lazyPersonaList)) {
+            lazyPersonaList = new GenericLazyDataModel<BsPersona>(bsPersonaServiceImpl.buscarTodosLista());
+        }
+        return lazyPersonaList;
+    }
 
-			Throwable cause = e.getCause();
-			while (cause != null) {
-				if (cause instanceof ConstraintViolationException) {
-					CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-							"La Empresa para esta persona ya existe.");
-					break;
-				}
-				cause = cause.getCause();
-			}
+    public void setLazyPersonaList(LazyDataModel<BsPersona> lazyPersonaList) {
+        this.lazyPersonaList = lazyPersonaList;
+    }
 
-			if (cause == null) {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-						e.getMessage().substring(0, e.getMessage().length()) + "...");
-			}
+    // METODOS
+    public void guardar() {
+        if (Objects.isNull(bsEmpresa.getBsPersona()) || Objects.isNull(bsEmpresa.getBsPersona().getId())) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar una Persona.");
+            return;
+        }
+        try {
+            this.bsEmpresa.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
+            if (!Objects.isNull(bsEmpresaServiceImpl.save(this.bsEmpresa))) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                        "El registro se guardo correctamente.");
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo insertar el registro.");
+            }
+            this.cleanFields();
+            PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        } catch (Exception e) {
+            LOGGER.error("Ocurrio un error al Guardar", e);
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        }
 
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		}
+    }
 
-	}
+    public void delete() {
+        try {
+            if (!Objects.isNull(this.bsEmpresaSelected)) {
+                this.bsEmpresaServiceImpl.deleteById(this.bsEmpresaSelected.getId());
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                        "El registro se elimino correctamente.");
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo eliminar el registro.");
+            }
+            this.cleanFields();
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        } catch (Exception e) {
+            LOGGER.error("Ocurrio un error al eliminar", e);
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        }
 
-	public void delete() {
-		try {
-			if (!Objects.isNull(this.bsEmpresaSelected)) {
-				this.bsEmpresaServiceImpl.deleteById(this.bsEmpresaSelected.getId());
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-						"El registro se elimino correctamente.");
-			} else {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo eliminar el registro.");
-			}
-			this.cleanFields();
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al eliminar", e);
-			// e.printStackTrace(System.err);
-			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		}
-
-	}
+    }
 
 }

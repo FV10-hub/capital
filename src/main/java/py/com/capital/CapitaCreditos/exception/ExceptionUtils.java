@@ -12,12 +12,12 @@ public class ExceptionUtils {
 
         String mensaje = causa.getMessage();
 
-        // Violación de clave foránea (por nombre o mensaje)
+        // Violación de clave foránea
         if (mensaje != null && mensaje.toLowerCase().contains("foreign key")) {
             return "No se puede eliminar este registro porque está relacionado con otros datos.";
         }
 
-        // Violación de restricción única (por mensaje)
+        // Violación de restricción única
         if (mensaje != null && (mensaje.toLowerCase().contains("unique")
                 || mensaje.toLowerCase().contains("duplicate")
                 || mensaje.toLowerCase().contains("ya existe"))) {
