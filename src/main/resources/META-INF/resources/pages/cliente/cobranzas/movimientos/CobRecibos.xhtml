@@ -40,6 +40,8 @@
 
 
 
+
+
             </script>
             <div class="grid crud-demo">
                 <div class="col-12">
@@ -99,7 +101,7 @@
                             <p:column headerText="Monto Recibo"
                                       sortBy="#{recibo.montoTotalRecibo}">
                                 <h:outputText value="#{recibo.montoTotalRecibo}">
-                                    <f:convertNumber currencySymbol="Gs." pattern="###,###,###"/>
+                                    <f:convertNumber currencySymbol="Gs." pattern="###,###,###.##"/>
                                 </h:outputText>
                             </p:column>
                             <p:column>
@@ -302,7 +304,7 @@
                                                          var="detalle"
                                                          value="#{cobRecibosController.cobReciboCabecera.cobReciboDetalleList}"
                                                          reflow="true" paginator="true" rows="12" scrollable="true"
-                                                         scrollHeight="300" paginatorPosition="bottom"
+                                                         scrollHeight="500" paginatorPosition="bottom"
                                                          emptyMessage="No hay Registros">
 
                                                 <p:column headerText="Nro Orden">
@@ -331,19 +333,19 @@
                                                     </f:facet>
                                                     <h:outputText value="#{detalle.cobSaldo.saldoCuota}">
                                                         <f:convertNumber currencySymbol="Gs."
-                                                                         pattern="###,###,###"/>
+                                                                         pattern="###,###,###.##"/>
                                                     </h:outputText>
                                                 </p:column>
                                                 <p:column headerText="Monto Pagado">
                                                     <f:facet name="footer">
                                                         <h:outputText
                                                                 value="#{cobRecibosController.cobReciboCabecera.montoTotalRecibo}">
-                                                            <f:convertNumber pattern="###,###,###"/>
+                                                            <f:convertNumber pattern="###,###,###.##"/>
                                                         </h:outputText>
                                                     </f:facet>
                                                     <h:outputText value="#{detalle.montoPagado}">
                                                         <f:convertNumber currencySymbol="Gs."
-                                                                         pattern="###,###,###"/>
+                                                                         pattern="###,###,###.##"/>
                                                     </h:outputText>
                                                 </p:column>
                                                 <p:column exportable="false" headerText="Acciones">
@@ -420,7 +422,7 @@
                             <p:dataTable widgetVar="dtSaldo" var="saldo"
                                          value="#{cobRecibosController.lazyModelSaldos}" id="dt-saldo"
                                          paginator="true" paginatorPosition="bottom" reflow="true"
-                                         rows="12" scrollable="true" scrollHeight="300"
+                                         rows="12" scrollable="true" scrollHeight="500"
                                          emptyMessage="No hay Registros">
                                 <f:facet name="header">
                                     <div class="products-table-header">
@@ -619,7 +621,7 @@
                                         <h5 class="ml-2 text-sm">Total a Cobrar:</h5>
                                         <h:outputText class="ml-2 text-sm"
                                                       value="#{cobRecibosController.cobReciboCabecera.montoTotalRecibo}">
-                                            <f:convertNumber pattern="###,###,###"/>
+                                            <f:convertNumber pattern="###,###,###.##"/>
                                         </h:outputText>
                                     </div>
                                     <div class="field grid ml-3">
@@ -671,11 +673,11 @@
                                 <p:column headerText="Monto Valor">
                                     <f:facet name="footer">
                                         <h:outputText value="#{cobRecibosController.montoTotalCobro}">
-                                            <f:convertNumber pattern="###,###,###"/>
+                                            <f:convertNumber pattern="###,###,###.##"/>
                                         </h:outputText>
                                     </f:facet>
                                     <h:outputText value="#{cobros.montoValor}">
-                                        <f:convertNumber pattern="###,###,###"/>
+                                        <f:convertNumber pattern="###,###,###.##"/>
                                     </h:outputText>
                                 </p:column>
 
@@ -734,7 +736,7 @@
                                                  oncomplete="PF('dlgAddCobro').hide()"/>
                                 <p:commandButton value="Cancelar" icon="pi pi-times"
                                                  actionListener="#{cobRecibosController.setCobCobrosValoresSelected(null)}"
-                                                 update=":form:dt-cobros" onclick="PF('dlgAddCobro').hide()"
+                                                 update=":form:dt-cobros :form:tipoValorLb" onclick="PF('dlgAddCobro').hide()"
                                                  class="ui-button-secondary"/>
                             </f:facet>
                         </p:dialog>
@@ -882,6 +884,8 @@
 					today : 'Hoy',
 					clear : 'Claro'
 				};
+
+
 
 
 

@@ -7,18 +7,24 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /*
-* 12 ene. 2024 - Elitebook
-*/
-public interface CobSaldoService extends CommonService<CobSaldo>{
-	
-	BigDecimal calcularTotalSaldoAFecha(Long idEmpresa, Long idCliente);
-	
-	List<CobSaldo> buscarCobSaldoActivosLista(Long idEmpresa);
-	
-	List<CobSaldo> buscarSaldoPorClienteLista(Long idEmpresa, Long idCliente);
-	
-	List<CobSaldo> buscarSaldoPorClienteMayorACeroLista(Long idEmpresa, Long idCliente);
+ * 12 ene. 2024 - Elitebook
+ */
+public interface CobSaldoService extends CommonService<CobSaldo> {
 
-	List<CobSaldo> buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(Long idEmpresa, Long idCliente, Long idComprobante, String TipoComprobante);
+    BigDecimal calcularTotalSaldoAFecha(Long idEmpresa, Long idCliente);
+
+    List<CobSaldo> buscarCobSaldoActivosLista(Long idEmpresa);
+
+    List<CobSaldo> buscarSaldoPorClienteLista(Long idEmpresa, Long idCliente);
+
+    List<CobSaldo> buscarSaldoPorClienteMayorACeroLista(Long idEmpresa, Long idCliente);
+
+    List<CobSaldo> buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(Long idEmpresa, Long idCliente, Long idComprobante, String TipoComprobante);
+
+    List<CobSaldo> buscarSaldosFiltrados(
+            Long empresaId,
+            Long clienteId,
+            String tipo
+    );
 
 }
