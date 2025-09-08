@@ -16,7 +16,7 @@ public interface TesDepositoRepository extends JpaRepository<TesDeposito, Long> 
 	@Query("SELECT m FROM TesDeposito m")
 	List<TesDeposito> buscarTodosLista();
 
-	@Query("SELECT m FROM TesDeposito m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM TesDeposito m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<TesDeposito> buscarTesDepositoActivosLista(Long idEmpresa);
 	
 }

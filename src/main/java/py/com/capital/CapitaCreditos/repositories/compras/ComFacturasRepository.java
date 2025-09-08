@@ -21,6 +21,6 @@ public interface ComFacturasRepository extends JpaRepository<ComFacturaCabecera,
 	@Query(value = "SELECT COALESCE(MAX(m.nro_factura), 0) + 1 FROM com_facturas_cabecera m where bs_empresa_id = ?1 and bs_talonario_id = ?2", nativeQuery = true)
 	Long calcularNroFacturaDisponible(Long idEmpresa, Long idTalonario);
 
-	@Query("SELECT m FROM ComFacturaCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM ComFacturaCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC")
 	List<ComFacturaCabecera> buscarComFacturaCabeceraActivosLista(Long idEmpresa);
 }

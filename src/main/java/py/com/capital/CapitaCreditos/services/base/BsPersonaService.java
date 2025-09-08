@@ -22,7 +22,10 @@ public interface BsPersonaService {
 	
 	List<BsPersona> personasSinFichaCobradorPorEmpresaNativo(Long idEmpresa);
 	
-	List<BsPersona> personasSinFichaVendedorPorEmpresaNativo(Long idEmpresa);	
+	List<BsPersona> personasSinFichaVendedorPorEmpresaNativo(Long idEmpresa);
+
+	List<BsPersona> personasSinFichaProveedoresPorEmpresaNativo(Long idEmpresa);
+	List<BsPersona> personasSinFichaBancosPorEmpresaNativo(Long idEmpresa);
 	
 	BsPersona guardar(BsPersona obj);
 	

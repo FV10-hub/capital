@@ -21,7 +21,7 @@
 							</p:toolbarGroup>
 						</p:toolbar>
 						<p:dataTable id="dt-banco" widgetVar="dtTesBanco" var="banco"
-							value="#{tesBancoController.lazyModel}" reflow="true"
+							value="#{tesBancoController.lazyModel}" reflow="true" lazy="true"
 							selection="#{tesBancoController.tesBancoSelected}"
 							rowKey="#{banco.id}" paginator="true" rows="10"
 							rowSelectMode="add" paginatorPosition="bottom"

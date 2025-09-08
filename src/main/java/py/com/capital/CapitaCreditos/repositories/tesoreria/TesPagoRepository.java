@@ -19,7 +19,7 @@ public interface TesPagoRepository extends JpaRepository<TesPagoCabecera, Long> 
 	@Query(value = "SELECT COALESCE(MAX(m.nro_pago), 0) + 1 FROM tes_pagos_cabecera m where m.bs_empresa_id = ?1 and m.bs_talonario_id = ?2", nativeQuery = true)
 	Long calcularNroPagoDisponible(Long idEmpresa, Long idTalonario);
 
-	@Query("SELECT m FROM TesPagoCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM TesPagoCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<TesPagoCabecera> buscarTesPagoCabeceraActivosLista(Long idEmpresa);
 	
 	@Query("SELECT m FROM TesPagoCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 and m.idBeneficiario = ?2")

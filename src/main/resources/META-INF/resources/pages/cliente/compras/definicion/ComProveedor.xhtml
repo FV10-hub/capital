@@ -23,7 +23,7 @@
                         </p:toolbar>
                         <p:dataTable id="dt-proveedor" widgetVar="dtComProveedor"
                                      var="proveedor" value="#{comProveedorController.lazyModel}"
-                                     reflow="true"
+                                     reflow="true" lazy="true"
                                      selection="#{comProveedorController.comProveedorSelected}"
                                      rowKey="#{proveedor.id}" paginator="true" rows="10"
                                      rowSelectMode="add" paginatorPosition="bottom"
@@ -88,7 +88,7 @@
                                 <p:outputPanel>
                                     <div class="field">
                                         <p:outputLabel for="label">Codigo</p:outputLabel>
-                                        <p:inputText id="label" autocomplete="off"
+                                        <p:inputText id="label" autocomplete="off" disabled="true"
                                                      value="#{comProveedorController.comProveedor.codProveedor}"/>
                                     </div>
                                     <div class="field">
@@ -135,6 +135,16 @@
                                          value="#{comProveedorController.lazyPersonaList}" id="dt-persona"
                                          paginator="true" rows="10" paginatorPosition="bottom"
                                          emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
+                                        <span style="font-weight: bold">Administrar Personas</span> <span
+                                            class="filter-container ui-input-icon-left"> <i
+                                            class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                   onkeyup="PF('wdlgPersona').filter()"
+                                                                                   placeholder="Buscar..."/>
+									</span>
+                                    </div>
+                                </f:facet>
                                 <p:column style="width:3rem;text-align: center">
                                     <p:commandButton oncomplete="PF('dlgPersona').hide()"
                                                      icon="pi pi-check-circle" title="Seleccionar"

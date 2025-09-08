@@ -18,6 +18,6 @@ public interface CreMotivoPrestamoRepository extends JpaRepository<CreMotivoPres
 	@Query("SELECT m FROM CreMotivoPrestamo m")
 	List<CreMotivoPrestamo> buscarTodosLista();
 	
-	@Query("SELECT m FROM CreMotivoPrestamo m where m.estado = 'ACTIVO'")
+	@Query("SELECT m FROM CreMotivoPrestamo m where m.estado = 'ACTIVO' ORDER BY m.id DESC ")
 	List<CreMotivoPrestamo> buscarCreMotivoPrestamoActivosLista();
 }

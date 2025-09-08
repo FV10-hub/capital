@@ -1,6 +1,10 @@
 package py.com.capital.CapitaCreditos.entities.cobranzas;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.base.Common;
@@ -15,6 +19,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "cob_cobradores", uniqueConstraints = @UniqueConstraint(name= "cob_cobradores_unique_persona_empresa" ,
 columnNames = {"cod_cobrador", "bs_empresa_id", "id_bs_persona"}))
+@DynamicInsert
 public class CobCobrador extends Common implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -24,7 +29,8 @@ public class CobCobrador extends Common implements Serializable {
 	@Column(name = "id")
 	private Long id;
 	
-	@Column(name = "cod_cobrador")
+	@Column(name = "cod_cobrador", insertable = false, updatable = false)
+	@Generated(GenerationTime.INSERT) //esta conf. va de la mano con DynamicInsert para que no se mande si esta null
     private String codCobrador;
 	
 	@OneToOne()

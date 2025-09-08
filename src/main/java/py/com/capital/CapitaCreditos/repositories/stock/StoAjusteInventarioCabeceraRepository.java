@@ -19,7 +19,7 @@ public interface StoAjusteInventarioCabeceraRepository extends JpaRepository<Sto
 	@Query(value = "SELECT COALESCE(MAX(m.nro_operacion), 0) + 1 FROM sto_ajuste_inventarios_cabecera m where bs_empresa_id = ?1", nativeQuery = true)
 	Long calcularNroOperacionDisponible(Long idEmpresa);
 
-	@Query("SELECT m FROM StoAjusteInventarioCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM StoAjusteInventarioCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<StoAjusteInventarioCabecera> buscarStoAjusteInventarioCabeceraActivosLista(Long idEmpresa);
 	
 }

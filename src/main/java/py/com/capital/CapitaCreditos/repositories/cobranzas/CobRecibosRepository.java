@@ -22,7 +22,7 @@ public interface CobRecibosRepository extends JpaRepository<CobReciboCabecera, L
 	@Query(value = "SELECT COALESCE(MAX(m.nro_recibo), 0) + 1 FROM cob_recibos_cabecera m where bs_empresa_id = ?1 and bs_talonario_id = ?2", nativeQuery = true)
 	Long calcularNroReciboDisponible(Long idEmpresa, Long idTalonario);
 
-	@Query("SELECT m FROM CobReciboCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM CobReciboCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<CobReciboCabecera> buscarCobReciboCabeceraActivosLista(Long idEmpresa);
 	
 	@Query("SELECT m FROM CobReciboCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 and m.cobCliente.id = ?2")

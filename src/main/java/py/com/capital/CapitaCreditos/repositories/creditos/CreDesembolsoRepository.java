@@ -23,7 +23,7 @@ public interface CreDesembolsoRepository extends JpaRepository<CreDesembolsoCabe
 	@Query(value = "SELECT COALESCE(MAX(m.nro_desembolso), 0) + 1 FROM cre_desembolso_cabecera m where bs_empresa_id = ?1", nativeQuery = true)
 	BigDecimal calcularNroDesembolsoDisponible(Long idEmpresa);
 	
-	@Query("SELECT m FROM CreDesembolsoCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM CreDesembolsoCabecera m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<CreDesembolsoCabecera> buscarCreDesembolsoCabeceraActivosLista(Long idEmpresa);
 	
 	@Query("SELECT m FROM CreDesembolsoCabecera m where m.estado = 'ACTIVO' and m.indDesembolsado = 'N' and m.bsEmpresa.id = ?1")

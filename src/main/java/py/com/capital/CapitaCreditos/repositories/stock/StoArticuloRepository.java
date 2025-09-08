@@ -17,7 +17,7 @@ public interface StoArticuloRepository extends JpaRepository<StoArticulo, Long> 
 	@Query("SELECT m FROM StoArticulo m")
 	List<StoArticulo> buscarTodosLista();
 	
-	@Query("SELECT m FROM StoArticulo m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM StoArticulo m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<StoArticulo> buscarStoArticuloActivosLista(Long idEmpresa);
 	
 	@Query("SELECT m FROM StoArticulo m where m.estado = 'ACTIVO' and m.codArticulo = ?1 and m.bsEmpresa.id = ?2")

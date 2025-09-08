@@ -2,11 +2,12 @@ package py.com.capital.CapitaCreditos.presentation.controllers.compras.definicio
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.exception.ConstraintViolationException;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.compras.ComProveedor;
@@ -23,281 +24,274 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-
-import org.joinfaces.autoconfigure.viewscope.ViewScope;
-import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /*
-* 30 nov. 2023 - Elitebook
-*/
+ * 30 nov. 2023 - Elitebook
+ */
 @Component
 @Scope(ViewScope.SCOPE_VIEW)
 public class ComProveedorController {
-	
-	/**
-	 * Objeto que permite mostrar los mensajes de LOG en la consola del servidor o en un archivo externo.
-	 */
-	private static final Logger LOGGER = LogManager.getLogger(ComProveedorController.class);
 
-	private ComProveedor comProveedor, comProveedorSelected;
-	private LazyDataModel<ComProveedor> lazyModel;
-	private LazyDataModel<BsPersona> lazyPersonaList;
+    /**
+     * Objeto que permite mostrar los mensajes de LOG en la consola del servidor o en un archivo externo.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(ComProveedorController.class);
 
-	private BsPersona bsPersonaSelected;
-	private boolean esNuegoRegistro;
+    private ComProveedor comProveedor, comProveedorSelected;
+    private LazyDataModel<ComProveedor> lazyModel;
+    private LazyDataModel<BsPersona> lazyPersonaList;
 
-	private List<String> estadoList;
+    private BsPersona bsPersonaSelected;
+    private boolean esNuegoRegistro;
 
-	private static final String DT_NAME = "dt-proveedor";
-	private static final String DT_DIALOG_NAME = "manageProveedorDialog";
+    private List<String> estadoList;
 
-	@Autowired
-	private BsPersonaService bsPersonaServiceImpl;
+    private static final String DT_NAME = "dt-proveedor";
+    private static final String DT_DIALOG_NAME = "manageProveedorDialog";
 
-	@Autowired
-	private ComProveedorService comProveedorServiceImpl;
+    @Autowired
+    private BsPersonaService bsPersonaServiceImpl;
 
-	@Autowired
-	private CommonsUtilitiesController commonsUtilitiesController;
-	/**
-	 * Propiedad de la logica de negocio inyectada con JSF y Spring.
-	 */
-	private boolean puedeCrear, puedeEditar, puedeEliminar = false;
-	@Autowired
-	private SessionBean sessionBean;
+    @Autowired
+    private ComProveedorService comProveedorServiceImpl;
 
-	@PostConstruct
-	public void init() {
-		this.cleanFields();
-		this.sessionBean.cargarPermisos();
-		puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
-		puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
-		puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
-	}
+    @Autowired
+    private CommonsUtilitiesController commonsUtilitiesController;
+    /**
+     * Propiedad de la logica de negocio inyectada con JSF y Spring.
+     */
+    private boolean puedeCrear, puedeEditar, puedeEliminar = false;
+    @Autowired
+    private SessionBean sessionBean;
 
-	public void cleanFields() {
-		this.comProveedor = null;
-		this.comProveedorSelected = null;
-		this.bsPersonaSelected = null;
-		this.esNuegoRegistro = true;
+    @PostConstruct
+    public void init() {
+        this.cleanFields();
+        this.sessionBean.cargarPermisos();
+        puedeCrear = sessionBean.tienePermiso(getPaginaActual(), "CREAR");
+        puedeEditar = sessionBean.tienePermiso(getPaginaActual(), "EDITAR");
+        puedeEliminar = sessionBean.tienePermiso(getPaginaActual(), "ELIMINAR");
+    }
 
-		this.lazyModel = null;
-		this.lazyPersonaList = null;
+    public void cleanFields() {
+        this.comProveedor = null;
+        this.comProveedorSelected = null;
+        this.bsPersonaSelected = null;
+        this.esNuegoRegistro = true;
 
-		this.estadoList = List.of(Estado.ACTIVO.getEstado(), Estado.INACTIVO.getEstado());
-	}
+        this.lazyModel = null;
+        this.lazyPersonaList = null;
 
-	// GETTERS Y SETTERS
-	public ComProveedor getComProveedor() {
-		if (Objects.isNull(comProveedor)) {
-			this.comProveedor = new ComProveedor();
-			this.comProveedor.setEstado(Estado.ACTIVO.getEstado());
-			this.comProveedor.setBsEmpresa(new BsEmpresa());
-			this.comProveedor.setBsPersona(new BsPersona());
-		}
-		return comProveedor;
-	}
+        this.estadoList = List.of(Estado.ACTIVO.getEstado(), Estado.INACTIVO.getEstado());
+    }
 
-	public void setComProveedor(ComProveedor comProveedor) {
-		this.comProveedor = comProveedor;
-	}
+    // GETTERS Y SETTERS
+    public ComProveedor getComProveedor() {
+        if (Objects.isNull(comProveedor)) {
+            this.comProveedor = new ComProveedor();
+            this.comProveedor.setEstado(Estado.ACTIVO.getEstado());
+            this.comProveedor.setBsEmpresa(new BsEmpresa());
+            this.comProveedor.setBsPersona(new BsPersona());
+        }
+        return comProveedor;
+    }
 
-	public ComProveedor getComProveedorSelected() {
-		if (Objects.isNull(comProveedorSelected)) {
-			this.comProveedorSelected = new ComProveedor();
-			this.comProveedorSelected.setBsEmpresa(new BsEmpresa());
-			this.comProveedorSelected.setBsPersona(new BsPersona());
-		}
-		return comProveedorSelected;
-	}
+    public void setComProveedor(ComProveedor comProveedor) {
+        this.comProveedor = comProveedor;
+    }
 
-	public void setComProveedorSelected(ComProveedor comProveedorSelected) {
-		if (!Objects.isNull(comProveedorSelected)) {
-			this.comProveedor = comProveedorSelected;
-			comProveedorSelected = null;
-			this.esNuegoRegistro = false;
-		}
-		this.comProveedorSelected = comProveedorSelected;
-	}
+    public ComProveedor getComProveedorSelected() {
+        if (Objects.isNull(comProveedorSelected)) {
+            this.comProveedorSelected = new ComProveedor();
+            this.comProveedorSelected.setBsEmpresa(new BsEmpresa());
+            this.comProveedorSelected.setBsPersona(new BsPersona());
+        }
+        return comProveedorSelected;
+    }
 
-	public boolean isEsNuegoRegistro() {
-		return esNuegoRegistro;
-	}
+    public void setComProveedorSelected(ComProveedor comProveedorSelected) {
+        if (!Objects.isNull(comProveedorSelected)) {
+            this.comProveedor = comProveedorSelected;
+            comProveedorSelected = null;
+            this.esNuegoRegistro = false;
+        }
+        this.comProveedorSelected = comProveedorSelected;
+    }
 
-	public void setEsNuegoRegistro(boolean esNuegoRegistro) {
-		this.esNuegoRegistro = esNuegoRegistro;
-	}
+    public boolean isEsNuegoRegistro() {
+        return esNuegoRegistro;
+    }
 
-	public List<String> getEstadoList() {
-		return estadoList;
-	}
+    public void setEsNuegoRegistro(boolean esNuegoRegistro) {
+        this.esNuegoRegistro = esNuegoRegistro;
+    }
 
-	public void setEstadoList(List<String> estadoList) {
-		this.estadoList = estadoList;
-	}
+    public List<String> getEstadoList() {
+        return estadoList;
+    }
 
-	public BsPersonaService getBsPersonaServiceImpl() {
-		return bsPersonaServiceImpl;
-	}
+    public void setEstadoList(List<String> estadoList) {
+        this.estadoList = estadoList;
+    }
 
-	public void setBsPersonaServiceImpl(BsPersonaService bsPersonaServiceImpl) {
-		this.bsPersonaServiceImpl = bsPersonaServiceImpl;
-	}
+    public BsPersonaService getBsPersonaServiceImpl() {
+        return bsPersonaServiceImpl;
+    }
 
-	public ComProveedorService getComProveedorServiceImpl() {
-		return comProveedorServiceImpl;
-	}
+    public void setBsPersonaServiceImpl(BsPersonaService bsPersonaServiceImpl) {
+        this.bsPersonaServiceImpl = bsPersonaServiceImpl;
+    }
 
-	public void setComProveedorServiceImpl(ComProveedorService comProveedorServiceImpl) {
-		this.comProveedorServiceImpl = comProveedorServiceImpl;
-	}
+    public ComProveedorService getComProveedorServiceImpl() {
+        return comProveedorServiceImpl;
+    }
 
-	public SessionBean getSessionBean() {
-		return sessionBean;
-	}
+    public void setComProveedorServiceImpl(ComProveedorService comProveedorServiceImpl) {
+        this.comProveedorServiceImpl = comProveedorServiceImpl;
+    }
 
-	public void setSessionBean(SessionBean sessionBean) {
-		this.sessionBean = sessionBean;
-	}
+    public SessionBean getSessionBean() {
+        return sessionBean;
+    }
 
-	public BsPersona getBsPersonaSelected() {
-		if (Objects.isNull(bsPersonaSelected)) {
-			bsPersonaSelected = new BsPersona();
-		}
-		return bsPersonaSelected;
-	}
+    public void setSessionBean(SessionBean sessionBean) {
+        this.sessionBean = sessionBean;
+    }
 
-	public void setBsPersonaSelected(BsPersona bsPersonaSelected) {
-		if (!Objects.isNull(bsPersonaSelected.getId())) {
-			this.comProveedor.setBsPersona(bsPersonaSelected);
-			bsPersonaSelected = null;
-		}
+    public BsPersona getBsPersonaSelected() {
+        if (Objects.isNull(bsPersonaSelected)) {
+            bsPersonaSelected = new BsPersona();
+        }
+        return bsPersonaSelected;
+    }
 
-		this.bsPersonaSelected = bsPersonaSelected;
-	}
+    public void setBsPersonaSelected(BsPersona bsPersonaSelected) {
+        if (!Objects.isNull(bsPersonaSelected.getId())) {
+            this.comProveedor.setBsPersona(bsPersonaSelected);
+            bsPersonaSelected = null;
+        }
 
-	public CommonsUtilitiesController getCommonsUtilitiesController() {
-		return commonsUtilitiesController;
-	}
+        this.bsPersonaSelected = bsPersonaSelected;
+    }
 
-	public void setCommonsUtilitiesController(CommonsUtilitiesController commonsUtilitiesController) {
-		this.commonsUtilitiesController = commonsUtilitiesController;
-	}
+    public CommonsUtilitiesController getCommonsUtilitiesController() {
+        return commonsUtilitiesController;
+    }
+
+    public void setCommonsUtilitiesController(CommonsUtilitiesController commonsUtilitiesController) {
+        this.commonsUtilitiesController = commonsUtilitiesController;
+    }
 
 
-	public boolean isPuedeCrear() {
-		return puedeCrear;
-	}
+    public boolean isPuedeCrear() {
+        return puedeCrear;
+    }
 
-	public void setPuedeCrear(boolean puedeCrear) {
-		this.puedeCrear = puedeCrear;
-	}
+    public void setPuedeCrear(boolean puedeCrear) {
+        this.puedeCrear = puedeCrear;
+    }
 
-	public boolean isPuedeEditar() {
-		return puedeEditar;
-	}
+    public boolean isPuedeEditar() {
+        return puedeEditar;
+    }
 
-	public void setPuedeEditar(boolean puedeEditar) {
-		this.puedeEditar = puedeEditar;
-	}
+    public void setPuedeEditar(boolean puedeEditar) {
+        this.puedeEditar = puedeEditar;
+    }
 
-	public boolean isPuedeEliminar() {
-		return puedeEliminar;
-	}
+    public boolean isPuedeEliminar() {
+        return puedeEliminar;
+    }
 
-	public void setPuedeEliminar(boolean puedeEliminar) {
-		this.puedeEliminar = puedeEliminar;
-	}
+    public void setPuedeEliminar(boolean puedeEliminar) {
+        this.puedeEliminar = puedeEliminar;
+    }
 
-	// LAZY
-	public LazyDataModel<ComProveedor> getLazyModel() {
-		if (Objects.isNull(lazyModel)) {
-			lazyModel = new GenericLazyDataModel<ComProveedor>((List<ComProveedor>) comProveedorServiceImpl
-					.buscarComProveedorActivosLista(this.commonsUtilitiesController.getIdEmpresaLogueada()));
-		}
-		return lazyModel;
-	}
+    // LAZY
+    public LazyDataModel<ComProveedor> getLazyModel() {
+        if (Objects.isNull(lazyModel)) {
+            lazyModel = new GenericLazyDataModel<ComProveedor>((List<ComProveedor>) comProveedorServiceImpl
+                    .buscarComProveedorActivosLista(this.commonsUtilitiesController.getIdEmpresaLogueada()));
+        }
+        return lazyModel;
+    }
 
-	public void setLazyModel(LazyDataModel<ComProveedor> lazyModel) {
-		this.lazyModel = lazyModel;
-	}
+    public void setLazyModel(LazyDataModel<ComProveedor> lazyModel) {
+        this.lazyModel = lazyModel;
+    }
 
-	public LazyDataModel<BsPersona> getLazyPersonaList() {
-		if (Objects.isNull(lazyPersonaList)) {
-			lazyPersonaList = new GenericLazyDataModel<BsPersona>(bsPersonaServiceImpl
-					.buscarTodosLista()
-					.stream()
-					.filter(persona -> persona.getEstado().equalsIgnoreCase(Estado.ACTIVO.getEstado()))
-					.collect(Collectors.toList()));
-		}
-		return lazyPersonaList;
-	}
+    public LazyDataModel<BsPersona> getLazyPersonaList() {
+        if (Objects.isNull(lazyPersonaList)) {
+            lazyPersonaList = new GenericLazyDataModel<BsPersona>(bsPersonaServiceImpl
+                    .personasSinFichaProveedoresPorEmpresaNativo(this.commonsUtilitiesController.getIdEmpresaLogueada()));
+        }
+        return lazyPersonaList;
+    }
 
-	public void setLazyPersonaList(LazyDataModel<BsPersona> lazyPersonaList) {
-		this.lazyPersonaList = lazyPersonaList;
-	}
+    public void setLazyPersonaList(LazyDataModel<BsPersona> lazyPersonaList) {
+        this.lazyPersonaList = lazyPersonaList;
+    }
 
-	// METODOS
-	public void guardar() {
-		if (Objects.isNull(comProveedor.getBsPersona()) || Objects.isNull(comProveedor.getBsPersona().getId())) {
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar una Persona.");
-			return;
-		}
-		try {
-			this.comProveedor.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
-			this.comProveedor.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
-			if (!Objects.isNull(comProveedorServiceImpl.save(this.comProveedor))) {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-						"El registro se guardo correctamente.");
-			} else {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo insertar el registro.");
-			}
-			this.cleanFields();
-			PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", e);
-			// e.printStackTrace(System.err);
-			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+    // METODOS
+    public void guardar() {
+        if (Objects.isNull(comProveedor.getBsPersona()) || Objects.isNull(comProveedor.getBsPersona().getId())) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar una Persona.");
+            return;
+        }
+        try {
+            this.comProveedor.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
+            this.comProveedor.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
+            if (!Objects.isNull(comProveedorServiceImpl.save(this.comProveedor))) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                        "El registro se guardo correctamente.");
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo insertar el registro.");
+            }
+            this.cleanFields();
+            PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        } catch (Exception e) {
+            LOGGER.error("Ocurrio un error al Guardar", e);
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
 
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		}
-	}
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        }
+    }
 
-	public void delete() {
-		try {
-			if (!Objects.isNull(this.comProveedor)) {
-				this.comProveedorServiceImpl.deleteById(this.comProveedor.getId());
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-						"El registro se elimino correctamente.");
-			} else {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo eliminar el registro.");
-			}
-			this.cleanFields();
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al eliminar", e);
-			// e.printStackTrace(System.err);
-			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		}
+    public void delete() {
+        try {
+            if (!Objects.isNull(this.comProveedor)) {
+                this.comProveedorServiceImpl.deleteById(this.comProveedor.getId());
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                        "El registro se elimino correctamente.");
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo eliminar el registro.");
+            }
+            this.cleanFields();
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        } catch (Exception e) {
+            LOGGER.error("Ocurrio un error al eliminar", e);
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        }
 
-	}
+    }
 
-	public String getPaginaActual() {
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		if (facesContext != null) {
-			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
-			String uri = request.getRequestURI();
-			String pagina = uri.substring(uri.lastIndexOf("/") + 1);
-			return pagina;
-		}
-		return null;
-	}
+    public String getPaginaActual() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+            String uri = request.getRequestURI();
+            String pagina = uri.substring(uri.lastIndexOf("/") + 1);
+            return pagina;
+        }
+        return null;
+    }
 
 }

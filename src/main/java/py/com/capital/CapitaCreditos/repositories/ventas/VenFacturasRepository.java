@@ -15,7 +15,7 @@ public interface VenFacturasRepository extends JpaRepository<VenFacturaCabecera,
 	@Query("SELECT m FROM VenFacturaCabecera m")
 	Page<VenFacturaCabecera> buscarTodos(Pageable pageable);
 
-	@Query("SELECT m FROM VenFacturaCabecera m")
+	@Query("SELECT m FROM VenFacturaCabecera m ORDER BY m.id DESC ")
 	List<VenFacturaCabecera> buscarTodosLista();
 
 	@Query(value = "SELECT COALESCE(MAX(m.nro_factura), 0) + 1 FROM ven_facturas_cabecera m where bs_empresa_id = ?1 and bs_talonario_id = ?2", nativeQuery = true)

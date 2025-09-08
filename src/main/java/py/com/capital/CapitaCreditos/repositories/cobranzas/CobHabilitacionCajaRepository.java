@@ -28,6 +28,6 @@ public interface CobHabilitacionCajaRepository extends JpaRepository<CobHabilita
 	@Query(value = "SELECT m FROM CobHabilitacionCaja m where m.bsUsuario.bsEmpresa.id = ?1 and  m.bsUsuario.id = ?2 and m.cobCaja.id = ?3 and m.indCerrado = 'N'")
 	CobHabilitacionCaja retornarHabilitacionAbierta(Long idEmpresa, Long idUsuario, Long idCaja);
 
-	@Query("SELECT m FROM CobHabilitacionCaja m where m.estado = 'ACTIVO' and m.bsUsuario.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM CobHabilitacionCaja m where m.estado = 'ACTIVO' and m.bsUsuario.bsEmpresa.id = ?1 ORDER BY m.id DESC")
 	List<CobHabilitacionCaja> buscarCobHabilitacionCajaActivosLista(Long idEmpresa);
 }

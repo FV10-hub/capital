@@ -19,7 +19,7 @@ public interface CreSolicitudCreditoRepository extends JpaRepository<CreSolicitu
 	@Query("SELECT m FROM CreSolicitudCredito m")
 	List<CreSolicitudCredito> buscarTodosLista();
 	
-	@Query("SELECT m FROM CreSolicitudCredito m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM CreSolicitudCredito m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<CreSolicitudCredito> buscarSolicitudActivosLista(Long idEmpresa);
 	
 	@Query("SELECT m FROM CreSolicitudCredito m where m.estado = 'ACTIVO' and m.indAutorizado = 'S' and m.indDesembolsado = 'N' and m.bsEmpresa.id = ?1")

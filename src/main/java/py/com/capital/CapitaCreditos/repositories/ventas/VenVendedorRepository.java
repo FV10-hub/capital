@@ -16,7 +16,7 @@ public interface VenVendedorRepository extends JpaRepository<VenVendedor, Long> 
 	@Query("SELECT m FROM VenVendedor m")
 	List<VenVendedor> buscarTodosLista();
 	
-	@Query("SELECT m FROM VenVendedor m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM VenVendedor m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<VenVendedor> buscarVenVendedorActivosLista(Long idEmpresa);
 	
 	

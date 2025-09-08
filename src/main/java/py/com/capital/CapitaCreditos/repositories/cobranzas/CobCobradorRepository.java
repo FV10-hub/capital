@@ -16,7 +16,7 @@ public interface CobCobradorRepository extends JpaRepository<CobCobrador, Long> 
 	@Query("SELECT m FROM CobCobrador m")
 	List<CobCobrador> buscarTodosLista();
 	
-	@Query("SELECT m FROM CobCobrador m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM CobCobrador m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC")
 	List<CobCobrador> buscarCobradorActivosLista(Long idEmpresa);
 	
 	

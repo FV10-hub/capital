@@ -2,11 +2,12 @@ package py.com.capital.CapitaCreditos.presentation.controllers.tesoreria.definic
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.exception.ConstraintViolationException;
+import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsMoneda;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
@@ -23,269 +24,263 @@ import py.com.capital.CapitaCreditos.services.tesoreria.TesBancoService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import org.joinfaces.autoconfigure.viewscope.ViewScope;
-import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /*
-* 30 nov. 2023 - Elitebook
-*/
+ * 30 nov. 2023 - Elitebook
+ */
 @Component
 @Scope(ViewScope.SCOPE_VIEW)
 public class TesBancoController {
-	
-	/**
-	 * Objeto que permite mostrar los mensajes de LOG en la consola del servidor o en un archivo externo.
-	 */
-	private static final Logger LOGGER = LogManager.getLogger(TesBancoController.class);
 
-	private TesBanco tesBanco, tesBancoSelected;
-	private LazyDataModel<TesBanco> lazyModel;
-	private LazyDataModel<BsPersona> lazyPersonaList;
-	private LazyDataModel<BsMoneda> lazyMonedaList;
+    /**
+     * Objeto que permite mostrar los mensajes de LOG en la consola del servidor o en un archivo externo.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(TesBancoController.class);
 
-	private BsPersona bsPersonaSelected;
-	private boolean esNuegoRegistro;
+    private TesBanco tesBanco, tesBancoSelected;
+    private LazyDataModel<TesBanco> lazyModel;
+    private LazyDataModel<BsPersona> lazyPersonaList;
+    private LazyDataModel<BsMoneda> lazyMonedaList;
 
-	private List<String> estadoList;
+    private BsPersona bsPersonaSelected;
+    private boolean esNuegoRegistro;
 
-	private static final String DT_NAME = "dt-banco";
-	private static final String DT_DIALOG_NAME = "manageBancoDialog";
+    private List<String> estadoList;
 
-	@Autowired
-	private BsPersonaService bsPersonaServiceImpl;
+    private static final String DT_NAME = "dt-banco";
+    private static final String DT_DIALOG_NAME = "manageBancoDialog";
 
-	@Autowired
-	private TesBancoService tesBancoServiceImpl;
-	
-	@Autowired
-	private BsMonedaService bsMonedaServiceImpl;
+    @Autowired
+    private BsPersonaService bsPersonaServiceImpl;
 
-	/**
-	 * Propiedad de la logica de negocio inyectada con JSF y Spring.
-	 */
-	@Autowired
-	private SessionBean sessionBean;
+    @Autowired
+    private TesBancoService tesBancoServiceImpl;
 
-	@Autowired
-	private CommonsUtilitiesController commonsUtilitiesController;
+    @Autowired
+    private BsMonedaService bsMonedaServiceImpl;
 
-	@PostConstruct
-	public void init() {
-		this.cleanFields();
+    /**
+     * Propiedad de la logica de negocio inyectada con JSF y Spring.
+     */
+    @Autowired
+    private SessionBean sessionBean;
 
-	}
+    @Autowired
+    private CommonsUtilitiesController commonsUtilitiesController;
 
-	public void cleanFields() {
-		this.tesBanco = null;
-		this.tesBancoSelected = null;
-		this.bsPersonaSelected = null;
-		this.esNuegoRegistro = true;
+    @PostConstruct
+    public void init() {
+        this.cleanFields();
 
-		this.lazyModel = null;
-		this.lazyPersonaList = null;
-		this.lazyMonedaList = null;
+    }
 
-		this.estadoList = List.of(Estado.ACTIVO.getEstado(), Estado.INACTIVO.getEstado());
-	}
+    public void cleanFields() {
+        this.tesBanco = null;
+        this.tesBancoSelected = null;
+        this.bsPersonaSelected = null;
+        this.esNuegoRegistro = true;
 
-	// GETTERS Y SETTERS
-	public TesBanco getTesBanco() {
-		if (Objects.isNull(tesBanco)) {
-			this.tesBanco = new TesBanco();
-			this.tesBanco.setEstado(Estado.ACTIVO.getEstado());
-			this.tesBanco.setBsMoneda(new BsMoneda());
-			this.tesBanco.setBsEmpresa(new BsEmpresa());
-			this.tesBanco.setBsPersona(new BsPersona());
-		}
-		return tesBanco;
-	}
+        this.lazyModel = null;
+        this.lazyPersonaList = null;
+        this.lazyMonedaList = null;
 
-	public void setTesBanco(TesBanco tesBanco) {
-		this.tesBanco = tesBanco;
-	}
+        this.estadoList = List.of(Estado.ACTIVO.getEstado(), Estado.INACTIVO.getEstado());
+    }
 
-	public TesBanco getTesBancoSelected() {
-		if (Objects.isNull(tesBancoSelected)) {
-			this.tesBancoSelected = new TesBanco();
-			this.tesBancoSelected.setBsMoneda(new BsMoneda());
-			this.tesBancoSelected.setBsEmpresa(new BsEmpresa());
-			this.tesBancoSelected.setBsPersona(new BsPersona());
-		}
-		return tesBancoSelected;
-	}
+    // GETTERS Y SETTERS
+    public TesBanco getTesBanco() {
+        if (Objects.isNull(tesBanco)) {
+            this.tesBanco = new TesBanco();
+            this.tesBanco.setEstado(Estado.ACTIVO.getEstado());
+            this.tesBanco.setBsMoneda(new BsMoneda());
+            this.tesBanco.setBsEmpresa(new BsEmpresa());
+            this.tesBanco.setBsPersona(new BsPersona());
+        }
+        return tesBanco;
+    }
 
-	public void setTesBancoSelected(TesBanco tesBancoSelected) {
-		if (!Objects.isNull(tesBancoSelected)) {
-			this.tesBanco = tesBancoSelected;
-			tesBancoSelected = null;
-			this.esNuegoRegistro = false;
-		}
-		this.tesBancoSelected = tesBancoSelected;
-	}
+    public void setTesBanco(TesBanco tesBanco) {
+        this.tesBanco = tesBanco;
+    }
 
-	public boolean isEsNuegoRegistro() {
-		return esNuegoRegistro;
-	}
+    public TesBanco getTesBancoSelected() {
+        if (Objects.isNull(tesBancoSelected)) {
+            this.tesBancoSelected = new TesBanco();
+            this.tesBancoSelected.setBsMoneda(new BsMoneda());
+            this.tesBancoSelected.setBsEmpresa(new BsEmpresa());
+            this.tesBancoSelected.setBsPersona(new BsPersona());
+        }
+        return tesBancoSelected;
+    }
 
-	public void setEsNuegoRegistro(boolean esNuegoRegistro) {
-		this.esNuegoRegistro = esNuegoRegistro;
-	}
+    public void setTesBancoSelected(TesBanco tesBancoSelected) {
+        if (!Objects.isNull(tesBancoSelected)) {
+            this.tesBanco = tesBancoSelected;
+            tesBancoSelected = null;
+            this.esNuegoRegistro = false;
+        }
+        this.tesBancoSelected = tesBancoSelected;
+    }
 
-	public List<String> getEstadoList() {
-		return estadoList;
-	}
+    public boolean isEsNuegoRegistro() {
+        return esNuegoRegistro;
+    }
 
-	public void setEstadoList(List<String> estadoList) {
-		this.estadoList = estadoList;
-	}
+    public void setEsNuegoRegistro(boolean esNuegoRegistro) {
+        this.esNuegoRegistro = esNuegoRegistro;
+    }
 
-	public BsPersonaService getBsPersonaServiceImpl() {
-		return bsPersonaServiceImpl;
-	}
+    public List<String> getEstadoList() {
+        return estadoList;
+    }
 
-	public void setBsPersonaServiceImpl(BsPersonaService bsPersonaServiceImpl) {
-		this.bsPersonaServiceImpl = bsPersonaServiceImpl;
-	}
+    public void setEstadoList(List<String> estadoList) {
+        this.estadoList = estadoList;
+    }
 
-	public TesBancoService getTesBancoServiceImpl() {
-		return tesBancoServiceImpl;
-	}
+    public BsPersonaService getBsPersonaServiceImpl() {
+        return bsPersonaServiceImpl;
+    }
 
-	public void setTesBancoServiceImpl(TesBancoService tesBancoServiceImpl) {
-		this.tesBancoServiceImpl = tesBancoServiceImpl;
-	}
+    public void setBsPersonaServiceImpl(BsPersonaService bsPersonaServiceImpl) {
+        this.bsPersonaServiceImpl = bsPersonaServiceImpl;
+    }
 
-	public SessionBean getSessionBean() {
-		return sessionBean;
-	}
+    public TesBancoService getTesBancoServiceImpl() {
+        return tesBancoServiceImpl;
+    }
 
-	public void setSessionBean(SessionBean sessionBean) {
-		this.sessionBean = sessionBean;
-	}
+    public void setTesBancoServiceImpl(TesBancoService tesBancoServiceImpl) {
+        this.tesBancoServiceImpl = tesBancoServiceImpl;
+    }
 
-	public BsPersona getBsPersonaSelected() {
-		if (Objects.isNull(bsPersonaSelected)) {
-			bsPersonaSelected = new BsPersona();
-		}
-		return bsPersonaSelected;
-	}
+    public SessionBean getSessionBean() {
+        return sessionBean;
+    }
 
-	public void setBsPersonaSelected(BsPersona bsPersonaSelected) {
-		if (!Objects.isNull(bsPersonaSelected.getId())) {
-			this.tesBanco.setBsPersona(bsPersonaSelected);
-			bsPersonaSelected = null;
-		}
+    public void setSessionBean(SessionBean sessionBean) {
+        this.sessionBean = sessionBean;
+    }
 
-		this.bsPersonaSelected = bsPersonaSelected;
-	}
+    public BsPersona getBsPersonaSelected() {
+        if (Objects.isNull(bsPersonaSelected)) {
+            bsPersonaSelected = new BsPersona();
+        }
+        return bsPersonaSelected;
+    }
 
-	public CommonsUtilitiesController getCommonsUtilitiesController() {
-		return commonsUtilitiesController;
-	}
+    public void setBsPersonaSelected(BsPersona bsPersonaSelected) {
+        if (!Objects.isNull(bsPersonaSelected.getId())) {
+            this.tesBanco.setBsPersona(bsPersonaSelected);
+            bsPersonaSelected = null;
+        }
 
-	public void setCommonsUtilitiesController(CommonsUtilitiesController commonsUtilitiesController) {
-		this.commonsUtilitiesController = commonsUtilitiesController;
-	}
-	
+        this.bsPersonaSelected = bsPersonaSelected;
+    }
 
-	public BsMonedaService getBsMonedaServiceImpl() {
-		return bsMonedaServiceImpl;
-	}
+    public CommonsUtilitiesController getCommonsUtilitiesController() {
+        return commonsUtilitiesController;
+    }
 
-	public void setBsMonedaServiceImpl(BsMonedaService bsMonedaServiceImpl) {
-		this.bsMonedaServiceImpl = bsMonedaServiceImpl;
-	}
-
-	// LAZY
-	public LazyDataModel<TesBanco> getLazyModel() {
-		if (Objects.isNull(lazyModel)) {
-			lazyModel = new GenericLazyDataModel<TesBanco>((List<TesBanco>) tesBancoServiceImpl
-					.buscarTesBancoActivosLista(this.commonsUtilitiesController.getIdEmpresaLogueada()));
-		}
-		return lazyModel;
-	}
-
-	public void setLazyModel(LazyDataModel<TesBanco> lazyModel) {
-		this.lazyModel = lazyModel;
-	}
-
-	public LazyDataModel<BsPersona> getLazyPersonaList() {
-		if (Objects.isNull(lazyPersonaList)) {
-			lazyPersonaList = new GenericLazyDataModel<BsPersona>(bsPersonaServiceImpl
-					.buscarTodosLista()
-					.stream()
-					.filter(persona -> persona.getEstado().equalsIgnoreCase(Estado.ACTIVO.getEstado()))
-					.collect(Collectors.toList()));
-		}
-		return lazyPersonaList;
-	}
-
-	public void setLazyPersonaList(LazyDataModel<BsPersona> lazyPersonaList) {
-		this.lazyPersonaList = lazyPersonaList;
-	}
-
-	public LazyDataModel<BsMoneda> getLazyMonedaList() {
-		if (Objects.isNull(lazyMonedaList)) {
-			lazyMonedaList = new GenericLazyDataModel<BsMoneda>((List<BsMoneda>) bsMonedaServiceImpl.findAll());
-		}
-		return lazyMonedaList;
-	}
-
-	public void setLazyMonedaList(LazyDataModel<BsMoneda> lazyMonedaList) {
-		this.lazyMonedaList = lazyMonedaList;
-	}
+    public void setCommonsUtilitiesController(CommonsUtilitiesController commonsUtilitiesController) {
+        this.commonsUtilitiesController = commonsUtilitiesController;
+    }
 
 
-	// METODOS
-	public void guardar() {
-		if (Objects.isNull(tesBanco.getBsPersona()) || Objects.isNull(tesBanco.getBsPersona().getId())) {
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar una Persona.");
-			return;
-		}
-		try {
-			this.tesBanco.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
-			this.tesBanco.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
-			if (!Objects.isNull(tesBancoServiceImpl.save(this.tesBanco))) {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-						"El registro se guardo correctamente.");
-			} else {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo insertar el registro.");
-			}
-			this.cleanFields();
-			PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al Guardar", e);
-			// e.printStackTrace(System.err);
-			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+    public BsMonedaService getBsMonedaServiceImpl() {
+        return bsMonedaServiceImpl;
+    }
 
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		}
-	}
+    public void setBsMonedaServiceImpl(BsMonedaService bsMonedaServiceImpl) {
+        this.bsMonedaServiceImpl = bsMonedaServiceImpl;
+    }
 
-	public void delete() {
-		try {
-			if (!Objects.isNull(this.tesBanco)) {
-				this.tesBancoServiceImpl.deleteById(this.tesBanco.getId());
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-						"El registro se elimino correctamente.");
-			} else {
-				CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo eliminar el registro.");
-			}
-			this.cleanFields();
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		} catch (Exception e) {
-			LOGGER.error("Ocurrio un error al eliminar", e);
-			// e.printStackTrace(System.err);
-			String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
-			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
-			PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
-		}
+    // LAZY
+    public LazyDataModel<TesBanco> getLazyModel() {
+        if (Objects.isNull(lazyModel)) {
+            lazyModel = new GenericLazyDataModel<TesBanco>((List<TesBanco>) tesBancoServiceImpl
+                    .buscarTesBancoActivosLista(this.commonsUtilitiesController.getIdEmpresaLogueada()));
+        }
+        return lazyModel;
+    }
 
-	}
+    public void setLazyModel(LazyDataModel<TesBanco> lazyModel) {
+        this.lazyModel = lazyModel;
+    }
+
+    public LazyDataModel<BsPersona> getLazyPersonaList() {
+        if (Objects.isNull(lazyPersonaList)) {
+            lazyPersonaList = new GenericLazyDataModel<BsPersona>(bsPersonaServiceImpl
+                    .personasSinFichaBancosPorEmpresaNativo(this.commonsUtilitiesController.getIdEmpresaLogueada()));
+        }
+        return lazyPersonaList;
+    }
+
+    public void setLazyPersonaList(LazyDataModel<BsPersona> lazyPersonaList) {
+        this.lazyPersonaList = lazyPersonaList;
+    }
+
+    public LazyDataModel<BsMoneda> getLazyMonedaList() {
+        if (Objects.isNull(lazyMonedaList)) {
+            lazyMonedaList = new GenericLazyDataModel<BsMoneda>((List<BsMoneda>) bsMonedaServiceImpl.findAll());
+        }
+        return lazyMonedaList;
+    }
+
+    public void setLazyMonedaList(LazyDataModel<BsMoneda> lazyMonedaList) {
+        this.lazyMonedaList = lazyMonedaList;
+    }
+
+
+    // METODOS
+    public void guardar() {
+        if (Objects.isNull(tesBanco.getBsPersona()) || Objects.isNull(tesBanco.getBsPersona().getId())) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar una Persona.");
+            return;
+        }
+        try {
+            this.tesBanco.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
+            this.tesBanco.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
+            if (!Objects.isNull(tesBancoServiceImpl.save(this.tesBanco))) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                        "El registro se guardo correctamente.");
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo insertar el registro.");
+            }
+            this.cleanFields();
+            PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        } catch (Exception e) {
+            LOGGER.error("Ocurrio un error al Guardar", e);
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        }
+    }
+
+    public void delete() {
+        try {
+            if (!Objects.isNull(this.tesBanco)) {
+                this.tesBancoServiceImpl.deleteById(this.tesBanco.getId());
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                        "El registro se elimino correctamente.");
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo eliminar el registro.");
+            }
+            this.cleanFields();
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        } catch (Exception e) {
+            LOGGER.error("Ocurrio un error al eliminar", e);
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+        }
+
+    }
 
 }

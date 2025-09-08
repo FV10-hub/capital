@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCliente;
+import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.presentation.utils.Estado;
@@ -240,26 +241,12 @@ public class CobClienteController {
             }
             this.cleanFields();
             PrimeFaces.current().executeScript("PF('" + DT_DIALOG_NAME + "').hide()");
-            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+            PrimeFaces.current().ajax().update(":form","form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al Guardar", e);
-            e.printStackTrace(System.err);
-
-            Throwable cause = e.getCause();
-            while (cause != null) {
-                if (cause instanceof ConstraintViolationException) {
-                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                            "El cliente para esta persona ya existe.");
-                    break;
-                }
-                cause = cause.getCause();
-            }
-
-            if (cause == null) {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                        e.getMessage().substring(0, e.getMessage().length()) + "...");
-            }
-
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         }
     }
@@ -277,9 +264,10 @@ public class CobClienteController {
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al eliminar", System.err);
-            //e.printStackTrace(System.err);
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                    e.getMessage().substring(0, e.getMessage().length()) + "...");
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+            PrimeFaces.current().ajax().update("form:messages", "form:dt-modulo");
         }
 
     }

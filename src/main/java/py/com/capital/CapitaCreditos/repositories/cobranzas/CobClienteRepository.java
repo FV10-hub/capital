@@ -16,7 +16,7 @@ public interface CobClienteRepository extends JpaRepository<CobCliente, Long> {
 	@Query("SELECT m FROM CobCliente m")
 	List<CobCliente> buscarTodosLista();
 	
-	@Query("SELECT m FROM CobCliente m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM CobCliente m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 order by m.id DESC")
 	List<CobCliente> buscarClienteActivosLista(Long idEmpresa);
 	
 	

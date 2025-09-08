@@ -17,7 +17,7 @@ public interface TesBancoRepository extends JpaRepository<TesBanco, Long> {
 	@Query("SELECT m FROM TesBanco m")
 	List<TesBanco> buscarTodosLista();
 	
-	@Query("SELECT m FROM TesBanco m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM TesBanco m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<TesBanco> buscarTesBancoActivosLista(Long idEmpresa);
 
 	@Query("SELECT m FROM TesBanco m where m.estado = 'ACTIVO' and m.bsMoneda.id = ?1")

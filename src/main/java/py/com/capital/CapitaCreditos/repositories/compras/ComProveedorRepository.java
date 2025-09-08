@@ -17,7 +17,7 @@ public interface ComProveedorRepository extends JpaRepository<ComProveedor, Long
 	@Query("SELECT m FROM ComProveedor m")
 	List<ComProveedor> buscarTodosLista();
 	
-	@Query("SELECT m FROM ComProveedor m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM ComProveedor m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<ComProveedor> buscarComProveedorActivosLista(Long idEmpresa);
 	
 	

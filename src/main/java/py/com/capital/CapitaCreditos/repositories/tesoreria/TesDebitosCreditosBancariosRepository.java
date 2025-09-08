@@ -16,7 +16,7 @@ public interface TesDebitosCreditosBancariosRepository extends JpaRepository<Tes
 	@Query("SELECT m FROM TesDebitoCreditoBancario m")
 	List<TesDebitoCreditoBancario> buscarTodosLista();
 
-	@Query("SELECT m FROM TesDebitoCreditoBancario m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
+	@Query("SELECT m FROM TesDebitoCreditoBancario m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 ORDER BY m.id DESC ")
 	List<TesDebitoCreditoBancario> buscarTesDebitoCreditoBancarioActivosLista(Long idEmpresa);
 	
 }
