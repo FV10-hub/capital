@@ -10,41 +10,46 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /*
-* 12 ene. 2024 - Elitebook
-*/
+ * 12 ene. 2024 - Elitebook
+ */
 @Service
 public class CobSaldoServiceImpl extends CommonServiceImpl<CobSaldo, CobSaldoRepository> implements CobSaldoService {
 
-	private final CobSaldoRepository repository;
+    private final CobSaldoRepository repository;
 
-	public CobSaldoServiceImpl(CobSaldoRepository repository) {
-		super(repository);
-		this.repository = repository;
-	}
+    public CobSaldoServiceImpl(CobSaldoRepository repository) {
+        super(repository);
+        this.repository = repository;
+    }
 
-	@Override
-	public BigDecimal calcularTotalSaldoAFecha(Long idEmpresa, Long idCliente) {
-		return this.repository.calcularTotalSaldoAFecha(idEmpresa, idCliente);
-	}
+    @Override
+    public BigDecimal calcularTotalSaldoAFecha(Long idEmpresa, Long idCliente) {
+        return this.repository.calcularTotalSaldoAFecha(idEmpresa, idCliente);
+    }
 
-	@Override
-	public List<CobSaldo> buscarCobSaldoActivosLista(Long idEmpresa) {
-		return this.repository.buscarCobSaldoActivosLista(idEmpresa);
-	}
+    @Override
+    public List<CobSaldo> buscarCobSaldoActivosLista(Long idEmpresa) {
+        return this.repository.buscarCobSaldoActivosLista(idEmpresa);
+    }
 
-	@Override
-	public List<CobSaldo> buscarSaldoPorClienteLista(Long idEmpresa, Long idCliente) {
-		return this.repository.buscarSaldoPorClienteLista(idEmpresa, idCliente);
-	}
+    @Override
+    public List<CobSaldo> buscarSaldoPorClienteLista(Long idEmpresa, Long idCliente) {
+        return this.repository.buscarSaldoPorClienteLista(idEmpresa, idCliente);
+    }
 
-	@Override
-	public List<CobSaldo> buscarSaldoPorClienteMayorACeroLista(Long idEmpresa, Long idCliente) {
-		return this.repository.buscarSaldoPorClienteMayorACeroLista(idEmpresa, idCliente);
-	}
+    @Override
+    public List<CobSaldo> buscarSaldoPorClienteMayorACeroLista(Long idEmpresa, Long idCliente) {
+        return this.repository.buscarSaldoPorClienteMayorACeroLista(idEmpresa, idCliente);
+    }
 
-	@Override
-	public List<CobSaldo> buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(Long idEmpresa, Long idCliente, Long idComprobante, String tipoComprobante) {
-		return this.repository.buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(idEmpresa,idCliente,idComprobante,tipoComprobante);
-	}
+    @Override
+    public List<CobSaldo> buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(Long idEmpresa, Long idCliente, Long idComprobante, String tipoComprobante) {
+        return this.repository.buscarSaldoPorIdComprobantePorTipoComprobantePorCliente(idEmpresa, idCliente, idComprobante, tipoComprobante);
+    }
+
+    @Override
+    public List<CobSaldo> buscarSaldosFiltrados(Long empresaId, Long clienteId, String tipo) {
+        return this.repository.buscarSaldosFiltrados(empresaId, clienteId, tipo);
+    }
 
 }
