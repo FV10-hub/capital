@@ -842,6 +842,7 @@ public class CreDesembolsoController {
             }
             this.creDesembolsoCabecera.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
             this.creDesembolsoCabecera.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
+            this.creDesembolsoCabecera.setIndDesembolsado("N");
             this.creDesembolsoCabecera.setIndFacturado("N");
             if (Objects.isNull(this.creDesembolsoCabecera.getId())) {
                 this.creDesembolsoCabecera.setNroDesembolso(this.creDesembolsoServiceImpl

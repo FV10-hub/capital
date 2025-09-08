@@ -480,8 +480,8 @@ public class VenFacturasController {
 
 	public LazyDataModel<CreDesembolsoCabecera> getLazyModelDesembolso() {
 		if (Objects.isNull(lazyModelDesembolso)) {
-			lazyModelDesembolso = new GenericLazyDataModel<CreDesembolsoCabecera>(
-					(List<CreDesembolsoCabecera>) creDesembolsoServiceImpl
+			lazyModelDesembolso = new GenericLazyDataModel<>(
+					creDesembolsoServiceImpl
 							.buscarCreDesembolsoAFacturarLista(this.commonsUtilitiesController.getIdEmpresaLogueada()));
 		}
 		return lazyModelDesembolso;
