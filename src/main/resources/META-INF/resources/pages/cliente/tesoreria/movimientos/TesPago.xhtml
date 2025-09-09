@@ -286,7 +286,7 @@
 																	PF('dlgDesembolso').show(); 
 																	return true;
 					                                            } else{ 
-					                                            	PF('dlgDesembolso').show(); 
+					                                            	PF('dlgSaldo').show();
 					                                            	return false; 
 					                                            }"
                                                                          update=":form:dt-desembolso :form:btnLimpiar :form:btnGuardar"
@@ -483,10 +483,10 @@
                                     </div>
                                 </f:facet>
                                 <p:column style="width:3rem;text-align: center">
-                                    <p:commandButton oncomplete="PF('dlgCliente').hide()"
+                                    <p:commandButton oncomplete="PF('dlgProveedor').hide()"
                                                      icon="pi pi-check-circle" title="Seleccionar"
                                                      update=":form:beneficiarioLb :form:btnAddComprobante :form:dt-comprobantes">
-                                        <f:setPropertyActionListener value="#{cliente}"
+                                        <f:setPropertyActionListener value="#{proveedor}"
                                                                      target="#{tesPagoController.comProveedorSelected}"/>
                                     </p:commandButton>
                                 </p:column>
@@ -572,6 +572,72 @@
                                           sortBy="#{desembolso.montoTotalCapital}">
                                     <h:outputText value="#{desembolso.montoTotalCapital}">
                                         <f:convertNumber currencySymbol="Gs." pattern="###,###,###"/>
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+
+                        <p:dialog widgetVar="dlgSaldo" header="Buscar Saldo" width="900"
+                                  showEffect="fade" modal="true">
+                            <f:facet name="header">
+                                <div class="field flex justify-content-start align-items-center">
+                                    <p:commandButton value="Agregar Saldo" icon="pi pi-plus"
+                                                     class="ui-button-success"
+                                                     oncomplete="PF('dlgSaldo').hide()"
+                                                     update=":form:dt-comprobantes :form:btnLimpiarComprobante :form:btnAddDetalle"/>
+                                    <p:commandButton value="Cancelar" icon="pi pi-times"
+                                                     actionListener="#{tesPagoController.limpiarDetalleComprobantes}"
+                                                     class="ui-button-secondary ml-3"
+                                                     oncomplete="PF('dlgSaldo').hide()"
+                                                     update=":form:dt-comprobantes :form:btnLimpiarComprobante"/>
+                                </div>
+                            </f:facet>
+                            <p:dataTable widgetVar="dtSaldo" var="saldo"
+                                         value="#{tesPagoController.lazyModelSaldos}" id="dt-saldo"
+                                         selection="#{tesPagoController.saldoList}"
+                                         rowKey="#{saldo.id}" selectionPageOnly="false"
+                                         paginator="true" paginatorPosition="bottom" reflow="true"
+                                         rows="12" scrollable="true" scrollHeight="500"
+                                         emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtSaldo').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                                    </div>
+                                </f:facet>
+                                <p:ajax event="rowSelectCheckbox"
+                                        listener="#{tesPagoController.onRowSelectSaldo}"/>
+                                <p:ajax event="rowUnselectCheckbox"
+                                        listener="#{tesPagoController.onRowUnselectSaldo}"/>
+                                <p:column selectionMode="multiple"
+                                          style="width:16px;text-align:center"/>
+                                <p:column headerText="Tipo Comprobante"
+                                          sortBy="#{saldo.tipoComprobante}"
+                                          filterBy="#{saldo.tipoComprobante}">
+                                    <h:outputText value="#{saldo.tipoComprobante}"/>
+                                </p:column>
+                                <p:column headerText="Nro. Comprobante"
+                                          sortBy="#{saldo.nroComprobanteCompleto}"
+                                          filterBy="#{saldo.nroComprobanteCompleto}">
+                                    <h:outputText value="#{saldo.nroComprobanteCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Nro. Cuota" sortBy="#{saldo.nroCuota}"
+                                          filterBy="#{saldo.nroCuota}">
+                                    <h:outputText value="#{saldo.nroCuota}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">Fecha Vencimiento</f:facet>
+                                    <h:outputText value="#{saldo.fechaVencimiento}"
+                                                  converter="localDateConverter">
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Saldo Cuota" sortBy="#{saldo.saldoCuota}"
+                                          filterBy="#{saldo.saldoCuota}">
+                                    <h:outputText value="#{saldo.saldoCuota}">
+                                        <f:convertNumber pattern="###,###,###.##"/>
                                     </h:outputText>
                                 </p:column>
                             </p:dataTable>
@@ -718,7 +784,7 @@
                             </f:facet>
                         </p:dialog>
 
-                        <p:dialog widgetVar="dlgBanco" header="Buscar Banco" width="650"
+                        <p:dialog widgetVar="dlgBanco" header="Buscar Banco" width="950"
                                   showEffect="fade" modal="true">
                             <p:dataTable widgetVar="dtBanco" var="banco"
                                          value="#{tesPagoController.lazyModelBanco}" id="dt-banco"
@@ -768,7 +834,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgTipoValor" header="Buscar Tipo Valor"
-                                  width="650" showEffect="fade" modal="true">
+                                  width="750" showEffect="fade" modal="true">
                             <p:dataTable id="dt-tipoValor" widgetVar="dtTipoValor"
                                          var="tipoValor" value="#{tesPagoController.lazyModelTipoValor}"
                                          paginator="true" rows="10" paginatorPosition="bottom"

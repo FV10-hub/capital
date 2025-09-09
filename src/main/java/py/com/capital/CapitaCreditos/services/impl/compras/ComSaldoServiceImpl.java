@@ -6,6 +6,7 @@ import py.com.capital.CapitaCreditos.repositories.compras.ComSaldoRepository;
 import py.com.capital.CapitaCreditos.services.compras.ComSaldoService;
 import py.com.capital.CapitaCreditos.services.impl.CommonServiceImpl;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -41,5 +42,22 @@ public class ComSaldoServiceImpl extends CommonServiceImpl<ComSaldo, ComSaldoRep
     @Override
     public List<ComSaldo> buscarSaldoPorProveedorMayorACeroLista(Long idEmpresa, Long idProveedor) {
         return this.repository.buscarSaldoPorProveedorMayorACeroLista(idEmpresa, idProveedor);
+    }
+
+    @Override
+    public List<ComSaldo> buscarSaldosFiltrados(Long empresaId, Long proveedorId, String tipo) {
+        return this.repository.buscarSaldosFiltrados(empresaId, proveedorId, tipo);
+    }
+
+    @Override
+    @Transactional
+    public int pagarSaldosPorIds(Long empresaId, Long proveedorId, List<Long> idsSaldo, String usuario, BigDecimal montoPagado) {
+        return this.repository.pagarSaldosPorIds(empresaId, proveedorId, idsSaldo, usuario, montoPagado);
+    }
+
+    @Override
+    @Transactional
+    public int reestablecerSaldosPorIds(Long empresaId, Long proveedorId, List<Long> idsSaldo, String usuario, BigDecimal monto) {
+        return this.repository.reestablecerSaldosPorIds(empresaId, proveedorId, idsSaldo, usuario, monto);
     }
 }
