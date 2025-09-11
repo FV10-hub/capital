@@ -54,4 +54,9 @@ public class CobCobrosValoresServiceImpl extends CommonServiceImpl<CobCobrosValo
         return this.repository.buscarValoresParaConciliarPorFechas(idEmpresa, fechaDesde, fechaHasta);
     }
 
+    @Override
+    public int marcarValoresComoConciliado(Long empresaId, Long tipoValorId, List<Long> idsSaldo, String usuario) {
+        return this.repository.marcarValoresComoConciliado(empresaId, tipoValorId, idsSaldo,usuario);
+    }
+
 }

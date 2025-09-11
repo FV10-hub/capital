@@ -3,7 +3,9 @@ package py.com.capital.CapitaCreditos.repositories.cobranzas;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCobrosValores;
 
 import java.time.LocalDate;
@@ -35,6 +37,20 @@ public interface CobCobrosValoresRepository extends JpaRepository<CobCobrosValor
 	@Query("SELECT m FROM CobCobrosValores m WHERE m.estado = 'ACTIVO' AND m.bsEmpresa.id = ?1 AND m.fechaValor >= ?2 AND m.fechaValor <= ?3")
 	List<CobCobrosValores> buscarValoresParaConciliarPorFechas(Long idEmpresa, LocalDate fechaDesde, LocalDate fechaHasta);
 
-
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Query("""
+                UPDATE CobCobrosValores s
+                   SET s.indConsiliado = 'S',
+                       s.usuarioModificacion = :usuario,
+                       s.fechaActualizacion = now()
+                 WHERE s.bsEmpresa.id = :empresaId
+                   AND s.bsTipoValor.id = :tipoValorId
+                   AND s.id IN :idsSaldo
+                   AND s.indConsiliado = 'N'
+            """)
+	int marcarValoresComoConciliado(@Param("empresaId") Long empresaId,
+									@Param("tipoValorId") Long tipoValorId,
+									@Param("idsSaldo") List<Long> idsSaldo,
+									@Param("usuario") String usuario);
 
 }

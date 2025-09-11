@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -46,6 +48,10 @@ public class TesConciliacionValorController {
     private List<CobCobrosValores> lazyModelValores;
     private LazyDataModel<TesBanco> lazyModelBanco;
     private List<CobCobrosValores> cobrosValoresList;
+
+    private List<TesConciliacionValor> conciliacionValorList;
+
+    private List<Long> idList = new ArrayList<>();
 
     private boolean esNuegoRegistro;
     private boolean esVisibleFormulario = true;
@@ -94,6 +100,7 @@ public class TesConciliacionValorController {
         this.esNuegoRegistro = true;
         this.esVisibleFormulario = !esVisibleFormulario;
         this.cobrosValoresList = new ArrayList<>();
+        this.conciliacionValorList = new ArrayList<>();
 
     }
 
@@ -294,16 +301,62 @@ public class TesConciliacionValorController {
         this.indConsiliado = indConsiliado;
     }
 
-    public void consultarValoresAConciliar(){
+    public void consultarValoresAConciliar() {
         this.lazyModelValores = this.cobCobrosValoresServiceImpl
                 .buscarValoresParaConciliarPorFechas(
                         this.commonsUtilitiesController.getIdEmpresaLogueada(),
                         this.fecDesde,
                         this.fecHasta);
         this.esVisibleFormulario = true;
-        var a = 0;
         PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
     }
+
+    public void limpiarDetalle() {
+        this.cobrosValoresList = new ArrayList<>();
+        this.montoTotalConciliado = BigDecimal.ZERO;
+        this.esVisibleFormulario = false;
+        this.idList = new ArrayList<>();
+        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
+    }
+
+    public void calcularTotalesDetalle() {
+        this.montoTotalConciliado = BigDecimal.ZERO;
+        this.cobrosValoresList.forEach(valor -> {
+            this.tesConciliacionValorSelected = null;
+            getTesConciliacionValorSelected();
+            this.tesConciliacionValorSelected.setObservacion("CONCILIADO");
+            this.tesConciliacionValorSelected.setNroValor(valor.getNroValor());
+            this.tesConciliacionValorSelected.setMontoValor(valor.getMontoValor());
+            this.tesConciliacionValorSelected.setFechaValor(valor.getFechaValor());
+            this.tesConciliacionValorSelected.setIndConsiliadoBoolean(true);
+            this.tesConciliacionValorSelected.setBsTipoValor(valor.getBsTipoValor());
+            this.tesConciliacionValorSelected.setBsEmpresa(this.commonsUtilitiesController.getCajaUsuarioLogueado().getBsEmpresa());
+            this.tesConciliacionValorSelected.setCobCobrosValores(valor);
+
+
+            this.conciliacionValorList.add(tesConciliacionValorSelected);
+            this.idList.add(valor.getId());
+            montoTotalConciliado = montoTotalConciliado.add(valor.getMontoValor());
+        });
+        this.tesConciliacionValorSelected = null;
+    }
+
+    public void onRowSelect(SelectEvent<CobCobrosValores> event) {
+        this.cobCobrosValoresSelected = event.getObject();
+        this.calcularTotalesDetalle();
+        this.cobCobrosValoresSelected = null;
+        getCobCobrosValoresSelected();
+        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
+    }
+
+    public void onRowUnselect(UnselectEvent<CobCobrosValores> event) {
+        this.cobCobrosValoresSelected = event.getObject();
+        this.calcularTotalesDetalle();
+        this.cobCobrosValoresSelected = null;
+        getCobCobrosValoresSelected();
+        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
+    }
+
     public void guardar() {
         /*try {
             if (Objects.isNull(this.tesDeposito.getTesBanco())

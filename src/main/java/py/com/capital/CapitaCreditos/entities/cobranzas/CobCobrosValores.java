@@ -56,14 +56,14 @@ public class CobCobrosValores extends Common implements Serializable {
 	@Column(name = "ind_depositado")
 	private String indDepositado;
 
-	@Column(name = "ind_consiliado")
-	private String indConsiliado;
+	@Column(name = "ind_conciliado")
+	private String indConciliado;
 
 	@Transient
 	private boolean indDepositadoBoolean;
 
 	@Transient
-	private boolean indConsiliadoBoolean;
+	private boolean indConciliadoBoolean;
 
 	@Column(name = "fecha_deposito")
 	private LocalDate fechaDeposito;
@@ -200,24 +200,24 @@ public class CobCobrosValores extends Common implements Serializable {
 		this.indDepositadoBoolean = indDepositadoBoolean;
 	}
 
-	public String getIndConsiliado() {
-		return indConsiliado;
+	public String getIndConciliado() {
+		return indConciliado;
 	}
 
-	public void setIndConsiliado(String indConsiliado) {
-		this.indConsiliado = indConsiliado;
+	public void setIndConciliado(String indConciliado) {
+		this.indConciliado = indConciliado;
 	}
 
-	public boolean isIndConsiliadoBoolean() {
-		if (!Objects.isNull(indConsiliado)) {
-			indDepositadoBoolean = indConsiliado.equalsIgnoreCase("S");
+	public boolean isIndConciliadoBoolean() {
+		if (!Objects.isNull(indConciliado)) {
+			indDepositadoBoolean = indConciliado.equalsIgnoreCase("S");
 		}
 		return indDepositadoBoolean;
 	}
 
-	public void setIndConsiliadoBoolean(boolean indConsiliadoBoolean) {
-		indConsiliado = indConsiliadoBoolean ? "S" : "N";
-		this.indConsiliadoBoolean = indConsiliadoBoolean;
+	public void setIndConciliadoBoolean(boolean indConciliadoBoolean) {
+		indConciliado = indConciliadoBoolean ? "S" : "N";
+		this.indConciliadoBoolean = indConciliadoBoolean;
 	}
 
 	public LocalDate getFechaDeposito() {
