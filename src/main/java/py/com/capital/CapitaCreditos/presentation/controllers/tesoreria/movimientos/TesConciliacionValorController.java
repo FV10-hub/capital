@@ -397,15 +397,13 @@ public class TesConciliacionValorController {
                     if (valores_actualizados > 0) {
                         CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
                                 "El registro se guardo correctamente.");
-                        this.cleanFields();
-                        PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
                     }
                 }
             } else {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debes seleccionar por lo menos un registro a conciliar.");
             }
             this.cleanFields();
-            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+            PrimeFaces.current().ajax().update(":form","form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al Guardar", e);
             // e.printStackTrace(System.err);
@@ -430,8 +428,6 @@ public class TesConciliacionValorController {
 
                         CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
                                 "Las conciliaciones se revirtieron correctamente.");
-                        this.cleanFields();
-                        PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
                     }
                 }
 
@@ -439,6 +435,8 @@ public class TesConciliacionValorController {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debes seleccionar por lo menos un registro conciliado.");
             }
 
+            this.cleanFields();
+            PrimeFaces.current().ajax().update(":form","form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al Guardar", e);
             e.printStackTrace(System.err);

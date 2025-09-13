@@ -42,6 +42,7 @@
 
 
 
+
         </script>
     </h:head>
     <ui:define name="title">Solicitudes de Creditos</ui:define>
@@ -217,7 +218,8 @@
                                                         Vencimiento
                                                     </p:outputLabel>
                                                     <div class="col-12 md:col-6">
-                                                        <p:datePicker id="fechaPrimLb" autocomplete="off" showIcon="true"
+                                                        <p:datePicker id="fechaPrimLb" autocomplete="off"
+                                                                      showIcon="true"
                                                                       value="#{creSolicitudCreditoController.creSolicitudCredito.primerVencimiento}"
                                                                       pattern="dd/MM/yyyy"
                                                                       showButtonBar="true"
@@ -252,6 +254,7 @@
                                                     </p:outputLabel>
                                                     <div class="col-12 md:col-6">
                                                         <p:inputNumber id="montoAproLb"
+                                                                       disabled="#{creSolicitudCreditoController.creSolicitudCredito.indAutorizado eq 'S'}"
                                                                        value="#{creSolicitudCreditoController.creSolicitudCredito.montoAprobado}"/>
                                                     </div>
                                                 </div>
