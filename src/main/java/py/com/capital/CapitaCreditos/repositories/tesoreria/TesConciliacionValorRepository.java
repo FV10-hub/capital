@@ -23,7 +23,10 @@ public interface TesConciliacionValorRepository extends JpaRepository<TesConcili
 	List<TesConciliacionValor> buscarTesConciliacionValorActivosLista(Long idEmpresa);
 
 	//TODO: N o S son los estados para conciliado
-	@Query("SELECT m FROM TesConciliacionValor m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 and m.indConsiliado = ?2")
+	@Query("SELECT m FROM TesConciliacionValor m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 and m.indConciliado = ?2")
 	List<TesConciliacionValor> buscarTesConciliacionValorPorEstado(Long idEmpresa, String estado);
-	
+
+	@Query("SELECT m FROM TesConciliacionValor m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 AND m.cobCobrosValores.id IN ?2")
+	List<TesConciliacionValor> buscarTesConciliacionValorPorIds(Long idEmpresa, List<Long> ids);
+
 }

@@ -344,11 +344,11 @@ public class CobRecibosController {
             cobCobrosValoresSelected.setFechaValor(LocalDate.now());
             cobCobrosValoresSelected.setFechaVencimiento(LocalDate.now());
             cobCobrosValoresSelected.setIndDepositadoBoolean(false);
+            cobCobrosValoresSelected.setIndConciliado("N");
             cobCobrosValoresSelected.setNroValor("0");
             cobCobrosValoresSelected.setMontoValor(BigDecimal.ZERO);
             cobCobrosValoresSelected.setBsEmpresa(new BsEmpresa());
             cobCobrosValoresSelected.setBsTipoValor(new BsTipoValor());
-            System.out.println("se reinicio los valores");
         }
         return cobCobrosValoresSelected;
     }
@@ -843,24 +843,12 @@ public class CobRecibosController {
 
                 } catch (Exception e) {
                     LOGGER.error("Ocurrio un error al Guardar", e);
-                    e.printStackTrace(System.err);
-
-                    Throwable cause = e.getCause();
-                    while (cause != null) {
-                        if (cause instanceof ConstraintViolationException) {
-                            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                                    "El recibo ya existe.");
-                            break;
-                        }
-                        cause = cause.getCause();
-                    }
-
-                    if (cause == null) {
-                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                                e.getMessage().substring(0, e.getMessage().length()) + "...");
-                    }
+                    // e.printStackTrace(System.err);
+                    String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
 
                     PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+
                 }
 
             }

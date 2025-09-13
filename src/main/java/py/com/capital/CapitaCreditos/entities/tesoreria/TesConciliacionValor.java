@@ -41,10 +41,10 @@ public class TesConciliacionValor extends Common implements Serializable {
 	private LocalDate fechaValor;
 
 	@Column(name = "ind_conciliado")
-	private String indConsiliado;
+	private String indConciliado;
 
 	@Transient
-	private boolean indConsiliadoBoolean;
+	private boolean indConciliadoBoolean;
 
 	@ManyToOne
 	@JoinColumn(name = "bs_tipo_valor_id", referencedColumnName = "id", nullable = false)
@@ -110,24 +110,24 @@ public class TesConciliacionValor extends Common implements Serializable {
 		this.fechaValor = fechaValor;
 	}
 
-	public String getIndConsiliado() {
-		return indConsiliado;
+	public String getIndConciliado() {
+		return indConciliado;
 	}
 
-	public void setIndConsiliado(String indConsiliado) {
-		this.indConsiliado = indConsiliado;
+	public void setIndConciliado(String indConciliado) {
+		this.indConciliado = indConciliado;
 	}
 
-	public boolean isIndConsiliadoBoolean() {
-		if (!Objects.isNull(indConsiliado)) {
-			indConsiliadoBoolean = indConsiliado.equalsIgnoreCase("S");
+	public boolean isIndConciliadoBoolean() {
+		if (!Objects.isNull(indConciliado)) {
+			indConciliadoBoolean = indConciliado.equalsIgnoreCase("S");
 		}
-		return indConsiliadoBoolean;
+		return indConciliadoBoolean;
 	}
 
-	public void setIndConsiliadoBoolean(boolean indConsiliadoBoolean) {
-		indConsiliado = indConsiliadoBoolean ? "S" : "N";
-		this.indConsiliadoBoolean = indConsiliadoBoolean;
+	public void setIndConciliadoBoolean(boolean indConciliadoBoolean) {
+		indConciliado = indConciliadoBoolean ? "S" : "N";
+		this.indConciliadoBoolean = indConciliadoBoolean;
 	}
 
 	public BsTipoValor getBsTipoValor() {

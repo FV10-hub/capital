@@ -41,6 +41,10 @@
 			};
 
 
+
+
+
+
         </script>
     </h:head>
     <ui:define name="title">Conciliacion Bancaria</ui:define>
@@ -48,6 +52,7 @@
         <h:form id="form">
             <div class="grid crud-demo">
                 <div class="col-12">
+                    <p:growl id="messages" showDetail="true"/>
                     <div class="card ui-fluid">
                         <h5>Conciliacion Bancaria</h5>
                         <div class="field grid">
@@ -80,28 +85,55 @@
                         </div>
                         <div class="card">
                             <h5>Procesar</h5>
-                            <div class="formgroup-inline flex align-items-center">
+                            <div class="formgroup-inline flex justify-content-between align-items-center flex-wrap">
 
-                                <div class="field col-4 md:col-2">
+                                <div class="field col-4 md:col-1">
                                     <p:outputLabel for="formato" value="Estado"/>
                                 </div>
-                                <div class="field col-4 md:col-4">
+                                <div class="field col-4 md:col-2 mr-7">
                                     <p:selectOneMenu id="formato"
-                                                     value="#{tesConciliacionValorController.indConsiliado}">
+                                                     value="#{tesConciliacionValorController.indConciliado}">
                                         <f:selectItem itemLabel="Selecciona un Estado"
                                                       itemValue="#{null}" noSelectionOption="true"/>
-                                        <f:selectItem itemLabel="CONSILIADO" itemValue="S"/>
-                                        <f:selectItem itemLabel="NO CONSILIADO" itemValue="N"/>
-                                        <f:selectItem itemLabel="TODOS" itemValue="T"/>
+                                        <f:selectItem itemLabel="CONCILIADO" itemValue="S"/>
+                                        <f:selectItem itemLabel="NO CONCILIADO" itemValue="N"/>
                                     </p:selectOneMenu>
                                 </div>
-                                <div class="field col-4 md:col-4">
+                                <div class="field md:col-2">
                                     <p:commandButton
                                             actionListener="#{tesConciliacionValorController.consultarValoresAConciliar}"
                                             value="Consultar"
                                             icon="pi pi-cloud-download"
                                             styleClass="ui-button-info"/>
                                 </div>
+                                <div class="field md:col-2">
+                                    <p:commandButton value="Guardar" icon="pi pi-save"
+                                                     id="btnGuardar"
+                                                     disabled="#{tesConciliacionValorController.cobrosValoresList.size() == 0}"
+                                                     actionListener="#{tesConciliacionValorController.guardar}"
+                                                     update=":form" styleClass="ui-button-success"
+                                                     style="margin-right: .5rem"/>
+                                </div>
+                                <div class="field md:col-2">
+                                    <p:commandButton value="Limpiar Detalles" icon="pi pi-bolt"
+                                                     id="btnLimpiar"
+                                                     disabled="#{tesConciliacionValorController.cobrosValoresList.size() == 0}"
+                                                     actionListener="#{tesConciliacionValorController.limpiarDetalle}"
+                                                     process="@this"
+                                                     update=":form:dt-conciliacion :form:btnGuardar"
+                                                     styleClass="ui-button-primary"
+                                                     style="margin-right: .5rem"/>
+                                </div>
+                                <div class="field md:col-2">
+                                    <p:commandButton
+                                            id="btnEliminar"
+                                            value="Eliminar" icon="pi pi-trash"
+                                            disabled="#{tesConciliacionValorController.cobrosValoresList.size() == 0}"
+                                            actionListener="#{tesConciliacionValorController.delete}"
+                                            update=":form" styleClass="ui-button-danger"
+                                            style="margin-right: .5rem"/>
+                                </div>
+
 
                             </div>
 

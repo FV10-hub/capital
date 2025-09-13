@@ -6,6 +6,7 @@ import py.com.capital.CapitaCreditos.repositories.cobranzas.CobCobrosValoresRepo
 import py.com.capital.CapitaCreditos.services.cobranzas.CobCobrosValoresService;
 import py.com.capital.CapitaCreditos.services.impl.CommonServiceImpl;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -50,13 +51,14 @@ public class CobCobrosValoresServiceImpl extends CommonServiceImpl<CobCobrosValo
     }
 
     @Override
-    public List<CobCobrosValores> buscarValoresParaConciliarPorFechas(Long idEmpresa, LocalDate fechaDesde, LocalDate fechaHasta) {
-        return this.repository.buscarValoresParaConciliarPorFechas(idEmpresa, fechaDesde, fechaHasta);
+    public List<CobCobrosValores> buscarValoresParaConciliarPorFechas(Long idEmpresa, LocalDate fechaDesde, LocalDate fechaHasta, String conciliado) {
+        return this.repository.buscarValoresParaConciliarPorFechas(idEmpresa, fechaDesde, fechaHasta, conciliado);
     }
 
     @Override
-    public int marcarValoresComoConciliado(Long empresaId, Long tipoValorId, List<Long> idsSaldo, String usuario) {
-        return this.repository.marcarValoresComoConciliado(empresaId, tipoValorId, idsSaldo,usuario);
+    @Transactional
+    public int marcarValoresComoConciliado(Long empresaId, List<Long> idsSaldo, String usuario) {
+        return this.repository.marcarValoresComoConciliado(empresaId, idsSaldo,usuario);
     }
 
 }

@@ -38,12 +38,17 @@ public class TesConciliacionValorServiceImpl extends CommonServiceImpl<TesConcil
 
 	@Override
 	public List<TesConciliacionValor> buscarTesConciliacionValorActivosLista(Long idEmpresa) {
-		return this.buscarTesConciliacionValorActivosLista(idEmpresa);
+		return this.repository.buscarTesConciliacionValorActivosLista(idEmpresa);
 	}
 
 	@Override
 	public List<TesConciliacionValor> buscarTesConciliacionValorPorEstado(Long idEmpresa, String estado) {
 		return this.repository.buscarTesConciliacionValorPorEstado(idEmpresa, estado);
+	}
+
+	@Override
+	public List<TesConciliacionValor> buscarTesConciliacionValorPorIds(Long idEmpresa, List<Long> ids) {
+		return this.repository.buscarTesConciliacionValorPorIds(idEmpresa, ids);
 	}
 
 

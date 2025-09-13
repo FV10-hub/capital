@@ -1,5 +1,6 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.tesoreria.movimientos;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
@@ -15,7 +16,9 @@ import py.com.capital.CapitaCreditos.entities.base.BsTipoValor;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCobrosValores;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesBanco;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesConciliacionValor;
+import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
+import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonsUtilitiesController;
 import py.com.capital.CapitaCreditos.presentation.utils.Estado;
 import py.com.capital.CapitaCreditos.presentation.utils.GenericLazyDataModel;
@@ -24,12 +27,10 @@ import py.com.capital.CapitaCreditos.services.tesoreria.TesBancoService;
 import py.com.capital.CapitaCreditos.services.tesoreria.TesConciliacionValorService;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -58,7 +59,7 @@ public class TesConciliacionValorController {
 
     private LocalDate fecDesde;
     private LocalDate fecHasta;
-    private String indConsiliado;
+    private String indConciliado;
     private static final String DT_NAME = "dt-conciliacion";
 
     public BigDecimal montoTotalConciliado = BigDecimal.ZERO;
@@ -293,12 +294,12 @@ public class TesConciliacionValorController {
         this.fecHasta = fecHasta;
     }
 
-    public String getIndConsiliado() {
-        return indConsiliado;
+    public String getIndConciliado() {
+        return indConciliado;
     }
 
-    public void setIndConsiliado(String indConsiliado) {
-        this.indConsiliado = indConsiliado;
+    public void setIndConciliado(String indConciliado) {
+        this.indConciliado = indConciliado;
     }
 
     public void consultarValoresAConciliar() {
@@ -306,7 +307,8 @@ public class TesConciliacionValorController {
                 .buscarValoresParaConciliarPorFechas(
                         this.commonsUtilitiesController.getIdEmpresaLogueada(),
                         this.fecDesde,
-                        this.fecHasta);
+                        this.fecHasta,
+                        indConciliado);
         this.esVisibleFormulario = true;
         PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
     }
@@ -321,23 +323,47 @@ public class TesConciliacionValorController {
 
     public void calcularTotalesDetalle() {
         this.montoTotalConciliado = BigDecimal.ZERO;
-        this.cobrosValoresList.forEach(valor -> {
-            this.tesConciliacionValorSelected = null;
-            getTesConciliacionValorSelected();
-            this.tesConciliacionValorSelected.setObservacion("CONCILIADO");
-            this.tesConciliacionValorSelected.setNroValor(valor.getNroValor());
-            this.tesConciliacionValorSelected.setMontoValor(valor.getMontoValor());
-            this.tesConciliacionValorSelected.setFechaValor(valor.getFechaValor());
-            this.tesConciliacionValorSelected.setIndConsiliadoBoolean(true);
-            this.tesConciliacionValorSelected.setBsTipoValor(valor.getBsTipoValor());
-            this.tesConciliacionValorSelected.setBsEmpresa(this.commonsUtilitiesController.getCajaUsuarioLogueado().getBsEmpresa());
-            this.tesConciliacionValorSelected.setCobCobrosValores(valor);
+        // IDs ya presentes en la lista (evita duplicados)
+        Set<Long> idsYaAgregados = this.conciliacionValorList.stream()
+                .map(cv -> cv.getCobCobrosValores())
+                .filter(Objects::nonNull)
+                .map(cv -> cv.getId())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
+        for (CobCobrosValores valor : this.cobrosValoresList) {
+            if (valor == null || valor.getId() == null) {
+                continue;
+            }
 
-            this.conciliacionValorList.add(tesConciliacionValorSelected);
-            this.idList.add(valor.getId());
-            montoTotalConciliado = montoTotalConciliado.add(valor.getMontoValor());
-        });
+            // si ya existe, saltar
+            if (!idsYaAgregados.add(valor.getId())) {
+                continue;
+            }
+
+            TesConciliacionValor item = getTesConciliacionValorSelected();
+            item.setObservacion("CONCILIADO");
+            item.setUsuarioModificacion(this.commonsUtilitiesController.getCodUsuarioLogueada());
+            item.setNroValor(valor.getNroValor());
+            item.setMontoValor(valor.getMontoValor());
+            item.setFechaValor(valor.getFechaValor());
+            item.setIndConciliadoBoolean(true);
+            item.setBsTipoValor(valor.getBsTipoValor());
+            item.setBsEmpresa(this.commonsUtilitiesController.getCajaUsuarioLogueado().getBsEmpresa());
+            item.setCobCobrosValores(valor);
+
+            this.conciliacionValorList.add(item);
+
+            // si mantenés una lista de IDs, no dupliques:
+            if (this.idList != null && !this.idList.contains(valor.getId())) {
+                this.idList.add(valor.getId());
+            }
+
+            if (valor.getMontoValor() != null) {
+                montoTotalConciliado = montoTotalConciliado.add(valor.getMontoValor());
+            }
+        }
+
         this.tesConciliacionValorSelected = null;
     }
 
@@ -346,7 +372,8 @@ public class TesConciliacionValorController {
         this.calcularTotalesDetalle();
         this.cobCobrosValoresSelected = null;
         getCobCobrosValoresSelected();
-        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
+        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME,
+                ":form:btnGuardar", ":form:btnLimpiar", ":form:btnEliminar");
     }
 
     public void onRowUnselect(UnselectEvent<CobCobrosValores> event) {
@@ -354,80 +381,71 @@ public class TesConciliacionValorController {
         this.calcularTotalesDetalle();
         this.cobCobrosValoresSelected = null;
         getCobCobrosValoresSelected();
-        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
+        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME,
+                ":form:btnGuardar", ":form:btnLimpiar", ":form:btnEliminar");
     }
 
     public void guardar() {
-        /*try {
-            if (Objects.isNull(this.tesDeposito.getTesBanco())
-                    || Objects.isNull(this.tesDeposito.getTesBanco().getId())) {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar un banco.");
-                return;
-            }
-            this.tesDeposito.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
-            this.tesDeposito.setBsEmpresa(sessionBean.getUsuarioLogueado().getBsEmpresa());
-
-            TesDeposito depositoGuardado = this.tesDepositoServiceImpl.save(tesDeposito);
-            if (!Objects.isNull(depositoGuardado)) {
-                if (CollectionUtils.isNotEmpty(cobrosValoresList) && cobrosValoresList.size() > 0) {
-                    this.cobrosValoresList = cobrosValoresList.stream().map(cobro -> {
-                        cobro.setIndDepositadoBoolean(true);
-                        cobro.setTesDeposito(depositoGuardado);
-                        cobro.setFechaDeposito(depositoGuardado.getFechaDeposito());
-                        return cobro;
-                    }).collect(Collectors.toList());
-                    this.cobCobrosValoresServiceImpl.saveAll(cobrosValoresList);
+        try {
+            if (CollectionUtils.isNotEmpty(conciliacionValorList) && conciliacionValorList.size() > 0) {
+                if (CollectionUtils.isNotEmpty(this.tesConciliacionValorServiceImpl.saveAll(conciliacionValorList))) {
+                    var valores_actualizados = this.cobCobrosValoresServiceImpl.marcarValoresComoConciliado(
+                            this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                            this.idList,
+                            this.commonsUtilitiesController.getCodUsuarioLogueada()
+                    );
+                    if (valores_actualizados > 0) {
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                                "El registro se guardo correctamente.");
+                        this.cleanFields();
+                        PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+                    }
                 }
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                        "El registro se guardo correctamente.");
             } else {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo insertar el registro.");
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debes seleccionar por lo menos un registro a conciliar.");
             }
-
             this.cleanFields();
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al Guardar", e);
-            e.printStackTrace(System.err);
-
-            Throwable cause = e.getCause();
-            while (cause != null) {
-                if (cause instanceof ConstraintViolationException) {
-                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "El DEPOSITO ya fue creado.");
-                    break;
-                }
-                cause = cause.getCause();
-            }
-
-            if (cause == null) {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                        e.getMessage().substring(0, e.getMessage().length()) + "...");
-            }
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
 
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         }
-*/
+
     }
 
     public void delete() {
-        /*try {
-            if (!Objects.isNull(this.tesDeposito)) {
-                this.tesDepositoServiceImpl.deleteById(this.tesDeposito.getId());
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                        "El registro se elimino correctamente.");
+        try {
+            if (this.indConciliado.equalsIgnoreCase("S")) {
+                List<TesConciliacionValor> conciliacionesAEliminar;
+                if (CollectionUtils.isNotEmpty(idList) && idList.size() > 0) {
+                    conciliacionesAEliminar = this.tesConciliacionValorServiceImpl.buscarTesConciliacionValorPorIds(
+                            this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                            this.idList
+                    );
+                    if (CollectionUtils.isNotEmpty(this.tesConciliacionValorServiceImpl.deleteAll(conciliacionesAEliminar))) {
+
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                                "Las conciliaciones se revirtieron correctamente.");
+                        this.cleanFields();
+                        PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+                    }
+                }
 
             } else {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo eliminar el registro.");
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debes seleccionar por lo menos un registro conciliado.");
             }
-            this.cleanFields();
-            PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
+
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al Guardar", e);
             e.printStackTrace(System.err);
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
                     e.getMessage().substring(0, e.getMessage().length()) + "...");
         }
-*/
+
     }
 
 }

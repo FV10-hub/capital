@@ -18,4 +18,6 @@ public interface TesConciliacionValorService extends CommonService<TesConciliaci
 
 	List<TesConciliacionValor> buscarTesConciliacionValorPorEstado(Long idEmpresa, String estado);
 
+	List<TesConciliacionValor> buscarTesConciliacionValorPorIds(Long idEmpresa, List<Long> ids);
+
 }

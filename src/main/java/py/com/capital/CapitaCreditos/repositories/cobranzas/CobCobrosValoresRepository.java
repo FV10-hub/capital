@@ -34,22 +34,20 @@ public interface CobCobrosValoresRepository extends JpaRepository<CobCobrosValor
 	@Query("SELECT m FROM CobCobrosValores m where m.estado = 'ACTIVO' and m.indDepositado = 'S' and m.bsEmpresa.id = ?1 and m.tesDeposito.id = ?2 ")
 	List<CobCobrosValores> buscarValoresDepositoLista(Long idEmpresa,Long idDeposito);
 
-	@Query("SELECT m FROM CobCobrosValores m WHERE m.estado = 'ACTIVO' AND m.bsEmpresa.id = ?1 AND m.fechaValor >= ?2 AND m.fechaValor <= ?3")
-	List<CobCobrosValores> buscarValoresParaConciliarPorFechas(Long idEmpresa, LocalDate fechaDesde, LocalDate fechaHasta);
+	@Query("SELECT m FROM CobCobrosValores m WHERE m.estado = 'ACTIVO' AND m.indDepositado = 'S' AND m.bsEmpresa.id = ?1 AND m.fechaValor >= ?2 AND m.fechaValor <= ?3  AND m.indConciliado = ?4")
+	List<CobCobrosValores> buscarValoresParaConciliarPorFechas(Long idEmpresa, LocalDate fechaDesde, LocalDate fechaHasta, String conciliado);
 
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("""
                 UPDATE CobCobrosValores s
-                   SET s.indConsiliado = 'S',
+                   SET s.indConciliado = 'S',
                        s.usuarioModificacion = :usuario,
                        s.fechaActualizacion = now()
                  WHERE s.bsEmpresa.id = :empresaId
-                   AND s.bsTipoValor.id = :tipoValorId
                    AND s.id IN :idsSaldo
-                   AND s.indConsiliado = 'N'
+                   AND s.indConciliado = 'N'
             """)
 	int marcarValoresComoConciliado(@Param("empresaId") Long empresaId,
-									@Param("tipoValorId") Long tipoValorId,
 									@Param("idsSaldo") List<Long> idsSaldo,
 									@Param("usuario") String usuario);
 
