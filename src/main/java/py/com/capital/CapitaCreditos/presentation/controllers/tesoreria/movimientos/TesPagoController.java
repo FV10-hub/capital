@@ -892,9 +892,21 @@ public class TesPagoController {
 
             if (Objects.isNull(this.tesPagoCabecera.getId())) {
                 try {
-                    this.tesPagoCabecera.setNroPago(this.tesPagoServiceImpl.calcularNroPagoDisponible(
+                    /*this.tesPagoCabecera.setNroPago(this.tesPagoServiceImpl.calcularNroPagoDisponible(
                             commonsUtilitiesController.getIdEmpresaLogueada(),
-                            this.tesPagoCabecera.getBsTalonario().getId()));
+                            this.tesPagoCabecera.getBsTalonario().getId()));*/
+                    this.tesPagoCabecera.setNroPago(this.commonsUtilitiesController.asignarNumeroDesdeTalonario(
+                            commonsUtilitiesController.getIdEmpresaLogueada(),
+                            this.tesPagoCabecera.getBsTalonario().getId(),
+                            this.commonsUtilitiesController.getCodUsuarioLogueada()
+                    ));
+                    if (!this.commonsUtilitiesController.validarNumero(commonsUtilitiesController.getIdEmpresaLogueada(),
+                            this.tesPagoCabecera.getBsTalonario().getId(),
+                            this.tesPagoCabecera.getNroPago())) {
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+                                "El numero de factura calculado esta fuera de rango de vigencia.");
+                        return;
+                    }
                     String formato = "%s-%s-%09d";
                     this.tesPagoCabecera.setNroPagoCompleto(String.format(formato,
                             this.tesPagoCabecera.getBsTalonario().getBsTimbrado().getCodEstablecimiento(),

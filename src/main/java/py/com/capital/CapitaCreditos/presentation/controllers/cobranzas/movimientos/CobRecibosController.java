@@ -4,7 +4,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.exception.ConstraintViolationException;
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
@@ -832,9 +831,21 @@ public class CobRecibosController {
                     if (Objects.nonNull(this.cobHabilitacionCaja)) {
                         this.cobReciboCabecera.setCobHabilitacionCaja(cobHabilitacionCaja);
                     }
-                    this.cobReciboCabecera.setNroRecibo(this.cobRecibosServiceImpl.calcularNroReciboDisponible(
+                    /*this.cobReciboCabecera.setNroRecibo(this.cobRecibosServiceImpl.calcularNroReciboDisponible(
                             commonsUtilitiesController.getIdEmpresaLogueada(),
-                            this.cobReciboCabecera.getBsTalonario().getId()));
+                            this.cobReciboCabecera.getBsTalonario().getId()));*/
+                    this.cobReciboCabecera.setNroRecibo(this.commonsUtilitiesController.asignarNumeroDesdeTalonario(
+                            commonsUtilitiesController.getIdEmpresaLogueada(),
+                            this.cobReciboCabecera.getBsTalonario().getId(),
+                            this.commonsUtilitiesController.getCodUsuarioLogueada()
+                    ));
+                    if (!this.commonsUtilitiesController.validarNumero(commonsUtilitiesController.getIdEmpresaLogueada(),
+                            this.cobReciboCabecera.getBsTalonario().getId(),
+                            this.cobReciboCabecera.getNroRecibo())) {
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+                                "El numero de factura calculado esta fuera de rango de vigencia.");
+                        return;
+                    }
                     String formato = "%s-%s-%09d";
                     this.cobReciboCabecera.setNroReciboCompleto(String.format(formato,
                             this.cobReciboCabecera.getBsTalonario().getBsTimbrado().getCodEstablecimiento(),

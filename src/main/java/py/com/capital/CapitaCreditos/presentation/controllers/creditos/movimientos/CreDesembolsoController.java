@@ -130,10 +130,8 @@ public class CreDesembolsoController {
         if (Objects.isNull(creDesembolsoCabecera)) {
             try {
                 var moduloCredito = this.bsModuloServiceImpl.findByCodigo(Modulos.CREDITOS.getModulo());
-                var tazaAnualValorParametrizado = this.commonsUtilitiesController.getValorParametro("TAZANUAL",
-                        moduloCredito.getId());
-                var tazaMoraValorParametrizado = this.commonsUtilitiesController.getValorParametro("TAZAMORA",
-                        moduloCredito.getId());
+                var tazaAnualValorParametrizado = this.commonsUtilitiesController.getValorParametro("TAZANUAL", moduloCredito.getId());
+                var tazaMoraValorParametrizado = this.commonsUtilitiesController.getValorParametro("TAZAMORA", moduloCredito.getId());
                 creDesembolsoCabecera = new CreDesembolsoCabecera();
                 creDesembolsoCabecera.setFechaDesembolso(LocalDate.now());
                 creDesembolsoCabecera.setEstado(Estado.ACTIVO.getEstado());
@@ -363,9 +361,7 @@ public class CreDesembolsoController {
 
     public LazyDataModel<CreDesembolsoCabecera> getLazyModel() {
         if (Objects.isNull(lazyModel)) {
-            lazyModel = new GenericLazyDataModel<CreDesembolsoCabecera>(
-                    (List<CreDesembolsoCabecera>) creDesembolsoServiceImpl.buscarCreDesembolsoCabeceraActivosLista(
-                            this.commonsUtilitiesController.getIdEmpresaLogueada()));
+            lazyModel = new GenericLazyDataModel<CreDesembolsoCabecera>((List<CreDesembolsoCabecera>) creDesembolsoServiceImpl.buscarCreDesembolsoCabeceraActivosLista(this.commonsUtilitiesController.getIdEmpresaLogueada()));
         }
         return lazyModel;
     }
@@ -376,9 +372,7 @@ public class CreDesembolsoController {
 
     public LazyDataModel<CreSolicitudCredito> getLazyModelSolicitudes() {
         if (Objects.isNull(lazyModelSolicitudes)) {
-            lazyModelSolicitudes = new GenericLazyDataModel<CreSolicitudCredito>(
-                    (List<CreSolicitudCredito>) creSolicitudCreditoServiceImpl
-                            .buscarSolicitudAutorizadosLista(this.commonsUtilitiesController.getIdEmpresaLogueada()));
+            lazyModelSolicitudes = new GenericLazyDataModel<CreSolicitudCredito>((List<CreSolicitudCredito>) creSolicitudCreditoServiceImpl.buscarSolicitudAutorizadosLista(this.commonsUtilitiesController.getIdEmpresaLogueada()));
         }
         return lazyModelSolicitudes;
     }
@@ -390,9 +384,7 @@ public class CreDesembolsoController {
     public LazyDataModel<BsTalonario> getLazyModelTalonario() {
         if (Objects.isNull(lazyModelTalonario)) {
             var moduloCredito = this.bsModuloServiceImpl.findByCodigo(Modulos.CREDITOS.getModulo());
-            lazyModelTalonario = new GenericLazyDataModel<BsTalonario>(
-                    this.commonsUtilitiesController.bsTalonarioPorModuloLista(
-                            this.commonsUtilitiesController.getIdEmpresaLogueada(), moduloCredito.getId()));
+            lazyModelTalonario = new GenericLazyDataModel<BsTalonario>(this.commonsUtilitiesController.bsTalonarioPorModuloLista(this.commonsUtilitiesController.getIdEmpresaLogueada(), moduloCredito.getId()));
 
         }
         return lazyModelTalonario;
@@ -404,8 +396,7 @@ public class CreDesembolsoController {
 
     public LazyDataModel<CreTipoAmortizacion> getLazyModelTipoAmortizacion() {
         if (Objects.isNull(lazyModelTipoAmortizacion)) {
-            lazyModelTipoAmortizacion = new GenericLazyDataModel<CreTipoAmortizacion>(
-                    creTipoAmortizacionServiceImpl.buscarCreTipoAmortizacionActivosLista());
+            lazyModelTipoAmortizacion = new GenericLazyDataModel<CreTipoAmortizacion>(creTipoAmortizacionServiceImpl.buscarCreTipoAmortizacionActivosLista());
         }
         return lazyModelTipoAmortizacion;
     }
@@ -447,10 +438,8 @@ public class CreDesembolsoController {
     }
 
     public void procesarCuotas() {
-        if (Objects.isNull(creDesembolsoCabecera.getCreTipoAmortizacion())
-                || Objects.isNull(creDesembolsoCabecera.getCreTipoAmortizacion().getId())) {
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                    "Debe seleccionar un tipo de Amortizacion.");
+        if (Objects.isNull(creDesembolsoCabecera.getCreTipoAmortizacion()) || Objects.isNull(creDesembolsoCabecera.getCreTipoAmortizacion().getId())) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar un tipo de Amortizacion.");
             PrimeFaces.current().ajax().update(":form:messages");
             return;
         }
@@ -475,8 +464,7 @@ public class CreDesembolsoController {
         limpiarCuotas();
         try {
             try {
-                this.stoArticuloSelected = this.stoArticuloServiceImpl.buscarArticuloPorCodigo("CUO",
-                        this.commonsUtilitiesController.getIdEmpresaLogueada());
+                this.stoArticuloSelected = this.stoArticuloServiceImpl.buscarArticuloPorCodigo("CUO", this.commonsUtilitiesController.getIdEmpresaLogueada());
             } catch (Exception e) {
                 LOGGER.error("Ocurrio un error al generar cuotas", e);
                 e.printStackTrace(System.err);
@@ -521,17 +509,13 @@ public class CreDesembolsoController {
                     } else {
                         int ultimoDiaHabilActual = YearMonth.from(fechaVencimiento).atEndOfMonth().getDayOfMonth();
                         if (ultimoDiaHabilActual < diaHabilPrimerVencimiento) {
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(),
-                                    ultimoDiaHabilActual);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(), ultimoDiaHabilActual);
                             detalle.setFechaVencimiento(fechaVencimiento);
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(),
-                                    fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
                         } else if (fechaVencimiento.getMonth() == Month.FEBRUARY) {
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(),
-                                    diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(), diaHabilPrimerVencimiento);
                             detalle.setFechaVencimiento(fechaVencimiento);
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(),
-                                    fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
                         } else {
                             detalle.setFechaVencimiento(fechaVencimiento);
                             fechaVencimiento = fechaVencimiento.plusMonths(1);
@@ -563,16 +547,14 @@ public class CreDesembolsoController {
 
     private void generarCuotasMetodoFrances() {
         try {
-            this.stoArticuloSelected = this.stoArticuloServiceImpl.buscarArticuloPorCodigo("CUO",
-                    this.commonsUtilitiesController.getIdEmpresaLogueada());
+            this.stoArticuloSelected = this.stoArticuloServiceImpl.buscarArticuloPorCodigo("CUO", this.commonsUtilitiesController.getIdEmpresaLogueada());
 
             if (CollectionUtils.isEmpty(creDesembolsoCabecera.getCreDesembolsoDetalleList())) {
                 creDesembolsoCabecera.setCreDesembolsoDetalleList(new ArrayList<CreDesembolsoDetalle>());
                 double monto = creDesembolsoCabecera.getCreSolicitudCredito().getMontoAprobado().doubleValue();
                 double tasaAnual = creDesembolsoCabecera.getTazaAnual().divide(BigDecimal.valueOf(100)).doubleValue();
                 double plazoMeses = creDesembolsoCabecera.getCreSolicitudCredito().getPlazo();
-                double iva = this.stoArticuloSelected.getBsIva().getPorcentaje().divide(BigDecimal.valueOf(100))
-                        .doubleValue();
+                double iva = this.stoArticuloSelected.getBsIva().getPorcentaje().divide(BigDecimal.valueOf(100)).doubleValue();
 
                 //////
                 double tasaMensual = tasaAnual / 12;
@@ -609,17 +591,13 @@ public class CreDesembolsoController {
                     } else {
                         int ultimoDiaHabilActual = YearMonth.from(fechaVencimiento).atEndOfMonth().getDayOfMonth();
                         if (ultimoDiaHabilActual < diaHabilPrimerVencimiento) {
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(),
-                                    ultimoDiaHabilActual);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(), ultimoDiaHabilActual);
                             detalle.setFechaVencimiento(fechaVencimiento);
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(),
-                                    fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
                         } else if (fechaVencimiento.getMonth() == Month.FEBRUARY) {
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(),
-                                    diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(), diaHabilPrimerVencimiento);
                             detalle.setFechaVencimiento(fechaVencimiento);
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(),
-                                    fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
                         } else {
                             detalle.setFechaVencimiento(fechaVencimiento);
                             fechaVencimiento = fechaVencimiento.plusMonths(1);
@@ -638,8 +616,7 @@ public class CreDesembolsoController {
         } catch (Exception e) {
             LOGGER.error("Ocurrió un error al generar cuotas METODO FRANCES", e);
             e.printStackTrace(System.err);
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                    e.getMessage().substring(0, e.getMessage().length()) + "...");
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", e.getMessage().substring(0, e.getMessage().length()) + "...");
             PrimeFaces.current().ajax().update(":form:messages");
         }
     }
@@ -647,8 +624,7 @@ public class CreDesembolsoController {
     private void generarCuotasMetodoAleman() {
         limpiarCuotas();
         try {
-            this.stoArticuloSelected = this.stoArticuloServiceImpl.buscarArticuloPorCodigo("CUO",
-                    this.commonsUtilitiesController.getIdEmpresaLogueada());
+            this.stoArticuloSelected = this.stoArticuloServiceImpl.buscarArticuloPorCodigo("CUO", this.commonsUtilitiesController.getIdEmpresaLogueada());
 
             if (CollectionUtils.isEmpty(creDesembolsoCabecera.getCreDesembolsoDetalleList())) {
                 BigDecimal montoSolicitado = creDesembolsoCabecera.getCreSolicitudCredito().getMontoAprobado();
@@ -688,17 +664,13 @@ public class CreDesembolsoController {
                     } else {
                         int ultimoDiaHabilActual = YearMonth.from(fechaVencimiento).atEndOfMonth().getDayOfMonth();
                         if (ultimoDiaHabilActual < diaHabilPrimerVencimiento) {
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(),
-                                    ultimoDiaHabilActual);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(), ultimoDiaHabilActual);
                             detalle.setFechaVencimiento(fechaVencimiento);
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(),
-                                    fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
                         } else if (fechaVencimiento.getMonth() == Month.FEBRUARY) {
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(),
-                                    diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(), diaHabilPrimerVencimiento);
                             detalle.setFechaVencimiento(fechaVencimiento);
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(),
-                                    fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
                         } else {
                             detalle.setFechaVencimiento(fechaVencimiento);
                             fechaVencimiento = fechaVencimiento.plusMonths(1);
@@ -724,8 +696,7 @@ public class CreDesembolsoController {
         } catch (Exception e) {
             LOGGER.error("Ocurrió un error al generar cuotas", e);
             e.printStackTrace(System.err);
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                    e.getMessage().substring(0, e.getMessage().length()) + "...");
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", e.getMessage().substring(0, e.getMessage().length()) + "...");
             PrimeFaces.current().ajax().update(":form:messages");
         }
     }
@@ -733,8 +704,7 @@ public class CreDesembolsoController {
     private void generarCuotasMetodoAmericano() {
         limpiarCuotas();
         try {
-            this.stoArticuloSelected = this.stoArticuloServiceImpl.buscarArticuloPorCodigo("CUO",
-                    this.commonsUtilitiesController.getIdEmpresaLogueada());
+            this.stoArticuloSelected = this.stoArticuloServiceImpl.buscarArticuloPorCodigo("CUO", this.commonsUtilitiesController.getIdEmpresaLogueada());
 
             if (CollectionUtils.isEmpty(creDesembolsoCabecera.getCreDesembolsoDetalleList())) {
                 BigDecimal montoSolicitado = creDesembolsoCabecera.getCreSolicitudCredito().getMontoAprobado();
@@ -772,17 +742,13 @@ public class CreDesembolsoController {
                     } else {
                         int ultimoDiaHabilActual = YearMonth.from(fechaVencimiento).atEndOfMonth().getDayOfMonth();
                         if (ultimoDiaHabilActual < diaHabilPrimerVencimiento) {
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(),
-                                    ultimoDiaHabilActual);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(), ultimoDiaHabilActual);
                             detalle.setFechaVencimiento(fechaVencimiento);
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(),
-                                    fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
                         } else if (fechaVencimiento.getMonth() == Month.FEBRUARY) {
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(),
-                                    diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.getMonth(), diaHabilPrimerVencimiento);
                             detalle.setFechaVencimiento(fechaVencimiento);
-                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(),
-                                    fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
+                            fechaVencimiento = LocalDate.of(fechaVencimiento.getYear(), fechaVencimiento.plusMonths(1).getMonth(), diaHabilPrimerVencimiento);
                         } else {
                             detalle.setFechaVencimiento(fechaVencimiento);
                             fechaVencimiento = fechaVencimiento.plusMonths(1);
@@ -806,8 +772,7 @@ public class CreDesembolsoController {
         } catch (Exception e) {
             LOGGER.error("Ocurrió un error al generar cuotas", e);
             e.printStackTrace(System.err);
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                    e.getMessage().substring(0, e.getMessage().length()) + "...");
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", e.getMessage().substring(0, e.getMessage().length()) + "...");
             PrimeFaces.current().ajax().update(":form:messages");
         }
     }
@@ -823,21 +788,16 @@ public class CreDesembolsoController {
 
     public void guardar() {
         try {
-            if (Objects.isNull(this.creDesembolsoCabecera.getCreSolicitudCredito())
-                    || Objects.isNull(this.creDesembolsoCabecera.getCreSolicitudCredito().getId())) {
+            if (Objects.isNull(this.creDesembolsoCabecera.getCreSolicitudCredito()) || Objects.isNull(this.creDesembolsoCabecera.getCreSolicitudCredito().getId())) {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar una Solicitud.");
                 return;
             }
-            if (Objects.isNull(this.creDesembolsoCabecera.getCreTipoAmortizacion())
-                    || Objects.isNull(this.creDesembolsoCabecera.getCreTipoAmortizacion().getId())) {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                        "Debe seleccionar un tipo de Amortizacion.");
+            if (Objects.isNull(this.creDesembolsoCabecera.getCreTipoAmortizacion()) || Objects.isNull(this.creDesembolsoCabecera.getCreTipoAmortizacion().getId())) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe seleccionar un tipo de Amortizacion.");
                 return;
             }
-            if (CollectionUtils.isEmpty(creDesembolsoCabecera.getCreDesembolsoDetalleList())
-                    || creDesembolsoCabecera.getCreDesembolsoDetalleList().size() == 0) {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
-                        "Debe generar las Cuotas para guardar.");
+            if (CollectionUtils.isEmpty(creDesembolsoCabecera.getCreDesembolsoDetalleList()) || creDesembolsoCabecera.getCreDesembolsoDetalleList().size() == 0) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debe generar las Cuotas para guardar.");
                 return;
             }
             this.creDesembolsoCabecera.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());
@@ -845,12 +805,15 @@ public class CreDesembolsoController {
             this.creDesembolsoCabecera.setIndDesembolsado("N");
             this.creDesembolsoCabecera.setIndFacturado("N");
             if (Objects.isNull(this.creDesembolsoCabecera.getId())) {
-                this.creDesembolsoCabecera.setNroDesembolso(this.creDesembolsoServiceImpl
-                        .calcularNroDesembolsoDisponible(commonsUtilitiesController.getIdEmpresaLogueada()));
+                this.creDesembolsoCabecera.setNroDesembolso(this.creDesembolsoServiceImpl.calcularNroDesembolsoDisponible(commonsUtilitiesController.getIdEmpresaLogueada()));
+                this.creDesembolsoCabecera.setNroDesembolso(BigDecimal.valueOf(this.commonsUtilitiesController.asignarNumeroDesdeTalonario(commonsUtilitiesController.getIdEmpresaLogueada(), this.creDesembolsoCabecera.getBsTalonario().getId(), this.commonsUtilitiesController.getCodUsuarioLogueada())));
+                if (!this.commonsUtilitiesController.validarNumero(commonsUtilitiesController.getIdEmpresaLogueada(), this.creDesembolsoCabecera.getBsTalonario().getId(), this.creDesembolsoCabecera.getNroDesembolso().longValue())) {
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "El numero de factura calculado esta fuera de rango de vigencia.");
+                    return;
+                }
             }
             if (!Objects.isNull(this.creDesembolsoServiceImpl.save(creDesembolsoCabecera))) {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                        "El registro se guardo correctamente.");
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!", "El registro se guardo correctamente.");
             } else {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo insertar el registro.");
             }
@@ -869,15 +832,13 @@ public class CreDesembolsoController {
 
     public void delete() {
         try {
-            if (Objects.isNull(this.creDesembolsoCabecera.getCreSolicitudCredito())
-                    || this.creDesembolsoCabecera.isIndDesembolsadoBoolean()) {
+            if (Objects.isNull(this.creDesembolsoCabecera.getCreSolicitudCredito()) || this.creDesembolsoCabecera.isIndDesembolsadoBoolean()) {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Ya fue desembolsado.");
                 return;
             }
             if (!Objects.isNull(this.creDesembolsoCabecera)) {
                 this.creDesembolsoServiceImpl.deleteById(this.creDesembolsoCabecera.getId());
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                        "El registro se elimino correctamente.");
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!", "El registro se elimino correctamente.");
             } else {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "No se pudo eliminar el registro.");
             }
