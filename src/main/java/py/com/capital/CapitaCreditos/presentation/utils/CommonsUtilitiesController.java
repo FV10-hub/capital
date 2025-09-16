@@ -115,6 +115,14 @@ public class CommonsUtilitiesController {
 		this.bsTalonarioServiceImpl = bsTalonarioServiceImpl;
 	}
 
+	public long asignarNumeroDesdeTalonario(Long empresaId, Long talonarioId, String usuario){
+		return this.bsTalonarioServiceImpl.asignarNumeroDesdeTalonario(empresaId, talonarioId, usuario);
+	}
+
+	public boolean validarNumero(Long empresaId, Long talonarioId, long numero){
+		return this.bsTalonarioServiceImpl.validarNumero(empresaId, talonarioId, numero);
+	}
+
 	public CobCajaService getCobCajaServiceImpl() {
 		return cobCajaServiceImpl;
 	}

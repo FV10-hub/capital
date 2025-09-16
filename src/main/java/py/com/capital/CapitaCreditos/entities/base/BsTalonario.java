@@ -3,6 +3,7 @@ package py.com.capital.CapitaCreditos.entities.base;
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 /*
@@ -19,6 +20,9 @@ public class BsTalonario extends Common implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
+
+	@Column(name = "proximo_numero")
+	private BigInteger proximoNumero;
 	
 	@ManyToOne
 	@JoinColumn(name = "bs_timbrado_id", referencedColumnName = "id", nullable = false)
@@ -62,9 +66,14 @@ public class BsTalonario extends Common implements Serializable {
 	public void setBsTipoComprobante(BsTipoComprobante bsTipoComprobante) {
 		this.bsTipoComprobante = bsTipoComprobante;
 	}
-	
-	
-	
+
+	public BigInteger getProximoNumero() {
+		return proximoNumero;
+	}
+
+	public void setProximoNumero(BigInteger proximoNumero) {
+		this.proximoNumero = proximoNumero;
+	}
 }
 
 

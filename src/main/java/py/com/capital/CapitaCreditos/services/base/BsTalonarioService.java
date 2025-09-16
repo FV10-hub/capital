@@ -14,4 +14,8 @@ public interface BsTalonarioService extends CommonService<BsTalonario> {
 	List<BsTalonario> buscarBsTalonarioActivosLista(Long idEmpresa);
 	
 	List<BsTalonario> buscarBsTalonarioPorModuloLista(Long idEmpresa, Long idModulo);
+
+	public long asignarNumeroDesdeTalonario(Long empresaId, Long talonarioId, String usuario);
+
+	public boolean validarNumero(Long empresaId, Long talonarioId, long numero);
 }
