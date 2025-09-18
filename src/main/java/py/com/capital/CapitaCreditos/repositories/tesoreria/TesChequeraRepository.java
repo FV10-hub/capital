@@ -32,12 +32,12 @@ public interface TesChequeraRepository extends JpaRepository<TesChequera, Long> 
               SELECT c
               FROM TesChequera c
               JOIN FETCH c.tesBanco b
-              WHERE c.id = :chequeraId
+              WHERE c.tesBanco.id = :bancoId
                 AND c.bsEmpresa.id = :empresaId
                 AND c.estado = 'ACTIVO'
             """)
-    Optional<TesChequera> findForUpdate(@Param("empresaId") Long empresaId,
-                                        @Param("chequeraId") Long chequeraId);
+    Optional<TesChequera> findByBancoForUpdate(@Param("empresaId") Long empresaId,
+                                               @Param("bancoId") Long bancoId);
 
     // Para sugerir en UI (solo lectura, sin lock)
     @Query("""
@@ -46,7 +46,29 @@ public interface TesChequeraRepository extends JpaRepository<TesChequera, Long> 
               WHERE c.id = :chequeraId AND c.bsEmpresa.id = :empresaId
             """)
     Optional<BigDecimal> sugerenciaProximo(@Param("empresaId") Long empresaId,
-                                     @Param("chequeraId") Long chequeraId);
+                                           @Param("chequeraId") Long chequeraId);
+
+    @Query("""
+              SELECT c
+              FROM TesChequera c
+              JOIN FETCH c.tesBanco b
+              WHERE c.tesBanco.id = :bancoId
+                AND c.bsEmpresa.id = :empresaId
+                AND c.estado = 'ACTIVO'
+            """)
+    Optional<TesChequera> findByBanco(@Param("empresaId") Long empresaId,
+                                      @Param("bancoId") Long bancoId);
+
+    @Query("""
+              SELECT c
+              FROM TesChequera c
+              JOIN FETCH c.tesBanco b
+              WHERE c.id = :chequeraId
+                AND c.bsEmpresa.id = :empresaId
+                AND c.estado = 'ACTIVO'
+            """)
+    Optional<TesChequera> findByIdAndEmpresa(@Param("empresaId") Long empresaId,
+                                             @Param("chequeraId") Long chequeraId);
 
 
 }

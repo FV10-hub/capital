@@ -804,7 +804,7 @@
                                                      icon="pi pi-check-circle" title="Seleccionar"
                                                      update=":form:bancoLb">
                                         <f:setPropertyActionListener value="#{banco}"
-                                                                     target="#{tesPagoController.tesPagoValoresSelected.tesBanco}"/>
+                                                                     target="#{tesPagoController.tesBancoSelected}"/>
                                     </p:commandButton>
                                 </p:column>
                                 <p:column headerText="Nro. Cuenta" sortBy="#{banco.codBnaco}"
@@ -851,9 +851,9 @@
                                 <p:column style="width:3rem;text-align: center">
                                     <p:commandButton oncomplete="PF('dlgTipoValor').hide()"
                                                      icon="pi pi-check-circle" title="Seleccionar"
-                                                     update=":form:tipoValorLb">
+                                                     update=":form:tipoValorLb :form:nroValorLb :form:nroValorLb :form:montoValorLb :form:fechaValorLb">
                                         <f:setPropertyActionListener value="#{tipoValor}"
-                                                                     target="#{tesPagoController.tesPagoValoresSelected.bsTipoValor}"/>
+                                                                     target="#{tesPagoController.bsTipoValorSelected}"/>
                                     </p:commandButton>
                                 </p:column>
                                 <p:column headerText="Modulo"

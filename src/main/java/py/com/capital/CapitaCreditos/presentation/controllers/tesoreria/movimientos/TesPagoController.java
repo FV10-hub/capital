@@ -19,10 +19,7 @@ import py.com.capital.CapitaCreditos.entities.cobranzas.CobHabilitacionCaja;
 import py.com.capital.CapitaCreditos.entities.compras.ComProveedor;
 import py.com.capital.CapitaCreditos.entities.compras.ComSaldo;
 import py.com.capital.CapitaCreditos.entities.creditos.CreDesembolsoCabecera;
-import py.com.capital.CapitaCreditos.entities.tesoreria.TesBanco;
-import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoCabecera;
-import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoComprobanteDetalle;
-import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoValores;
+import py.com.capital.CapitaCreditos.entities.tesoreria.*;
 import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.*;
@@ -34,6 +31,7 @@ import py.com.capital.CapitaCreditos.services.compras.ComProveedorService;
 import py.com.capital.CapitaCreditos.services.compras.ComSaldoService;
 import py.com.capital.CapitaCreditos.services.creditos.CreDesembolsoService;
 import py.com.capital.CapitaCreditos.services.tesoreria.TesBancoService;
+import py.com.capital.CapitaCreditos.services.tesoreria.TesChequeraService;
 import py.com.capital.CapitaCreditos.services.tesoreria.TesPagoService;
 
 import javax.annotation.PostConstruct;
@@ -67,6 +65,10 @@ public class TesPagoController {
     private TesPagoComprobanteDetalle tesPagoComprobanteDetalleSelected;
     private List<TesPagoComprobanteDetalle> tesPagoComprobanteDetallesList;
     private TesPagoValores tesPagoValoresSelected;
+
+    private TesBanco tesBancoSelected;
+
+    private BsTipoValor bsTipoValorSelected;
     private List<TesPagoValores> tesPagoValoresList;
     private List<CreDesembolsoCabecera> desembolsoList;
 
@@ -142,6 +144,9 @@ public class TesPagoController {
     @Autowired
     private GenerarReporte generarReporte;
 
+    @Autowired
+    private TesChequeraService tesChequeraServiceImpl;
+
     @PostConstruct
     public void init() {
         this.cleanFields();
@@ -163,6 +168,8 @@ public class TesPagoController {
         this.desembolsoList = null;
         this.saldoList = null;
         this.lazyModelSaldos = null;
+        this.tesBancoSelected = null;
+        this.bsTipoValorSelected = null;
 
         // lazy
         this.lazyModel = null;
@@ -295,6 +302,8 @@ public class TesPagoController {
     }
 
     public void setTesPagoValoresSelected(TesPagoValores tesPagoValoresSelected) {
+        System.out.println("paso pro el select ");
+        var a = 0;
         this.tesPagoValoresSelected = tesPagoValoresSelected;
     }
 
@@ -449,8 +458,6 @@ public class TesPagoController {
                 getLazyModelSaldos();
             }
 
-
-            // TODO:aca debo implementar cuando es proveedor traer saldos de compras
             PrimeFaces.current().ajax().update(":form:manageComprobante",
                     ":form:dt-comprobantes");
         }
@@ -508,6 +515,80 @@ public class TesPagoController {
 
     public void setPuedeEliminar(boolean puedeEliminar) {
         this.puedeEliminar = puedeEliminar;
+    }
+
+    public TesBanco getTesBancoSelected() {
+        if (Objects.isNull(tesBancoSelected)) {
+            this.tesBancoSelected = new TesBanco();
+            this.tesBancoSelected.setBsMoneda(new BsMoneda());
+            this.tesBancoSelected.setBsEmpresa(new BsEmpresa());
+            this.tesBancoSelected.setBsPersona(new BsPersona());
+        }
+        return tesBancoSelected;
+    }
+
+    public void setTesBancoSelected(TesBanco tesBancoSelected) {
+        if (Objects.nonNull(tesBancoSelected)) {
+            //comparo que el saldo del banco pueda pagar
+            if (this.montoTotalPago.compareTo(tesBancoSelected.getSaldoCuenta()) > 0) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_WARN, "¡CUIDADO!",
+                        "El banco no tiene saldo suficiente para realizar este pago.");
+                tesPagoValoresSelected.setTesBanco(new TesBanco());
+                tesPagoValoresSelected.getTesBanco().setBsPersona(new BsPersona());
+                PrimeFaces.current().ajax().update("form:messages", ":form:bancoLb");
+                return;
+            }
+            this.tesPagoValoresSelected.setTesBanco(tesBancoSelected);
+            tesBancoSelected = null;
+        }
+        this.tesBancoSelected = tesBancoSelected;
+    }
+
+    public BsTipoValor getBsTipoValorSelected() {
+        if (Objects.isNull(bsTipoValorSelected)) {
+            this.bsTipoValorSelected = new BsTipoValor();
+            this.bsTipoValorSelected.setBsEmpresa(new BsEmpresa());
+            this.bsTipoValorSelected.setBsModulo(new BsModulo());
+        }
+        return bsTipoValorSelected;
+    }
+
+    public void setBsTipoValorSelected(BsTipoValor bsTipoValorSelected) {
+        if (Objects.nonNull(bsTipoValorSelected)) {
+            this.tesPagoValoresSelected.setMontoValor(this.montoTotalPago);
+            if (bsTipoValorSelected.getCodTipo().equalsIgnoreCase("CHE")) {
+                Optional<TesChequera> chequera = this.tesChequeraServiceImpl.findByBanco(
+                        this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                        this.tesPagoValoresSelected.getTesBanco().getId()
+                );
+                if (chequera.isPresent()) {
+                    //asigno con for update
+                    long numeroAsignado = this.tesChequeraServiceImpl.asignarNumeroDesdeChequera(
+                            this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                            this.tesPagoValoresSelected.getTesBanco().getId());
+
+                    if (this.tesChequeraServiceImpl.validarNumero(
+                            this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                            chequera.get().getId(),
+                            numeroAsignado
+                    )) {
+                        this.tesPagoValoresSelected.setNroValor(String.valueOf(numeroAsignado));
+                        this.tesPagoValoresSelected.setFechaValor(LocalDate.now());
+                    } else {
+                        this.tesPagoValoresSelected.setBsTipoValor(new BsTipoValor());
+                        this.tesPagoValoresSelected.setNroValor(null);
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_WARN, "¡CUIDADO!",
+                                "El numero asignado no esta en un rango valido.");
+                        PrimeFaces.current().ajax().update("form:messages", ":form:nroValorLb");
+                        return;
+                    }
+                }
+
+
+            }
+            bsTipoValorSelected = null;
+        }
+        this.bsTipoValorSelected = bsTipoValorSelected;
     }
 
     // LAZY
@@ -592,7 +673,7 @@ public class TesPagoController {
         if (Objects.isNull(lazyModelTipoValor)) {
             lazyModelTipoValor = new GenericLazyDataModel<BsTipoValor>((List<BsTipoValor>) bsTipoValorServiceImpl
                     .buscarTipoValorActivosLista(sessionBean.getUsuarioLogueado().getBsEmpresa().getId()).stream()
-                    .filter(tipo -> tipo.getBsModulo().getCodigo().equalsIgnoreCase(Modulos.COBRANZAS.getModulo()))
+                    .filter(tipo -> tipo.getBsModulo().getCodigo().equalsIgnoreCase(Modulos.TESORERIA.getModulo()))
                     .collect(Collectors.toList()));
         }
         return lazyModelTipoValor;
@@ -721,6 +802,15 @@ public class TesPagoController {
         this.comSaldoServiceImpl = comSaldoServiceImpl;
     }
 
+    public TesChequeraService getTesChequeraServiceImpl() {
+        return tesChequeraServiceImpl;
+    }
+
+    public void setTesChequeraServiceImpl(TesChequeraService tesChequeraServiceImpl) {
+        this.tesChequeraServiceImpl = tesChequeraServiceImpl;
+    }
+
+    //METODOS
     public void validarCajaDelUsuario(boolean tieneHab) {
         if (tieneHab) {
             PrimeFaces.current().executeScript("PF('dlgNoTieneHabilitacion').show()");

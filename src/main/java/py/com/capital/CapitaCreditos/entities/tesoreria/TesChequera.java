@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /*
-* 2 ene. 2024 - Elitebook
+* SOLO PERMITO TENER UNA CHEQUERA ACTIVA POR BANCO BANCO
 */
 @Entity
 @Table(name = "tes_chequeras",

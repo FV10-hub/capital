@@ -11,7 +11,7 @@ import py.com.capital.CapitaCreditos.repositories.base.BsResetPasswordTokenRepos
 import py.com.capital.CapitaCreditos.services.base.BsResetPasswordTokenService;
 import py.com.capital.CapitaCreditos.services.impl.CommonServiceImpl;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**

@@ -7,7 +7,7 @@ import py.com.capital.CapitaCreditos.repositories.base.BsTalonarioRepository;
 import py.com.capital.CapitaCreditos.services.base.BsTalonarioService;
 import py.com.capital.CapitaCreditos.services.impl.CommonServiceImpl;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

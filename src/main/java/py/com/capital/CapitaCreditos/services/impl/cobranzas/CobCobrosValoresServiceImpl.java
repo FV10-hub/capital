@@ -6,7 +6,7 @@ import py.com.capital.CapitaCreditos.repositories.cobranzas.CobCobrosValoresRepo
 import py.com.capital.CapitaCreditos.services.cobranzas.CobCobrosValoresService;
 import py.com.capital.CapitaCreditos.services.impl.CommonServiceImpl;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 

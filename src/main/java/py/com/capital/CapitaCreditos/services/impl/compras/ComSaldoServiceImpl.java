@@ -6,7 +6,7 @@ import py.com.capital.CapitaCreditos.repositories.compras.ComSaldoRepository;
 import py.com.capital.CapitaCreditos.services.compras.ComSaldoService;
 import py.com.capital.CapitaCreditos.services.impl.CommonServiceImpl;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
