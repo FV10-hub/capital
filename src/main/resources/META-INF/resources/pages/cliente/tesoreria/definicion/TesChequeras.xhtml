@@ -1,0 +1,312 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+    <h:head>
+        <script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+
+        
+        
+
+
+        </script>
+    </h:head>
+    <ui:define name="title">Chequeras</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <div class="grid crud-demo">
+                <div class="col-12">
+                    <div class="card">
+                        <p:growl id="messages" showDetail="true"/>
+                        <p:toolbar styleClass="mb-4">
+                            <p:toolbarGroup>
+                                <p:commandButton value="Nuevo" icon="pi pi-plus"
+                                                 actionListener="#{tesChequeraController.cleanFields}"
+                                                 update="manage-chequera"
+                                                 onclick="PF('manageChequeraDialog').show()"
+                                                 styleClass="ui-button-success" style="margin-right: .5rem"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        <p:dataTable id="dt-chequera" widgetVar="dtChequera"
+                                     var="chequera" value="#{tesChequeraController.lazyModel}"
+                                     reflow="true"
+                                     selection="#{tesChequeraController.tesChequeraSelected}"
+                                     rowKey="#{chequera.id}" paginator="true" rows="10"
+                                     rowSelectMode="add" paginatorPosition="bottom"
+                                     emptyMessage="No hay Registros">
+                            <f:facet name="header">
+                                <div class="products-table-header">
+                                    <span style="font-weight: bold">Administrar Chequeras</span> <span
+                                        class="filter-container ui-input-icon-left"> <i
+                                        class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                               onkeyup="PF('dtChequera').filter()"
+                                                                               placeholder="Buscar..."/>
+									</span>
+                                </div>
+                            </f:facet>
+                            <p:column>
+                                <f:facet name="header">Banco</f:facet>
+                                <h:outputText
+                                        value="#{chequera.tesBanco.bsPersona.nombreCompleto}"/>
+                            </p:column>
+                            <p:column headerText="Tipo Valor"
+                                      sortBy="#{chequera.bsTipoValor.descripcion}"
+                                      filterBy="#{chequera.bsTipoValor.descripcion}">
+                                <h:outputText value="#{chequera.bsTipoValor.descripcion}"/>
+                            </p:column>
+                            <p:column headerText="Nro. Desde"
+                                      sortBy="#{chequera.nroDesde}"
+                                      filterBy="#{chequera.nroDesde}">
+                                <h:outputText value="#{chequera.nroDesde}">
+                                    <f:convertNumber type="number"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Nro. Hasta"
+                                      sortBy="#{chequera.nroHasta}"
+                                      filterBy="#{chequera.nroHasta}">
+                                <h:outputText value="#{chequera.nroHasta}">
+                                    <f:convertNumber type="number"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column exportable="false" headerText="Acciones">
+                                <p:commandButton icon="pi pi-pencil"
+                                                 update=":form:manage-chequera :form:lbHeader" process="@this"
+                                                 oncomplete="PF('manageChequeraDialog').show()"
+                                                 styleClass="edit-button rounded-button ui-button-warning">
+                                    <f:setPropertyActionListener value="#{chequera}"
+                                                                 target="#{tesChequeraController.tesChequeraSelected}"/>
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-danger rounded-button"
+                                                 icon="pi pi-trash" process="@this"
+                                                 oncomplete="PF('deleteChequeraDialog').show()">
+                                    <f:setPropertyActionListener value="#{chequera}"
+                                                                 target="#{tesChequeraController.tesChequeraSelected}"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+
+                        <!-- Dialogos -->
+                        <p:dialog showEffect="fade" modal="true"
+                                  widgetVar="manageChequeraDialog" responsive="true">
+                            <f:facet name="header">
+                                <p:outputLabel id="lbHeader"
+                                               value="#{tesChequeraController.esNuegoRegistro ? 'Nuevo' : 'Editar'}"/>
+                            </f:facet>
+                            <p:outputPanel id="manage-chequera" class="ui-fluid">
+                                <p:outputPanel>
+                                    <div class="field">
+                                        <p:outputLabel for="nrodesdeLb">Nro. Desde</p:outputLabel>
+                                        <p:inputNumber id="nrodesdeLb" autocomplete="off"
+                                                       value="#{tesChequeraController.tesChequera.nroDesde}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="nrohastaLb">Nro. Hasta</p:outputLabel>
+                                        <p:inputNumber id="nrohastaLb" autocomplete="off"
+                                                       value="#{tesChequeraController.tesChequera.nroHasta}"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="vigenciaDesdeLb">Vigencia Desde</p:outputLabel>
+                                        <p:datePicker id="vigenciaDesdeLb" autocomplete="off" showIcon="true"
+                                                      value="#{tesChequeraController.tesChequera.fechaVigenciaDesde}"
+                                                      pattern="dd/MM/yyyy"
+                                                      showButtonBar="true"
+                                                      mask="true"
+                                                      showOnFocus="false">
+                                        </p:datePicker>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="vigenciaHastaLb">Vigencia Hasta</p:outputLabel>
+                                        <p:datePicker id="vigenciaHastaLb" autocomplete="off" showIcon="true"
+                                                      value="#{tesChequeraController.tesChequera.fechaVigenciaHasta}"
+                                                      pattern="dd/MM/yyyy"
+                                                      showButtonBar="true"
+                                                      mask="true"
+                                                      showOnFocus="false">
+                                        </p:datePicker>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="bancoLb">Banco</p:outputLabel>
+                                        <p:inputText id="bancoLb"
+                                                     placeholder="Pulse F9 para buscar"
+                                                     value="#{tesChequeraController.tesChequera.tesBanco.bsPersona.nombreCompleto}"
+                                                     onkeydown="if (event.keyCode == 120) {
+                                             PF('dlgBanco').show()
+                                         }"/>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="tipoValorLb">Tipo Valor</p:outputLabel>
+                                        <p:inputText id="tipoValorLb"
+                                                     placeholder="Pulse F9 para buscar"
+                                                     value="#{tesChequeraController.tesChequera.bsTipoValor.descripcion}"
+                                                     onkeydown="if (event.keyCode == 120) {
+												PF('dlgTipoValor').show()
+											}"/>
+                                    </div>
+
+                                    <div class="field">
+                                        <p:outputLabel for="estadolb">Estado</p:outputLabel>
+                                        <p:selectOneMenu id="estadolb"
+                                                         disabled="#{tesChequeraController.esNuegoRegistro}"
+                                                         value="#{tesChequeraController.tesChequera.estado}">
+                                            <f:selectItem itemLabel="Seleccione un estado"
+                                                          itemValue="#{null}" noSelectionOption="true"/>
+                                            <f:selectItems value="#{tesChequeraController.estadoList}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                </p:outputPanel>
+                            </p:outputPanel>
+
+                            <f:facet name="footer">
+                                <p:commandButton value="Guardar" icon="pi pi-check"
+                                                 actionListener="#{tesChequeraController.guardar}"
+                                                 update=":form:manage-chequera"/>
+                                <p:commandButton value="Cancelar" icon="pi pi-times"
+                                                 actionListener="#{tesChequeraController.cleanFields}"
+                                                 update=":form" onclick="PF('manageChequeraDialog').hide()"
+                                                 class="ui-button-secondary"/>
+                            </f:facet>
+                        </p:dialog>
+
+                        <p:dialog widgetVar="dlgTipoValor" header="Buscar Tipo Valor"
+                                  width="750" showEffect="fade" modal="true">
+                            <p:dataTable id="dt-tipoValor" widgetVar="dtTipoValor"
+                                         var="tipoValor" value="#{tesChequeraController.lazyModelTipoValor}"
+                                         paginator="true" rows="10" paginatorPosition="bottom"
+                                         emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtTipoValor').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgTipoValor').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:tipoValorLb">
+                                        <f:setPropertyActionListener value="#{tipoValor}"
+                                                                     target="#{tesChequeraController.tesChequera.bsTipoValor}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Modulo"
+                                          sortBy="#{tipoValor.bsModulo.nombre}"
+                                          filterBy="#{tipoValor.bsModulo.nombre}">
+                                    <h:outputText value="#{tipoValor.bsModulo.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Codigo" sortBy="#{tipoValor.codTipo}"
+                                          filterBy="#{tipoValor.codTipo}">
+                                    <h:outputText value="#{tipoValor.codTipo}"/>
+                                </p:column>
+                                <p:column headerText="Descripcion"
+                                          sortBy="#{tipoValor.descripcion}"
+                                          filterBy="#{tipoValor.descripcion}">
+                                    <h:outputText value="#{tipoValor.descripcion}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+
+                        <p:dialog widgetVar="dlgBanco" header="Buscar Banco" width="850"
+                                  showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtBanco" var="banco"
+                                         value="#{tesChequeraController.lazyModelBanco}" id="dt-banco"
+                                         paginator="true" rows="10" paginatorPosition="bottom"
+                                         emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtBanco').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgBanco').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:bancoLb">
+                                        <f:setPropertyActionListener value="#{banco}"
+                                                                     target="#{tesChequeraController.tesChequera.tesBanco}"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Nro. Cuenta" sortBy="#{banco.codBnaco}"
+                                          filterBy="#{banco.codBnaco}">
+                                    <h:outputText value="#{banco.codBnaco}"/>
+                                </p:column>
+                                <p:column headerText="Nombre"
+                                          sortBy="#{banco.bsPersona.nombreCompleto}"
+                                          filterBy="#{banco.bsPersona.nombreCompleto}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{banco.bsPersona.nombreCompleto}"/>
+                                </p:column>
+                                <p:column headerText="Documento"
+                                          sortBy="#{banco.bsPersona.documento}"
+                                          filterBy="#{banco.bsPersona.documento}"
+                                          filterStyle="display:none; visibility:hidden;"
+                                          filtarable="true" filterMatchMode="contains">
+                                    <h:outputText value="#{banco.bsPersona.documento}"/>
+                                </p:column>
+                                <p:column headerText="Moneda"
+                                          sortBy="#{banco.bsMoneda.codMoneda}"
+                                          filterBy="#{banco.bsMoneda.codMoneda}">
+                                    <h:outputText value="#{banco.bsMoneda.codMoneda}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+
+                        <!-- confirms -->
+                        <p:confirmDialog widgetVar="deleteChequeraDialog"
+                                         showEffect="fade" width="300"
+                                         message="Esta seguro que desea eliminar el registro?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             actionListener="#{tesChequeraController.delete}" process="@this"
+                                             oncomplete="PF('deleteChequeraDialog').hide()"/>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('deleteChequeraDialog').hide()"/>
+                        </p:confirmDialog>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
