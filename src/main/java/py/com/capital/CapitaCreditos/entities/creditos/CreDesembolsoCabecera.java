@@ -4,6 +4,7 @@ import javax.persistence.*;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
 import py.com.capital.CapitaCreditos.entities.base.BsTalonario;
 import py.com.capital.CapitaCreditos.entities.base.Common;
+import py.com.capital.CapitaCreditos.entities.converter.SiNoBooleanConverter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -60,6 +61,14 @@ public class CreDesembolsoCabecera extends Common implements Serializable {
 
 	@Column(name = "monto_total_credito")
 	private BigDecimal montoTotalCredito;
+
+	@Convert(converter = SiNoBooleanConverter.class)
+	@Column(name = "ind_pagare_impreso", nullable = true, length = 1)
+	private Boolean indPagareImpreso;
+
+	@Convert(converter = SiNoBooleanConverter.class)
+	@Column(name = "ind_contrato_impreso", nullable = true, length = 1)
+	private Boolean indContratoImpreso;
 
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "cre_solicitud_credito_id", referencedColumnName = "id", nullable = false)
@@ -237,6 +246,22 @@ public class CreDesembolsoCabecera extends Common implements Serializable {
 
 	public void setIndFacturado(String indFacturado) {
 		this.indFacturado = indFacturado;
+	}
+
+	public Boolean getIndPagareImpreso() {
+		return indPagareImpreso;
+	}
+
+	public void setIndPagareImpreso(Boolean indPagareImpreso) {
+		this.indPagareImpreso = indPagareImpreso;
+	}
+
+	public Boolean getIndContratoImpreso() {
+		return indContratoImpreso;
+	}
+
+	public void setIndContratoImpreso(Boolean indContratoImpreso) {
+		this.indContratoImpreso = indContratoImpreso;
 	}
 
 	public void addDetalle(CreDesembolsoDetalle detalle) {

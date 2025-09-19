@@ -12,7 +12,6 @@ import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 import py.com.capital.CapitaCreditos.entities.base.*;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCliente;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobHabilitacionCaja;
@@ -41,8 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -99,7 +96,6 @@ public class TesPagoController {
     public BigDecimal montoTotalPago = BigDecimal.ZERO;
     public BigDecimal montoTotalPagoValores = BigDecimal.ZERO;
     private String tipoSaldoAFiltrar;
-    private ParametrosReporte parametrosReporte;
 
     private static final String DT_NAME = "dt-pagos";
 
@@ -138,11 +134,7 @@ public class TesPagoController {
     @Autowired
     private CommonsUtilitiesController commonsUtilitiesController;
 
-    @Autowired
-    private UtilsService utilsService;
 
-    @Autowired
-    private GenerarReporte generarReporte;
 
     @Autowired
     private TesChequeraService tesChequeraServiceImpl;
@@ -480,19 +472,6 @@ public class TesPagoController {
         this.saldoList = saldoList;
     }
 
-    public ParametrosReporte getParametrosReporte() {
-        if (Objects.isNull(parametrosReporte)) {
-            parametrosReporte = new ParametrosReporte();
-            parametrosReporte.setCodModulo(Modulos.CREDITOS.getModulo());
-            parametrosReporte.setFormato("PDF");
-        }
-        return parametrosReporte;
-    }
-
-    public void setParametrosReporte(ParametrosReporte parametrosReporte) {
-        this.parametrosReporte = parametrosReporte;
-    }
-
     public boolean isPuedeCrear() {
         return puedeCrear;
     }
@@ -776,22 +755,6 @@ public class TesPagoController {
 
     public void setCommonsUtilitiesController(CommonsUtilitiesController commonsUtilitiesController) {
         this.commonsUtilitiesController = commonsUtilitiesController;
-    }
-
-    public UtilsService getUtilsService() {
-        return utilsService;
-    }
-
-    public void setUtilsService(UtilsService utilsService) {
-        this.utilsService = utilsService;
-    }
-
-    public GenerarReporte getGenerarReporte() {
-        return generarReporte;
-    }
-
-    public void setGenerarReporte(GenerarReporte generarReporte) {
-        this.generarReporte = generarReporte;
     }
 
     public ComSaldoService getComSaldoServiceImpl() {
@@ -1081,106 +1044,6 @@ public class TesPagoController {
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
             PrimeFaces.current().ajax().update("form:messages", "form:" + DT_NAME);
         }
-    }
-
-    public void imprimir(String tipo) {
-        try {
-            this.parametrosReporte = null;
-            getParametrosReporte();
-            this.prepareParams();
-            if (StringUtils.equalsAny(tipo, "PAGARE")) {
-                this.parametrosReporte.setReporte("CrePagare");
-                // key
-                this.parametrosReporte.getParametros().add("p_nombre");
-                this.parametrosReporte.getParametros().add("p_documento");
-                this.parametrosReporte.getParametros().add("p_monto");
-                this.parametrosReporte.getParametros().add("p_vencimiento");
-                this.parametrosReporte.getParametros().add("p_fecha");
-                this.parametrosReporte.getParametros().add("p_cant_cuota");
-                this.parametrosReporte.getParametros().add("p_monto_cuota");
-
-                // values
-                this.parametrosReporte.getValores().add(this.tesPagoCabecera.getBeneficiario());
-                this.parametrosReporte.getValores().add("documento aqui");
-                this.parametrosReporte.getValores().add(String.valueOf(this.tesPagoCabecera.getMontoTotalPago()));
-                this.parametrosReporte.getValores().add("vencimiento aqui");
-                this.parametrosReporte.getValores().add("fecha aqui");
-                this.parametrosReporte.getValores().add("cantidad_cuota aqui");
-                this.parametrosReporte.getValores().add("monto de cuota aqui");
-                //TODO: aca restrinjo el registro si es pagare
-                if (this.utilsService.actualizarRegistro("tes_pagos_cabecera", "ind_impreso = 'S'",
-                        " bs_empresa_id = " + commonsUtilitiesController.getIdEmpresaLogueada() + " and id = " + this.tesPagoCabecera.getId())) {
-                } else {
-                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
-                            "No se pudo actualizar el registro.");
-                    return;
-                }
-            } else {
-                this.parametrosReporte.setReporte("CreContrato");
-                // key
-                this.parametrosReporte.getParametros().add("p_nombre");
-                this.parametrosReporte.getParametros().add("p_documento");
-                this.parametrosReporte.getParametros().add("p_monto");
-
-                // values
-                this.parametrosReporte.getValores().add(this.tesPagoCabecera.getBeneficiario());
-                this.parametrosReporte.getValores().add("documento aqui");
-                this.parametrosReporte.getValores().add(String.valueOf(this.tesPagoCabecera.getMontoTotalPago()));
-
-            }
-            if (!(Objects.isNull(parametrosReporte) && Objects.isNull(parametrosReporte.getFormato()))
-                    && CollectionUtils.isNotEmpty(this.parametrosReporte.getParametros())
-                    && CollectionUtils.isNotEmpty(this.parametrosReporte.getValores())) {
-                this.generarReporte.procesarReporte(parametrosReporte);
-
-            } else {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
-                        "Debes seccionar los parametros validos.");
-                return;
-            }
-            this.cleanFields();
-            PrimeFaces.current().ajax().update(":form");
-
-        } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", e);
-            // e.printStackTrace(System.err);
-            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
-            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
-            PrimeFaces.current().ajax().update(":form");
-
-        }
-    }
-
-    /*
-     * Recordar que el orden en la que se agregan los valores en las listas SI
-     * importan ya que en el backend se procesa como llave valor y va ir pareando en
-     * el mismo orden
-     */
-    private void prepareParams() {
-        // basicos
-        // Obtener la fecha y hora actual
-        LocalDateTime now = LocalDateTime.now();
-
-        DateTimeFormatter formatterDiaHora = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        String formattedDateTimeDiaHora = now.format(formatterDiaHora);
-        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMAGEN_PATH);
-        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_NOMBRE_IMAGEN);
-        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMPRESO_POR);
-        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DIA_HORA);
-        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DESC_EMPRESA);
-
-        this.parametrosReporte.getValores().add(ApplicationConstant.PATH_IMAGEN_EMPRESA);
-        this.parametrosReporte.getValores().add(ApplicationConstant.IMAGEN_EMPRESA_NAME);
-        this.parametrosReporte.getValores()
-                .add(this.sessionBean.getUsuarioLogueado().getBsPersona().getNombreCompleto());
-        this.parametrosReporte.getValores().add(formattedDateTimeDiaHora);
-        this.parametrosReporte.getValores()
-                .add(this.sessionBean.getUsuarioLogueado().getBsEmpresa().getNombreFantasia());
-        // basico
-
-        DateTimeFormatter formatToDateParam = DateTimeFormatter.ofPattern("dd/MM/yyy");
-
-
     }
 
     public String getPaginaActual() {

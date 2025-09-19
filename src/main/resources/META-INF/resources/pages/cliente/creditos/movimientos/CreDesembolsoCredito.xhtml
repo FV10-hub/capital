@@ -5,6 +5,18 @@
                 xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
     <h:head>
         <script>
+        function handleImprimirButtonClick() {
+					setTimeout(function() {
+						PF('imprimirDialog').hide();
+						window.location.reload();
+					}, 4000);
+				}
+				function handleImprimirPagareButtonClick() {
+					setTimeout(function() {
+						PF('imprimirPagareDialog').hide();
+						window.location.reload();
+					}, 4000);
+				}
 			PrimeFaces.locales['es'] = {
 				closeText : 'Cerrar',
 				prevText : 'Anterior',
@@ -39,6 +51,7 @@
 				today : 'Hoy',
 				clear : 'Claro'
 			};
+
 
 
 
@@ -146,7 +159,22 @@
                                                      actionListener="#{creDesembolsoController.cleanFields}"
                                                      update=":form" styleClass="ui-button-info"
                                                      style="margin-right: .5rem"/>
+                                    <p:commandButton
+                                            value="Contrato"
+                                            id="btnImpContrato"
+                                            disabled="#{creDesembolsoController.creDesembolsoCabecera.indDesembolsadoBoolean and creDesembolsoController.creDesembolsoCabecera.indContratoImpreso}"
+                                            icon="pi pi-file-pdf"
+                                            onclick="PF('imprimirDialog').show()"
+                                            styleClass="ui-button-warning" style="margin-right: .5rem"/>
+                                    <p:commandButton
+                                            value="Pagare"
+                                            id="btnImpPagare"
+                                            disabled="#{creDesembolsoController.creDesembolsoCabecera.indDesembolsadoBoolean and creDesembolsoController.creDesembolsoCabecera.indPagareImpreso}"
+                                            icon="pi pi-file-pdf"
+                                            onclick="PF('imprimirPagareDialog').show()"
+                                            styleClass="ui-button-warning" style="margin-right: .5rem"/>
                                     <p:commandButton value="Eliminar" icon="pi pi-trash"
+                                                     disabled="#{creDesembolsoController.creDesembolsoCabecera.indDesembolsadoBoolean and creDesembolsoController.creDesembolsoCabecera.indPagareImpreso}"
                                                      rendered="#{creDesembolsoController.creDesembolsoCabecera.id != null}"
                                                      actionListener="#{creDesembolsoController.delete}"
                                                      update=":form" styleClass="ui-button-danger"
@@ -199,7 +227,8 @@
                                                                styleClass="col-12 mb-2 md:col-6 mb-md-0">Fecha Solicitud
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
-                                                    <p:datePicker id="fechaSolLb" disabled="true" autocomplete="off" showIcon="true"
+                                                    <p:datePicker id="fechaSolLb" disabled="true" autocomplete="off"
+                                                                  showIcon="true"
                                                                   value="#{creDesembolsoController.creDesembolsoCabecera.creSolicitudCredito.fechaSolicitud}"
                                                                   pattern="dd/MM/yyyy"
                                                                   showButtonBar="true"
@@ -214,7 +243,8 @@
                                                     Vencimiento
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
-                                                    <p:datePicker id="fechaPrimLb" disabled="true" autocomplete="off" showIcon="true"
+                                                    <p:datePicker id="fechaPrimLb" disabled="true" autocomplete="off"
+                                                                  showIcon="true"
                                                                   value="#{creDesembolsoController.creDesembolsoCabecera.creSolicitudCredito.primerVencimiento}"
                                                                   pattern="dd/MM/yyyy"
                                                                   showButtonBar="true"
@@ -253,7 +283,8 @@
                                                     Desembolso
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
-                                                    <p:datePicker id="fechaDesembolsoLb" autocomplete="off" showIcon="true"
+                                                    <p:datePicker id="fechaDesembolsoLb" autocomplete="off"
+                                                                  showIcon="true"
                                                                   value="#{creDesembolsoController.creDesembolsoCabecera.fechaDesembolso}"
                                                                   pattern="dd/MM/yyyy"
                                                                   showButtonBar="true"
@@ -556,6 +587,30 @@
                         <!-- DIALOGOS -->
 
                         <!-- confirms -->
+                        <p:confirmDialog widgetVar="imprimirDialog" showEffect="fade"
+                                         width="300" message="Esta seguro que desea Imprimir?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
+                                             id="btnImprimirContratoReporte" onclick="handleImprimirButtonClick();"
+                                             actionListener="#{creDesembolsoController.imprimir('CONTRATO')}">
+                            </p:commandButton>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('imprimirDialog').hide()"/>
+                        </p:confirmDialog>
+
+                        <p:confirmDialog widgetVar="imprimirPagareDialog" showEffect="fade"
+                                         width="300" message="Esta seguro que desea Imprimir?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
+                                             id="btnImprimirReporte" onclick="handleImprimirPagareButtonClick();"
+                                             actionListener="#{creDesembolsoController.imprimir('PAGARE')}">
+                            </p:commandButton>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('imprimirPagareDialog').hide()"/>
+                        </p:confirmDialog>
+
                         <p:confirmDialog widgetVar="deleteModuloDialog" showEffect="fade"
                                          width="300" message="Esta seguro que desea eliminar el registro?"
                                          header="Confirmacion" severity="warn">

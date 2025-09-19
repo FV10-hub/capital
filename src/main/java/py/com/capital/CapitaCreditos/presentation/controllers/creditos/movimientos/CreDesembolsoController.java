@@ -1,6 +1,7 @@
 package py.com.capital.CapitaCreditos.presentation.controllers.creditos.movimientos;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
@@ -9,6 +10,8 @@ import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import py.com.capital.CapitaCreditos.dtos.SqlUpdateBuilder;
+import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 import py.com.capital.CapitaCreditos.entities.base.*;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCliente;
 import py.com.capital.CapitaCreditos.entities.creditos.*;
@@ -17,6 +20,7 @@ import py.com.capital.CapitaCreditos.entities.ventas.VenVendedor;
 import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.*;
+import py.com.capital.CapitaCreditos.services.UtilsService;
 import py.com.capital.CapitaCreditos.services.base.BsModuloService;
 import py.com.capital.CapitaCreditos.services.base.BsParametroService;
 import py.com.capital.CapitaCreditos.services.creditos.CreDesembolsoService;
@@ -31,8 +35,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /*
@@ -67,6 +73,9 @@ public class CreDesembolsoController {
     private static final String DT_NAME = "dt-desembolso";
     private static final String DT_DIALOG_NAME = "manageDesembolsoDialog";
 
+    private ParametrosReporte parametrosReporte;
+
+
     // services
     @Autowired
     private CreDesembolsoService creDesembolsoServiceImpl;
@@ -84,6 +93,9 @@ public class CreDesembolsoController {
     private BsParametroService bsParametroServiceImpl;
 
     @Autowired
+    private GenerarReporte generarReporte;
+
+    @Autowired
     private BsModuloService bsModuloServiceImpl;
 
     /**
@@ -95,6 +107,9 @@ public class CreDesembolsoController {
 
     @Autowired
     private CommonsUtilitiesController commonsUtilitiesController;
+
+    @Autowired
+    private UtilsService utilsService;
 
     @PostConstruct
     public void init() {
@@ -340,6 +355,35 @@ public class CreDesembolsoController {
 
     public void setEsNuegoRegistro(boolean esNuegoRegistro) {
         this.esNuegoRegistro = esNuegoRegistro;
+    }
+
+    public ParametrosReporte getParametrosReporte() {
+        if (Objects.isNull(parametrosReporte)) {
+            parametrosReporte = new ParametrosReporte();
+            parametrosReporte.setCodModulo(Modulos.CREDITOS.getModulo());
+            parametrosReporte.setFormato("PDF");
+        }
+        return parametrosReporte;
+    }
+
+    public void setParametrosReporte(ParametrosReporte parametrosReporte) {
+        this.parametrosReporte = parametrosReporte;
+    }
+
+    public GenerarReporte getGenerarReporte() {
+        return generarReporte;
+    }
+
+    public void setGenerarReporte(GenerarReporte generarReporte) {
+        this.generarReporte = generarReporte;
+    }
+
+    public UtilsService getUtilsService() {
+        return utilsService;
+    }
+
+    public void setUtilsService(UtilsService utilsService) {
+        this.utilsService = utilsService;
     }
 
     public StoArticuloService getStoArticuloServiceImpl() {
@@ -863,6 +907,138 @@ public class CreDesembolsoController {
             return pagina;
         }
         return null;
+    }
+
+    public void imprimir(String tipo) {
+        try {
+            this.parametrosReporte = null;
+            getParametrosReporte();
+            this.prepareParams();
+            if (StringUtils.equalsAny(tipo, "PAGARE")) {
+                this.parametrosReporte.setReporte("CrePagare");
+                // key
+                this.parametrosReporte.getParametros().add("p_nombre");
+                this.parametrosReporte.getParametros().add("p_documento");
+                this.parametrosReporte.getParametros().add("p_monto");
+                this.parametrosReporte.getParametros().add("p_vencimiento");
+                this.parametrosReporte.getParametros().add("p_fecha");
+                this.parametrosReporte.getParametros().add("p_cant_cuota");
+                this.parametrosReporte.getParametros().add("p_monto_cuota");
+
+                // values
+                this.parametrosReporte.getValores().add(this.creDesembolsoCabecera.getCreSolicitudCredito().getCobCliente().getBsPersona().getNombreCompleto());
+                this.parametrosReporte.getValores().add("documento aqui");
+                this.parametrosReporte.getValores().add(String.valueOf(this.creDesembolsoCabecera.getMontoTotalCredito()));
+                this.parametrosReporte.getValores().add("vencimiento aqui");
+                this.parametrosReporte.getValores().add("fecha aqui");
+                this.parametrosReporte.getValores().add("cantidad_cuota aqui");
+                this.parametrosReporte.getValores().add("monto de cuota aqui");
+                //TODO: aca restrinjo el registro si es pagare
+                SqlUpdateBuilder ub = SqlUpdateBuilder.table("public.cre_desembolso_cabecera")
+                        .set("ind_pagare_impreso", "S")
+                        .whereEq("bs_empresa_id", commonsUtilitiesController.getIdEmpresaLogueada())
+                        .whereEq("id", this.creDesembolsoCabecera.getId());
+                if (this.utilsService.updateDinamico(ub)) {
+                    if(this.generarReporte.procesarReporte(parametrosReporte)){
+                        //FacesContext.getCurrentInstance().responseComplete();
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                                "Se imprimio correctamente.");
+                        PrimeFaces.current().executeScript("PF('imprimirPagareDialog').hide()");
+                    }else{
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡NO!",
+                                "No se pudo imprimir.");
+                    }
+                    PrimeFaces.current().ajax().update("form:messages", ":form:manage-desembolso");
+                } else {
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
+                            "No se pudo actualizar el registro.");
+                    return;
+                }
+            } else {
+                this.parametrosReporte.setReporte("CreContrato");
+                // key
+                this.parametrosReporte.getParametros().add("p_nombre");
+                this.parametrosReporte.getParametros().add("p_documento");
+                this.parametrosReporte.getParametros().add("p_monto");
+
+                // values
+                this.parametrosReporte.getValores().add(this.creDesembolsoCabecera.getCreSolicitudCredito().getCobCliente().getBsPersona().getNombreCompleto());
+                this.parametrosReporte.getValores().add("documento aqui");
+                this.parametrosReporte.getValores().add(String.valueOf(this.creDesembolsoCabecera.getMontoTotalCredito()));
+
+            }
+            if (!(Objects.isNull(parametrosReporte) && Objects.isNull(parametrosReporte.getFormato()))
+                    && CollectionUtils.isNotEmpty(this.parametrosReporte.getParametros())
+                    && CollectionUtils.isNotEmpty(this.parametrosReporte.getValores())) {
+                SqlUpdateBuilder ub = SqlUpdateBuilder.table("public.cre_desembolso_cabecera")
+                        .set("ind_contrato_impreso", "S")
+                        .whereEq("bs_empresa_id", commonsUtilitiesController.getIdEmpresaLogueada())
+                        .whereEq("id", this.creDesembolsoCabecera.getId());
+                if (this.utilsService.updateDinamico(ub)) {
+                    if(this.generarReporte.procesarReporte(parametrosReporte)){
+                        //FacesContext.getCurrentInstance().responseComplete();
+                        PrimeFaces.current().executeScript("PF('imprimirDialog').hide()");
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                                "Se imprimio correctamente.");
+                    }else{
+                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡NO!",
+                                "No se pudo imprimir.");
+                    }
+                    PrimeFaces.current().ajax().update("form:messages", ":form:manage-desembolso");
+                } else {
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
+                            "No se pudo actualizar el registro.");
+                    return;
+                }
+
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
+                        "Debes seccionar los parametros validos.");
+                return;
+            }
+            this.cleanFields();
+            PrimeFaces.current().ajax().update(":form");
+
+        } catch (Exception e) {
+            LOGGER.error("Ocurrio un error al Guardar", e);
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+            PrimeFaces.current().ajax().update(":form");
+
+        }
+    }
+
+    /*
+     * Recordar que el orden en la que se agregan los valores en las listas SI
+     * importan ya que en el backend se procesa como llave valor y va ir pareando en
+     * el mismo orden
+     */
+    private void prepareParams() {
+        // basicos
+        // Obtener la fecha y hora actual
+        LocalDateTime now = LocalDateTime.now();
+
+        DateTimeFormatter formatterDiaHora = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String formattedDateTimeDiaHora = now.format(formatterDiaHora);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMAGEN_PATH);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_NOMBRE_IMAGEN);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMPRESO_POR);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DIA_HORA);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DESC_EMPRESA);
+
+        this.parametrosReporte.getValores().add(ApplicationConstant.PATH_IMAGEN_EMPRESA);
+        this.parametrosReporte.getValores().add(ApplicationConstant.IMAGEN_EMPRESA_NAME);
+        this.parametrosReporte.getValores()
+                .add(this.sessionBean.getUsuarioLogueado().getBsPersona().getNombreCompleto());
+        this.parametrosReporte.getValores().add(formattedDateTimeDiaHora);
+        this.parametrosReporte.getValores()
+                .add(this.sessionBean.getUsuarioLogueado().getBsEmpresa().getNombreFantasia());
+        // basico
+
+        DateTimeFormatter formatToDateParam = DateTimeFormatter.ofPattern("dd/MM/yyy");
+
+
     }
 
 }
