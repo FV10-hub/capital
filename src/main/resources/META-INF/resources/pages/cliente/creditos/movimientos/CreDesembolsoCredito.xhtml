@@ -5,6 +5,7 @@
                 xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
     <h:head>
         <script>
+
         function handleImprimirButtonClick() {
 					setTimeout(function() {
 						PF('imprimirDialog').hide();
@@ -51,6 +52,15 @@
 				today : 'Hoy',
 				clear : 'Claro'
 			};
+
+
+
+
+
+
+
+
+
 
 
 
@@ -110,10 +120,16 @@
                                               converter="localDateConverter">
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="Monto Solicitado"
-                                      sortBy="#{desembolso.creSolicitudCredito.montoSolicitado}">
+                            <p:column headerText="Nro. Desembolso"
+                                      sortBy="#{desembolso.nroDesembolso}">
                                 <h:outputText
-                                        value="#{desembolso.creSolicitudCredito.montoSolicitado}">
+                                        value="#{desembolso.nroDesembolso}">
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Monto Solicitado"
+                                      sortBy="#{desembolso.creSolicitudCredito.montoAprobado}">
+                                <h:outputText
+                                        value="#{desembolso.creSolicitudCredito.montoAprobado}">
                                     <f:convertNumber currencySymbol="Gs." pattern="###,###,###"/>
                                 </h:outputText>
                             </p:column>
@@ -162,14 +178,14 @@
                                     <p:commandButton
                                             value="Contrato"
                                             id="btnImpContrato"
-                                            disabled="#{creDesembolsoController.creDesembolsoCabecera.indDesembolsadoBoolean and creDesembolsoController.creDesembolsoCabecera.indContratoImpreso}"
+                                            disabled="#{creDesembolsoController.creDesembolsoCabecera.indDesembolsadoBoolean and creDesembolsoController.esContratoImpreso}"
                                             icon="pi pi-file-pdf"
                                             onclick="PF('imprimirDialog').show()"
                                             styleClass="ui-button-warning" style="margin-right: .5rem"/>
                                     <p:commandButton
                                             value="Pagare"
                                             id="btnImpPagare"
-                                            disabled="#{creDesembolsoController.creDesembolsoCabecera.indDesembolsadoBoolean and creDesembolsoController.creDesembolsoCabecera.indPagareImpreso}"
+                                            disabled="#{creDesembolsoController.creDesembolsoCabecera.indDesembolsadoBoolean and creDesembolsoController.esPagareImpreso}"
                                             icon="pi pi-file-pdf"
                                             onclick="PF('imprimirPagareDialog').show()"
                                             styleClass="ui-button-warning" style="margin-right: .5rem"/>
@@ -587,13 +603,15 @@
                         <!-- DIALOGOS -->
 
                         <!-- confirms -->
+                        <p:remoteCommand name="rc" update=":form:messages"/>
                         <p:confirmDialog widgetVar="imprimirDialog" showEffect="fade"
                                          width="300" message="Esta seguro que desea Imprimir?"
                                          header="Confirmacion" severity="warn">
-                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
-                                             id="btnImprimirContratoReporte" onclick="handleImprimirButtonClick();"
-                                             actionListener="#{creDesembolsoController.imprimir('CONTRATO')}">
-                            </p:commandButton>
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             id="btnImprimirContratoReporte"
+                                             ajax="false"
+                                             onclick="actualizarCampos('CONTRATO')"
+                                             actionListener="#{creDesembolsoController.imprimir('CONTRATO')}"/>
                             <p:commandButton value="No" type="button"
                                              styleClass="ui-button-secondary" icon="pi pi-times"
                                              onclick="PF('imprimirDialog').hide()"/>
@@ -602,10 +620,11 @@
                         <p:confirmDialog widgetVar="imprimirPagareDialog" showEffect="fade"
                                          width="300" message="Esta seguro que desea Imprimir?"
                                          header="Confirmacion" severity="warn">
-                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
-                                             id="btnImprimirReporte" onclick="handleImprimirPagareButtonClick();"
-                                             actionListener="#{creDesembolsoController.imprimir('PAGARE')}">
-                            </p:commandButton>
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             id="btnImprimirReporte"
+                                             ajax="false"
+                                             onclick="actualizarCampos('PAGARE')"
+                                             actionListener="#{creDesembolsoController.imprimir('PAGARE')}"/>
                             <p:commandButton value="No" type="button"
                                              styleClass="ui-button-secondary" icon="pi pi-times"
                                              onclick="PF('imprimirPagareDialog').hide()"/>
@@ -624,6 +643,51 @@
                     </div>
                 </div>
             </div>
+            <script>
+                function actualizarCampos(tipo) {
+
+                    var buttonId = tipo === 'CONTRATO' ? 'form:btnImpContrato' : 'form:btnImpPagare';
+                    var button = document.getElementById(buttonId);
+                    if (button) {
+                        console.log("Se encontro el boton: " + buttonId);
+                        // FORMA CORRECTA: Usar las clases de PrimeFaces
+                        button.disabled = true;
+
+                        // Remover clase de estado normal y agregar clase de disabled
+                        button.classList.remove('ui-state-default');
+                        button.classList.remove('ui-state-hover');
+                        button.classList.remove('ui-state-active');
+                        button.classList.add('ui-state-disabled');
+
+                        // También deshabilitar el span interno si existe
+                        var iconSpan = button.querySelector('.ui-button-icon-left');
+                        if (iconSpan) {
+                            iconSpan.style.opacity = '0.5';
+                        }
+
+                        var textSpan = button.querySelector('.ui-button-text');
+                        if (textSpan) {
+                            textSpan.style.opacity = '0.5';
+                        }
+
+                        // Cambiar el cursor
+                        button.style.cursor = 'not-allowed';
+
+                        // Remover el evento onclick de PrimeFaces
+                        button.onclick = null;
+                        button.setAttribute('onclick', 'return false;');
+                    }
+                    if (tipo === 'CONTRATO') {
+                        PF('imprimirDialog').hide();
+                    } else {
+                        PF('imprimirPagareDialog').hide();
+                    }
+                    console.log("en teoria se ejecuto todo");
+                    rc();
+
+                }
+
+            </script>
         </h:form>
     </ui:define>
 

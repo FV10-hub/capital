@@ -1,5 +1,6 @@
 package py.com.capital.CapitaCreditos.services.creditos;
 
+import org.springframework.data.repository.query.Param;
 import py.com.capital.CapitaCreditos.entities.creditos.CreDesembolsoCabecera;
 import py.com.capital.CapitaCreditos.services.CommonService;
 
@@ -18,5 +19,9 @@ public interface CreDesembolsoService extends CommonService<CreDesembolsoCabecer
 	List<CreDesembolsoCabecera> buscarCreDesembolsoAFacturarLista(Long idEmpresa);
 	
 	List<CreDesembolsoCabecera> buscarCreDesembolsoParaPagosTesoreriarLista(Long idEmpresa, Long idCliente);
+
+	int marcarContratoImpresa(Long empresaId, Long desembolsoId);
+
+	int marcarPagareImpresa(Long empresaId, Long desembolsoId);
 	
 }

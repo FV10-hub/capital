@@ -26,4 +26,8 @@ public class UtilsService {
         return this.repository.updateDinamico(sqlUpdateBuilder);
     }
 
+    public <T, ID> T reload(Class<T> type, Long id) {
+        return this.repository.reload(type,id);
+    }
+
 }

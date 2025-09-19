@@ -70,6 +70,9 @@ public class CreDesembolsoController {
     private boolean esNuegoRegistro;
     private boolean esVisibleFormulario = true;
 
+    private boolean esContratoImpreso = true;
+    private boolean esPagareImpreso = true;
+
     private static final String DT_NAME = "dt-desembolso";
     private static final String DT_DIALOG_NAME = "manageDesembolsoDialog";
 
@@ -195,9 +198,12 @@ public class CreDesembolsoController {
         if (!Objects.isNull(creDesembolsoCabeceraSelected)) {
             creDesembolsoCabeceraSelected.getCreDesembolsoDetalleList().sort(Comparator.comparing(CreDesembolsoDetalle::getNroCuota));
             creDesembolsoCabecera = creDesembolsoCabeceraSelected;
-            creDesembolsoCabeceraSelected = null;
+
             this.esNuegoRegistro = false;
             this.esVisibleFormulario = true;
+            this.esContratoImpreso = creDesembolsoCabeceraSelected.getIndContratoImpreso();
+            this.esPagareImpreso = creDesembolsoCabeceraSelected.getIndPagareImpreso();
+            creDesembolsoCabeceraSelected = null;
         }
         this.creDesembolsoCabeceraSelected = creDesembolsoCabeceraSelected;
     }
@@ -283,6 +289,22 @@ public class CreDesembolsoController {
 
     public void setStoArticuloSelected(StoArticulo stoArticuloSelected) {
         this.stoArticuloSelected = stoArticuloSelected;
+    }
+
+    public boolean isEsContratoImpreso() {
+        return esContratoImpreso;
+    }
+
+    public void setEsContratoImpreso(boolean esContratoImpreso) {
+        this.esContratoImpreso = esContratoImpreso;
+    }
+
+    public boolean isEsPagareImpreso() {
+        return esPagareImpreso;
+    }
+
+    public void setEsPagareImpreso(boolean esPagareImpreso) {
+        this.esPagareImpreso = esPagareImpreso;
     }
 
     public CreDesembolsoService getCreDesembolsoServiceImpl() {
@@ -914,6 +936,7 @@ public class CreDesembolsoController {
             this.parametrosReporte = null;
             getParametrosReporte();
             this.prepareParams();
+            SqlUpdateBuilder ub;
             if (StringUtils.equalsAny(tipo, "PAGARE")) {
                 this.parametrosReporte.setReporte("CrePagare");
                 // key
@@ -934,26 +957,11 @@ public class CreDesembolsoController {
                 this.parametrosReporte.getValores().add("cantidad_cuota aqui");
                 this.parametrosReporte.getValores().add("monto de cuota aqui");
                 //TODO: aca restrinjo el registro si es pagare
-                SqlUpdateBuilder ub = SqlUpdateBuilder.table("public.cre_desembolso_cabecera")
+                ub = SqlUpdateBuilder.table("public.cre_desembolso_cabecera")
                         .set("ind_pagare_impreso", "S")
                         .whereEq("bs_empresa_id", commonsUtilitiesController.getIdEmpresaLogueada())
                         .whereEq("id", this.creDesembolsoCabecera.getId());
-                if (this.utilsService.updateDinamico(ub)) {
-                    if(this.generarReporte.procesarReporte(parametrosReporte)){
-                        //FacesContext.getCurrentInstance().responseComplete();
-                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                                "Se imprimio correctamente.");
-                        PrimeFaces.current().executeScript("PF('imprimirPagareDialog').hide()");
-                    }else{
-                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡NO!",
-                                "No se pudo imprimir.");
-                    }
-                    PrimeFaces.current().ajax().update("form:messages", ":form:manage-desembolso");
-                } else {
-                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
-                            "No se pudo actualizar el registro.");
-                    return;
-                }
+
             } else {
                 this.parametrosReporte.setReporte("CreContrato");
                 // key
@@ -965,26 +973,23 @@ public class CreDesembolsoController {
                 this.parametrosReporte.getValores().add(this.creDesembolsoCabecera.getCreSolicitudCredito().getCobCliente().getBsPersona().getNombreCompleto());
                 this.parametrosReporte.getValores().add("documento aqui");
                 this.parametrosReporte.getValores().add(String.valueOf(this.creDesembolsoCabecera.getMontoTotalCredito()));
-
+                ub = SqlUpdateBuilder.table("public.cre_desembolso_cabecera")
+                        .set("ind_contrato_impreso", "S")
+                        .whereEq("bs_empresa_id", commonsUtilitiesController.getIdEmpresaLogueada())
+                        .whereEq("id", this.creDesembolsoCabecera.getId());
             }
             if (!(Objects.isNull(parametrosReporte) && Objects.isNull(parametrosReporte.getFormato()))
                     && CollectionUtils.isNotEmpty(this.parametrosReporte.getParametros())
                     && CollectionUtils.isNotEmpty(this.parametrosReporte.getValores())) {
-                SqlUpdateBuilder ub = SqlUpdateBuilder.table("public.cre_desembolso_cabecera")
-                        .set("ind_contrato_impreso", "S")
-                        .whereEq("bs_empresa_id", commonsUtilitiesController.getIdEmpresaLogueada())
-                        .whereEq("id", this.creDesembolsoCabecera.getId());
+
                 if (this.utilsService.updateDinamico(ub)) {
-                    if(this.generarReporte.procesarReporte(parametrosReporte)){
-                        //FacesContext.getCurrentInstance().responseComplete();
-                        PrimeFaces.current().executeScript("PF('imprimirDialog').hide()");
-                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                                "Se imprimio correctamente.");
-                    }else{
-                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡NO!",
-                                "No se pudo imprimir.");
+                    this.creDesembolsoCabecera = this.utilsService.reload(this.creDesembolsoCabecera.getClass(), this.creDesembolsoCabecera.getId());
+                    this.generarReporte.procesarReporte(parametrosReporte);
+                    if (StringUtils.equalsAny(tipo, "PAGARE")) {
+                        this.esPagareImpreso = creDesembolsoCabecera.getIndPagareImpreso();
+                    } else {
+                        this.esContratoImpreso = creDesembolsoCabecera.getIndContratoImpreso();
                     }
-                    PrimeFaces.current().ajax().update("form:messages", ":form:manage-desembolso");
                 } else {
                     CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
                             "No se pudo actualizar el registro.");
@@ -996,11 +1001,9 @@ public class CreDesembolsoController {
                         "Debes seccionar los parametros validos.");
                 return;
             }
-            this.cleanFields();
-            PrimeFaces.current().ajax().update(":form");
 
         } catch (Exception e) {
-            LOGGER.error("Ocurrio un error al Guardar", e);
+            LOGGER.error("Ocurrio un error al Imprimir", e);
             // e.printStackTrace(System.err);
             String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
@@ -1037,6 +1040,32 @@ public class CreDesembolsoController {
         // basico
 
         DateTimeFormatter formatToDateParam = DateTimeFormatter.ofPattern("dd/MM/yyy");
+
+
+    }
+
+    public void execute() {
+        //TODO esto sirve para ejecutar un comportamiento en paralelo con JS
+        String mensaje = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("mensaje");
+        String boton = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("boton");
+        if (mensaje != null || boton != null) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                    "Se imprimio correctamente.");
+        } else {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
+                    "Debes seccionar los parametros validos.");
+        }
+
+        PrimeFaces.current().executeScript("PF('imprimirDialog').hide();");
+        PrimeFaces.current().executeScript("PF('imprimirPagareDialog').hide();");
+        PrimeFaces.current().ajax().update(":form", mensaje, boton, ":form:btnImpPagare");
+
+        //retorna un valor al front
+        //PrimeFaces.current().ajax().addCallbackParam("serverTime", System.currentTimeMillis());
+
+        //html como atraparlo
+        //<p:remoteCommand name="rc" update="msgs" action="#{remoteCommandView.execute}"
+        //oncomplete="alert('Return value from server: ' + args.serverTime)"/>
 
 
     }
