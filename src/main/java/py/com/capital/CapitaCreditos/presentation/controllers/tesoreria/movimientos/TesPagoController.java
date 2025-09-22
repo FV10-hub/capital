@@ -22,7 +22,6 @@ import py.com.capital.CapitaCreditos.entities.tesoreria.*;
 import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.*;
-import py.com.capital.CapitaCreditos.services.UtilsService;
 import py.com.capital.CapitaCreditos.services.base.BsModuloService;
 import py.com.capital.CapitaCreditos.services.base.BsTipoValorService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobClienteService;
@@ -133,7 +132,6 @@ public class TesPagoController {
 
     @Autowired
     private CommonsUtilitiesController commonsUtilitiesController;
-
 
 
     @Autowired
@@ -534,38 +532,7 @@ public class TesPagoController {
 
     public void setBsTipoValorSelected(BsTipoValor bsTipoValorSelected) {
         if (Objects.nonNull(bsTipoValorSelected)) {
-            this.tesPagoValoresSelected.setMontoValor(this.montoTotalPago);
-            if (bsTipoValorSelected.getCodTipo().equalsIgnoreCase("CHE")) {
-                Optional<TesChequera> chequera = this.tesChequeraServiceImpl.findByBanco(
-                        this.commonsUtilitiesController.getIdEmpresaLogueada(),
-                        this.tesPagoValoresSelected.getTesBanco().getId()
-                );
-                if (chequera.isPresent()) {
-                    //asigno con for update
-                    long numeroAsignado = this.tesChequeraServiceImpl.asignarNumeroDesdeChequera(
-                            this.commonsUtilitiesController.getIdEmpresaLogueada(),
-                            this.tesPagoValoresSelected.getTesBanco().getId());
-
-                    if (this.tesChequeraServiceImpl.validarNumero(
-                            this.commonsUtilitiesController.getIdEmpresaLogueada(),
-                            chequera.get().getId(),
-                            numeroAsignado
-                    )) {
-                        this.tesPagoValoresSelected.setNroValor(String.valueOf(numeroAsignado));
-                        this.tesPagoValoresSelected.setFechaValor(LocalDate.now());
-                    } else {
-                        this.tesPagoValoresSelected.setBsTipoValor(new BsTipoValor());
-                        this.tesPagoValoresSelected.setNroValor(null);
-                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_WARN, "¡CUIDADO!",
-                                "El numero asignado no esta en un rango valido.");
-                        PrimeFaces.current().ajax().update("form:messages", ":form:nroValorLb");
-                        return;
-                    }
-                }
-
-
-            }
-            bsTipoValorSelected = null;
+            this.procesarCheque(bsTipoValorSelected);
         }
         this.bsTipoValorSelected = bsTipoValorSelected;
     }
@@ -774,6 +741,53 @@ public class TesPagoController {
     }
 
     //METODOS
+    private void procesarCheque(BsTipoValor tipoValor) {
+        this.tesPagoValoresSelected.setMontoValor(this.montoTotalPago);
+        if (tipoValor.getCodTipo().equalsIgnoreCase("CHE")) {
+            Optional<TesChequera> chequera = this.tesChequeraServiceImpl.findByBanco(
+                    this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                    this.tesPagoValoresSelected.getTesBanco().getId()
+            );
+            if (chequera.isPresent()) {
+                //asigno con for update
+                long numeroAsignado;
+                try {
+                    numeroAsignado = this.tesChequeraServiceImpl.asignarNumeroDesdeChequera(
+                            this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                            this.tesPagoValoresSelected.getTesBanco().getId());
+                } catch (IllegalStateException e) {
+                    LOGGER.error("Ocurrio un error al asignar numero de cheque", e);
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", e.getMessage());
+                    PrimeFaces.current().ajax().update("form:managePagoValor", "form:messages");
+                    //reseteamos los campos
+                    this.tesPagoValoresSelected = null;
+                    this.bsTipoValorSelected = null;
+                    getTesPagoValoresSelected();
+                    getBsTipoValorSelected();
+                    return;
+                }
+
+
+                if (this.tesChequeraServiceImpl.validarNumero(
+                        this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                        chequera.get().getId(),
+                        numeroAsignado
+                )) {
+                    this.tesPagoValoresSelected.setBsTipoValor(tipoValor);
+                    this.tesPagoValoresSelected.setNroValor(String.valueOf(numeroAsignado));
+                    this.tesPagoValoresSelected.setFechaValor(LocalDate.now());
+                } else {
+                    this.tesPagoValoresSelected.setBsTipoValor(new BsTipoValor());
+                    this.tesPagoValoresSelected.setNroValor(null);
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_WARN, "¡CUIDADO!",
+                            "El numero asignado no esta en un rango valido.");
+                    PrimeFaces.current().ajax().update("form:messages", ":form:nroValorLb");
+                    return;
+                }
+            }
+        }
+    }
+
     public void validarCajaDelUsuario(boolean tieneHab) {
         if (tieneHab) {
             PrimeFaces.current().executeScript("PF('dlgNoTieneHabilitacion').show()");
@@ -1056,6 +1070,8 @@ public class TesPagoController {
         }
         return null;
     }
+
+    //TODO debo implementar la impresion de OP
 
 
 }

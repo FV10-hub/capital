@@ -17,7 +17,7 @@ public interface TesChequeraService extends CommonService<TesChequera> {
 
     List<TesChequera> buscarTesChequeraActivosLista(Long idEmpresa);
 
-    public long asignarNumeroDesdeChequera(Long empresaId, Long bancoId);
+    long asignarNumeroDesdeChequera(Long empresaId, Long bancoId);
 
     Optional<BigDecimal> sugerenciaProximo(Long empresaId, Long chequeraId);
 

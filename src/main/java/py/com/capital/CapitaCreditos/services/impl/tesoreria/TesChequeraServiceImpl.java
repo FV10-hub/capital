@@ -52,7 +52,7 @@ public class TesChequeraServiceImpl extends CommonServiceImpl<TesChequera, TesCh
             throw new IllegalStateException("Chequera aún no vigente");
         }
         if (chequera.getFechaVigenciaHasta() != null && hoy.isAfter(chequera.getFechaVigenciaHasta())) {
-            throw new IllegalStateException("Chequera vencido");
+            throw new IllegalStateException("Chequera vencida");
         }
 
         // Tomar next y validar rango

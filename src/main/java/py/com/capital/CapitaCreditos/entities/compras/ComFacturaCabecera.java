@@ -19,7 +19,7 @@ import java.util.Objects;
 */
 @Entity
 @Table(name = "com_facturas_cabecera", uniqueConstraints = @UniqueConstraint(name = "com_fact_cab_unique_nroFact_des", columnNames = {
-		"tipo_factura", "nro_factura_completo" }))
+		"tipo_factura", "nro_factura_completo","com_proveedor_id","bs_empresa_id" }))
 public class ComFacturaCabecera extends Common implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -38,6 +38,7 @@
 
 
 
+
             </script>
             <div class="grid crud-demo">
                 <div class="col-12">
@@ -133,17 +134,10 @@
                                                      update=":form" styleClass="ui-button-info"
                                                      style="margin-right: .5rem"/>
                                     <p:commandButton
-                                            value="#{tesPagoController.estaAutorizado ? 'Imprimir' : 'Contrato'}"
+                                            value="#{tesPagoController.estaAutorizado ? 'Imprimir' : 'OP'}"
                                             id="btnImpContrato" disabled="#{tesPagoController.estaAutorizado}"
                                             icon="pi pi-file-pdf"
                                             onclick="PF('imprimirDialog').show()"
-                                            styleClass="ui-button-warning" style="margin-right: .5rem"/>
-                                    <p:commandButton
-                                            value="#{tesPagoController.estaAutorizado ? 'Imprimir' : 'Pagare'}"
-                                            id="btnImpPagare"
-                                            disabled="#{tesPagoController.tesPagoCabecera.indImpresoBoolean}"
-                                            icon="pi pi-file-pdf"
-                                            onclick="PF('imprimirPagareDialog').show()"
                                             styleClass="ui-button-warning" style="margin-right: .5rem"/>
                                     <p:commandButton value="Eliminar" icon="pi pi-trash"
                                                      rendered="#{tesPagoController.tesPagoCabecera.id != null}"
@@ -726,7 +720,7 @@
                                     </div>
                                     <div class="field">
                                         <p:outputLabel for="tipoValorLb">Tipo Valor</p:outputLabel>
-                                        <p:inputText id="tipoValorLb"
+                                        <p:inputText id="tipoValorLb" autocomplete="off"
                                                      placeholder="Pulse F9 para buscar"
                                                      value="#{tesPagoController.tesPagoValoresSelected.bsTipoValor.descripcion}"
                                                      onkeydown="if (event.keyCode == 120) {
@@ -925,23 +919,11 @@
                                          header="Confirmacion" severity="warn">
                             <p:commandButton value="Si" icon="pi pi-check" ajax="false"
                                              id="btnImprimirContratoReporte" onclick="handleImprimirButtonClick();"
-                                             actionListener="#{tesPagoController.imprimir('CONTRATO')}">
+                                             actionListener="#{tesPagoController.imprimir('OP')}">
                             </p:commandButton>
                             <p:commandButton value="No" type="button"
                                              styleClass="ui-button-secondary" icon="pi pi-times"
                                              onclick="PF('imprimirDialog').hide()"/>
-                        </p:confirmDialog>
-
-                        <p:confirmDialog widgetVar="imprimirPagareDialog" showEffect="fade"
-                                         width="300" message="Esta seguro que desea Imprimir?"
-                                         header="Confirmacion" severity="warn">
-                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
-                                             id="btnImprimirReporte" onclick="handleImprimirPagareButtonClick();"
-                                             actionListener="#{tesPagoController.imprimir('PAGARE')}">
-                            </p:commandButton>
-                            <p:commandButton value="No" type="button"
-                                             styleClass="ui-button-secondary" icon="pi pi-times"
-                                             onclick="PF('imprimirPagareDialog').hide()"/>
                         </p:confirmDialog>
 
                     </div>
@@ -983,6 +965,7 @@
 						today : 'Hoy',
 						clear : 'Claro'
 					};
+
 
 
 

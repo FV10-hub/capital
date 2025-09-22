@@ -990,6 +990,8 @@ public class CreDesembolsoController {
                     } else {
                         this.esContratoImpreso = creDesembolsoCabecera.getIndContratoImpreso();
                     }
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                            "Se imprimio correctamente.");
                 } else {
                     CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
                             "No se pudo actualizar el registro.");
@@ -1046,7 +1048,7 @@ public class CreDesembolsoController {
 
     public void execute() {
         //TODO esto sirve para ejecutar un comportamiento en paralelo con JS
-        String mensaje = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("mensaje");
+        /*String mensaje = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("mensaje");
         String boton = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("boton");
         if (mensaje != null || boton != null) {
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
@@ -1057,8 +1059,11 @@ public class CreDesembolsoController {
         }
 
         PrimeFaces.current().executeScript("PF('imprimirDialog').hide();");
-        PrimeFaces.current().executeScript("PF('imprimirPagareDialog').hide();");
-        PrimeFaces.current().ajax().update(":form", mensaje, boton, ":form:btnImpPagare");
+        PrimeFaces.current().executeScript("PF('imprimirPagareDialog').hide();");*/
+        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                "Se imprimio correctamente.");
+        System.out.println("paso por aca");
+        PrimeFaces.current().ajax().update(":form:messages");
 
         //retorna un valor al front
         //PrimeFaces.current().ajax().addCallbackParam("serverTime", System.currentTimeMillis());

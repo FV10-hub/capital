@@ -126,10 +126,10 @@
                                         value="#{desembolso.nroDesembolso}">
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="Monto Solicitado"
-                                      sortBy="#{desembolso.creSolicitudCredito.montoAprobado}">
+                            <p:column headerText="Monto Credito"
+                                      sortBy="#{desembolso.montoTotalCapital}">
                                 <h:outputText
-                                        value="#{desembolso.creSolicitudCredito.montoAprobado}">
+                                        value="#{desembolso.montoTotalCapital}">
                                     <f:convertNumber currencySymbol="Gs." pattern="###,###,###"/>
                                 </h:outputText>
                             </p:column>
@@ -603,7 +603,7 @@
                         <!-- DIALOGOS -->
 
                         <!-- confirms -->
-                        <p:remoteCommand name="rc" update=":form:messages"/>
+                        <p:remoteCommand name="rc" update=":form:messages" action="#{creDesembolsoController.execute}"/>
                         <p:confirmDialog widgetVar="imprimirDialog" showEffect="fade"
                                          width="300" message="Esta seguro que desea Imprimir?"
                                          header="Confirmacion" severity="warn">
