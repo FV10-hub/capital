@@ -57,6 +57,9 @@ public class ComFacturaCabecera extends Common implements Serializable {
 	@Column(name = "monto_total_factura")
 	private BigDecimal montoTotalFactura;
 
+	@Column(name = "nro_timbrado")
+	private BigDecimal nroTimbrado;
+
 	@ManyToOne
 	@JoinColumn(name = "com_proveedor_id", referencedColumnName = "id", nullable = false)
 	private ComProveedor comProveedor;
@@ -190,6 +193,14 @@ public class ComFacturaCabecera extends Common implements Serializable {
 
 	public void setComProveedor(ComProveedor comProveedor) {
 		this.comProveedor = comProveedor;
+	}
+
+	public BigDecimal getNroTimbrado() {
+		return nroTimbrado;
+	}
+
+	public void setNroTimbrado(BigDecimal nroTimbrado) {
+		this.nroTimbrado = nroTimbrado;
 	}
 
 	public void addDetalle(ComFacturaDetalle detalle) {

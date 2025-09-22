@@ -45,6 +45,7 @@
 
 
 
+
             </script>
             <div class="grid crud-demo">
                 <div class="col-12">
@@ -191,6 +192,15 @@
                                                     <p:inputMask id="nrofacturaLb"
                                                                  value="#{comFacturasController.comFacturaCabecera.nroFacturaCompleto}"
                                                                  mask="999-999-99999999" validateMask="true"/>
+                                                </div>
+                                            </div>
+                                            <div class="field grid">
+                                                <p:outputLabel for="nroTimbradoLb"
+                                                               styleClass="col-12 mb-2 md:col-6 mb-md-0">Nro Timbrado
+                                                </p:outputLabel>
+                                                <div class="col-12 md:col-6">
+                                                    <p:inputMask id="nroTimbradoLb"
+                                                                 value="#{comFacturasController.comFacturaCabecera.nroTimbrado}"/>
                                                 </div>
                                             </div>
                                             <div class="field grid">
@@ -517,6 +527,7 @@
 					};
 
             
+
 
 
 

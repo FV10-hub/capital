@@ -41,10 +41,9 @@
 			};
 
 
-
         </script>
     </h:head>
-    <ui:define name="title">Ventas por Fecha y Cliente</ui:define>
+    <ui:define name="title">Libro de Compras</ui:define>
     <ui:define name="content">
         <h:form id="form">
             <div class="grid crud-demo">
@@ -52,24 +51,12 @@
                     <div class="card ui-fluid">
                         <h5>Parametros</h5>
                         <div class="field grid">
-                            <p:outputLabel for="clienteLb"
-                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Cliente
-                            </p:outputLabel>
-                            <div class="col-12 md:col-10">
-                                <p:inputText id="clienteLb" placeholder="Pulse F9 para buscar"
-                                             value="#{rptVenVentasPorFechaClienteController.cobClienteSelected.bsPersona.nombreCompleto}"
-                                             onkeydown="if (event.keyCode == 120) {
-										PF('dlgCliente').show()
-									}"/>
-                            </div>
-                        </div>
-                        <div class="field grid">
                             <p:outputLabel for="fecdesde"
                                            styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Desde
                             </p:outputLabel>
                             <div class="col-12 md:col-10">
                                 <p:datePicker id="fecdesde" autocomplete="off" showIcon="true"
-                                              value="#{rptVenVentasPorFechaClienteController.fecDesde}"
+                                              value="#{rptComLibroComprasController.fecDesde}"
                                               pattern="dd/MM/yyyy"
                                               showButtonBar="true"
                                               mask="true"
@@ -83,7 +70,7 @@
                             </p:outputLabel>
                             <div class="col-12 md:col-10">
                                 <p:datePicker id="fechasta" autocomplete="off" showIcon="true"
-                                              value="#{rptVenVentasPorFechaClienteController.fecHasta}"
+                                              value="#{rptComLibroComprasController.fecHasta}"
                                               pattern="dd/MM/yyyy"
                                               showButtonBar="true"
                                               mask="true"
@@ -102,7 +89,7 @@
                             </div>
                             <div class="field col-4 md:col-4">
                                 <p:selectOneMenu id="formato"
-                                                 value="#{rptVenVentasPorFechaClienteController.parametrosReporte.formato}">
+                                                 value="#{rptComLibroComprasController.parametrosReporte.formato}">
                                     <f:selectItem itemLabel="Selecciona un formato"
                                                   itemValue="#{null}" noSelectionOption="true"/>
                                     <f:selectItem itemLabel="PDF" itemValue="PDF"/>
@@ -112,12 +99,12 @@
                             <div class="field col-4 md:col-4">
                                 <p:commandButton ajax="false" value="Generar"
                                                  icon="pi pi-cloud-download"
-                                                 actionListener="#{rptVenVentasPorFechaClienteController.downloadReport}"
+                                                 actionListener="#{rptComLibroComprasController.downloadReport}"
                                                  styleClass="ui-button-info"/>
                                 <p:commandButton value="Limpiar"
                                                  icon="pi pi-sync"
                                                  update=":form"
-                                                 actionListener="#{rptVenVentasPorFechaClienteController.cleanFields}"
+                                                 actionListener="#{rptComLibroComprasController.cleanFields}"
                                                  styleClass="ui-button-warning ml-2"/>
                             </div>
 
@@ -125,36 +112,6 @@
 
                     </div>
                     <!-- DIALOGOS -->
-                    <p:dialog widgetVar="dlgCliente" header="Buscar Clientes"
-                              width="650" showEffect="fade" modal="true">
-                        <p:dataTable widgetVar="wdlgCliente" var="cliente"
-                                     value="#{rptVenVentasPorFechaClienteController.lazyModelCliente}"
-                                     id="dt-cliente" paginator="true" rows="10"
-                                     paginatorPosition="bottom" emptyMessage="No hay Registros">
-                            <p:column style="width:3rem;text-align: center">
-                                <p:commandButton oncomplete="PF('dlgCliente').hide()"
-                                                 icon="pi pi-check-circle" title="Seleccionar"
-                                                 update=":form:clienteLb">
-                                    <f:setPropertyActionListener value="#{cliente}"
-                                                                 target="#{rptVenVentasPorFechaClienteController.cobClienteSelected}"/>
-                                </p:commandButton>
-                            </p:column>
-                            <p:column headerText="Nombre"
-                                      sortBy="#{cliente.bsPersona.nombreCompleto}"
-                                      filterBy="#{cliente.bsPersona.nombreCompleto}"
-                                      filterStyle="display:none; visibility:hidden;" filtarable="true"
-                                      filterMatchMode="contains">
-                                <h:outputText value="#{cliente.bsPersona.nombreCompleto}"/>
-                            </p:column>
-                            <p:column headerText="Documento"
-                                      sortBy="#{cliente.bsPersona.documento}"
-                                      filterBy="#{cliente.bsPersona.documento}"
-                                      filterStyle="display:none; visibility:hidden;" filtarable="true"
-                                      filterMatchMode="contains">
-                                <h:outputText value="#{cliente.bsPersona.documento}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </p:dialog>
                     <!-- DIALOGOS -->
                 </div>
             </div>

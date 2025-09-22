@@ -4,9 +4,46 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
     <h:head>
+        <script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
 
+
+        </script>
     </h:head>
-    <ui:define name="title">Desembolsos por Fecha y Cliente</ui:define>
+    <ui:define name="title">Compras por Fecha y Proveedor</ui:define>
     <ui:define name="content">
         <h:form id="form">
             <div class="grid crud-demo">
@@ -14,14 +51,14 @@
                     <div class="card ui-fluid">
                         <h5>Parametros</h5>
                         <div class="field grid">
-                            <p:outputLabel for="clienteLb"
-                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Cliente
+                            <p:outputLabel for="proveedorLb"
+                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Proveedor
                             </p:outputLabel>
                             <div class="col-12 md:col-10">
-                                <p:inputText id="clienteLb" placeholder="Pulse F9 para buscar"
-                                             value="#{rptCreDesembolsoPorFechaClienteController.cobClienteSelected.bsPersona.nombreCompleto}"
+                                <p:inputText id="proveedorLb" placeholder="Pulse F9 para buscar"
+                                             value="#{rptComComprasPorFechaProveedoresController.comProveedorSelected.bsPersona.nombreCompleto}"
                                              onkeydown="if (event.keyCode == 120) {
-										PF('dlgCliente').show()
+										PF('dlgProveedor').show()
 									}"/>
                             </div>
                         </div>
@@ -31,7 +68,7 @@
                             </p:outputLabel>
                             <div class="col-12 md:col-10">
                                 <p:datePicker id="fecdesde" autocomplete="off" showIcon="true"
-                                              value="#{rptCreDesembolsoPorFechaClienteController.fecDesde}"
+                                              value="#{rptComComprasPorFechaProveedoresController.fecDesde}"
                                               pattern="dd/MM/yyyy"
                                               showButtonBar="true"
                                               mask="true"
@@ -45,7 +82,7 @@
                             </p:outputLabel>
                             <div class="col-12 md:col-10">
                                 <p:datePicker id="fechasta" autocomplete="off" showIcon="true"
-                                              value="#{rptCreDesembolsoPorFechaClienteController.fecHasta}"
+                                              value="#{rptComComprasPorFechaProveedoresController.fecHasta}"
                                               pattern="dd/MM/yyyy"
                                               showButtonBar="true"
                                               mask="true"
@@ -64,7 +101,7 @@
                             </div>
                             <div class="field col-4 md:col-4">
                                 <p:selectOneMenu id="formato"
-                                                 value="#{rptCreDesembolsoPorFechaClienteController.parametrosReporte.formato}">
+                                                 value="#{rptComComprasPorFechaProveedoresController.parametrosReporte.formato}">
                                     <f:selectItem itemLabel="Selecciona un formato"
                                                   itemValue="#{null}" noSelectionOption="true"/>
                                     <f:selectItem itemLabel="PDF" itemValue="PDF"/>
@@ -74,90 +111,63 @@
                             <div class="field col-4 md:col-4">
                                 <p:commandButton ajax="false" value="Generar"
                                                  icon="pi pi-cloud-download"
-                                                 actionListener="#{rptCreDesembolsoPorFechaClienteController.downloadReport}"
+                                                 actionListener="#{rptComComprasPorFechaProveedoresController.downloadReport}"
                                                  styleClass="ui-button-info"/>
                                 <p:commandButton value="Limpiar"
                                                  icon="pi pi-sync"
                                                  update=":form"
-                                                 actionListener="#{rptCreDesembolsoPorFechaClienteController.cleanFields}"
+                                                 actionListener="#{rptComComprasPorFechaProveedoresController.cleanFields}"
                                                  styleClass="ui-button-warning ml-2"/>
                             </div>
+
 
                         </div>
 
                     </div>
                     <!-- DIALOGOS -->
-                    <p:dialog widgetVar="dlgCliente" header="Buscar Clientes"
+                    <p:dialog widgetVar="dlgProveedor" header="Buscar Proveedor"
                               width="650" showEffect="fade" modal="true">
-                        <p:dataTable widgetVar="wdlgCliente" var="cliente"
-                                     value="#{rptCreDesembolsoPorFechaClienteController.lazyModelCliente}"
-                                     id="dt-cliente" paginator="true" rows="10"
+                        <p:dataTable widgetVar="dtProveedor" var="proveedor"
+                                     value="#{rptComComprasPorFechaProveedoresController.lazyModelProveedor}"
+                                     id="dt-proveedor" paginator="true" rows="10"
                                      paginatorPosition="bottom" emptyMessage="No hay Registros">
+                            <f:facet name="header">
+                                <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtProveedor').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                                </div>
+                            </f:facet>
                             <p:column style="width:3rem;text-align: center">
-                                <p:commandButton oncomplete="PF('dlgCliente').hide()"
+                                <p:commandButton oncomplete="PF('dlgProveedor').hide()"
                                                  icon="pi pi-check-circle" title="Seleccionar"
-                                                 update=":form:clienteLb">
-                                    <f:setPropertyActionListener value="#{cliente}"
-                                                                 target="#{rptCreDesembolsoPorFechaClienteController.cobClienteSelected}"/>
+                                                 update=":form:proveedorLb">
+                                    <f:setPropertyActionListener value="#{proveedor}"
+                                                                 target="#{rptComComprasPorFechaProveedoresController.comProveedorSelected}"/>
                                 </p:commandButton>
                             </p:column>
                             <p:column headerText="Nombre"
-                                      sortBy="#{cliente.bsPersona.nombreCompleto}"
-                                      filterBy="#{cliente.bsPersona.nombreCompleto}"
-                                      filterStyle="display:none; visibility:hidden;" filtarable="true"
-                                      filterMatchMode="contains">
-                                <h:outputText value="#{cliente.bsPersona.nombreCompleto}"/>
+                                      sortBy="#{proveedor.bsPersona.nombreCompleto}"
+                                      filterBy="#{proveedor.bsPersona.nombreCompleto}"
+                                      filterStyle="display:none; visibility:hidden;"
+                                      filtarable="true" filterMatchMode="contains">
+                                <h:outputText value="#{proveedor.bsPersona.nombreCompleto}"/>
                             </p:column>
                             <p:column headerText="Documento"
-                                      sortBy="#{cliente.bsPersona.documento}"
-                                      filterBy="#{cliente.bsPersona.documento}"
-                                      filterStyle="display:none; visibility:hidden;" filtarable="true"
-                                      filterMatchMode="contains">
-                                <h:outputText value="#{cliente.bsPersona.documento}"/>
+                                      sortBy="#{proveedor.bsPersona.documento}"
+                                      filterBy="#{proveedor.bsPersona.documento}"
+                                      filterStyle="display:none; visibility:hidden;"
+                                      filtarable="true" filterMatchMode="contains">
+                                <h:outputText value="#{proveedor.bsPersona.documento}"/>
                             </p:column>
                         </p:dataTable>
                     </p:dialog>
                     <!-- DIALOGOS -->
                 </div>
             </div>
-            <script>
-				PrimeFaces.locales['es'] = {
-					closeText : 'Cerrar',
-					prevText : 'Anterior',
-					nextText : 'Siguiente',
-					monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril',
-							'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
-							'Octubre', 'Noviembre', 'Diciembre' ],
-					monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May',
-							'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
-					dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
-							'Jueves', 'Viernes', 'Sábado' ],
-					dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
-							'Sab' ],
-					dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
-					weekHeader : 'Semana',
-					firstDay : 1,
-					isRTL : false,
-					showMonthAfterYear : false,
-					yearSuffix : '',
-					timeOnlyTitle : 'Sólo hora',
-					timeText : 'Tiempo',
-					hourText : 'Hora',
-					minuteText : 'Minuto',
-					secondText : 'Segundo',
-					millisecondText : 'Milisegundo',
-					currentText : 'Fecha actual',
-					ampm : false,
-					month : 'Mes',
-					week : 'Semana',
-					day : 'Día',
-					allDayText : 'Todo el día',
-					today : 'Hoy',
-					clear : 'Claro'
-				};
 
-
-            </script>
         </h:form>
     </ui:define>
 

@@ -134,6 +134,7 @@ public class ComFacturasController {
             comFacturaCabecera.setIndPagado("N");
             comFacturaCabecera.setTipoFactura("FACTURA");
             comFacturaCabecera.setEstado(Estado.ACTIVO.getEstado());
+            comFacturaCabecera.setNroTimbrado(BigDecimal.ZERO);
             comFacturaCabecera.setBsEmpresa(new BsEmpresa());
             comFacturaCabecera.setComProveedor(new ComProveedor());
             comFacturaCabecera.getComProveedor().setBsPersona(new BsPersona());
@@ -455,6 +456,12 @@ public class ComFacturasController {
                     || comFacturaCabecera.getComFacturaDetalleList().size() == 0) {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
                         "Debe cargar algun detalle para guardar.");
+                return;
+            }
+            if(Objects.isNull(this.comFacturaCabecera.getNroTimbrado())
+                    || this.comFacturaCabecera.getNroTimbrado().compareTo(BigDecimal.ZERO) <= 0 ){
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+                        "Debe cargar un numero de timbrado valido.");
                 return;
             }
             this.comFacturaCabecera.setUsuarioModificacion(sessionBean.getUsuarioLogueado().getCodUsuario());

@@ -76,6 +76,11 @@
                                                  icon="pi pi-cloud-download"
                                                  actionListener="#{rptCobReciboPorFechaClienteController.downloadReport}"
                                                  styleClass="ui-button-info"/>
+                                <p:commandButton value="Limpiar"
+                                                 icon="pi pi-sync"
+                                                 update=":form"
+                                                 actionListener="#{rptCobReciboPorFechaClienteController.cleanFields}"
+                                                 styleClass="ui-button-warning ml-2"/>
                             </div>
 
                         </div>
