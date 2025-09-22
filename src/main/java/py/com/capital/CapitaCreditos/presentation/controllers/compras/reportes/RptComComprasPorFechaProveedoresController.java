@@ -2,6 +2,7 @@ package py.com.capital.CapitaCreditos.presentation.controllers.compras.reportes;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joinfaces.autoconfigure.viewscope.ViewScope;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -164,8 +165,24 @@ public class RptComComprasPorFechaProveedoresController {
         if (!(Objects.isNull(parametrosReporte) && Objects.isNull(parametrosReporte.getFormato()))
                 && CollectionUtils.isNotEmpty(this.parametrosReporte.getParametros())
                 && CollectionUtils.isNotEmpty(this.parametrosReporte.getValores())) {
-            this.generarReporte.procesarReporte(parametrosReporte);
-            this.cleanFields();
+            /* si usamos JS no es para xls descomentar si usamos JS
+            //descomentar esto si quieres previsualizar primero el archivo tener en cuenta que debes permitir popups
+            //String scriptJs = this.generarReporte.openAndPrintReportWithJS(parametrosReporte);
+            //descomentar esto si solo quieres descargar directamente el archivo
+            //String scriptJs = this.generarReporte.downloadReportWithJS(parametrosReporte, parametrosReporte.getReporte());
+            PrimeFaces.current().executeScript(scriptJs);
+         */
+            // si usamos JSF
+            if (this.generarReporte.procesarReporte(parametrosReporte)) {
+                //FacesContext.getCurrentInstance().responseComplete();
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                        "Se imprimio correctamente.");
+                this.cleanFields();
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡NO!",
+                        "No se pudo imprimir.");
+            }
+            PrimeFaces.current().ajax().update("form:messages");
         } else {
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
                     "Debes seccionar los parametros validos.");

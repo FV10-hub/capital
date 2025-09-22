@@ -137,6 +137,7 @@ public class RptComLibroComprasController {
 			//FacesContext.getCurrentInstance().responseComplete();
 			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
 					"Se imprimio correctamente.");
+			this.cleanFields();
 		}else{
 			CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡NO!",
 					"No se pudo imprimir.");
