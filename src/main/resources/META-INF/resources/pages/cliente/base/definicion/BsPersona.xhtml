@@ -3,8 +3,10 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
-    <h:head>
-        <script>
+    <ui:define name="title">Personas</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <script>
 			PrimeFaces.locales['es'] = {
 				closeText : 'Cerrar',
 				prevText : 'Anterior',
@@ -41,10 +43,6 @@
 			};
 
         </script>
-    </h:head>
-    <ui:define name="title">Personas</ui:define>
-    <ui:define name="content">
-        <h:form id="form">
             <div class="grid crud-demo">
                 <div class="col-12">
                     <div class="card">
@@ -116,7 +114,7 @@
                         </p:dataTable>
 
                         <!-- Dialogos -->
-                        <p:dialog showEffect="fade" modal="true"
+                        <p:dialog showEffect="fade" modal="true" width="650"
                                   widgetVar="managePersonaDialog" responsive="true">
                             <f:facet name="header">
                                 <p:outputLabel id="lbHeader"

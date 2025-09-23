@@ -1,23 +1,28 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
 
-	<div class="layout-topbar">
-		<div class="layout-topbar-wrapper">
-			<div class="layout-topbar-left">
-				<div class="menu-button">
-					<i class="pi pi-bars" />
-				</div>
-				<!--<h:link id="logolink" outcome="/dashboard" class="layout-topbar-logo">
+    <div class="layout-topbar">
+        <div class="layout-topbar-wrapper">
+            <div class="layout-topbar-left">
+                <div class="menu-button">
+                    <i class="pi pi-bars"/>
+                </div>
+                <!--<h:link id="logolink" outcome="/dashboard" class="layout-topbar-logo">
                      <p:graphicImage name="images/#{guestPreferences.darkLogo ? 'logo-footer.svg' : 'logo-pandora.svg'}"
                                     library="pandora-layout"/>
-                                  	
+
                 </h:link>-->
-				<h2 style="color: #f8fafc;">CapitalSys-ERP</h2>
-			</div>
-		</div>
-	</div>
+                <h2 style="color: #f8fafc;">CapitalSys-ERP</h2>
+            </div>
+            <div class="layout-topbar-right">
+                <div class="field mt-3 mx-2">
+                    <p:commandButton value="Descargar Manual" icon="pi pi-download" styleClass="ui-button-warning ml-2"
+                                     onclick="window.open('#{request.contextPath}/manual/ayuda.pdf', '_blank'); return false;"/>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
 </ui:composition>
