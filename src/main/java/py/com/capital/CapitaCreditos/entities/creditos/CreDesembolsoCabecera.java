@@ -70,6 +70,10 @@ public class CreDesembolsoCabecera extends Common implements Serializable {
 	@Column(name = "ind_contrato_impreso", nullable = true, length = 1)
 	private Boolean indContratoImpreso;
 
+	@Convert(converter = SiNoBooleanConverter.class)
+	@Column(name = "ind_proforma_impreso", nullable = true, length = 1)
+	private Boolean indProformaImpreso;
+
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "cre_solicitud_credito_id", referencedColumnName = "id", nullable = false)
 	private CreSolicitudCredito creSolicitudCredito;
@@ -262,6 +266,14 @@ public class CreDesembolsoCabecera extends Common implements Serializable {
 
 	public void setIndContratoImpreso(Boolean indContratoImpreso) {
 		this.indContratoImpreso = indContratoImpreso;
+	}
+
+	public Boolean getIndProformaImpreso() {
+		return indProformaImpreso;
+	}
+
+	public void setIndProformaImpreso(Boolean indProformaImpreso) {
+		this.indProformaImpreso = indProformaImpreso;
 	}
 
 	public void addDetalle(CreDesembolsoDetalle detalle) {

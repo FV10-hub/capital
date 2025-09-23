@@ -189,6 +189,13 @@
                                             icon="pi pi-file-pdf"
                                             onclick="PF('imprimirPagareDialog').show()"
                                             styleClass="ui-button-warning" style="margin-right: .5rem"/>
+                                    <p:commandButton
+                                            value="Proforma"
+                                            id="btnImpProforma"
+                                            disabled="#{creDesembolsoController.creDesembolsoCabecera.indDesembolsadoBoolean and creDesembolsoController.esProformaImpreso}"
+                                            icon="pi pi-file-pdf"
+                                            onclick="PF('imprimirProformaDialog').show()"
+                                            styleClass="ui-button-warning" style="margin-right: .5rem"/>
                                     <p:commandButton value="Eliminar" icon="pi pi-trash"
                                                      disabled="#{creDesembolsoController.creDesembolsoCabecera.indDesembolsadoBoolean and creDesembolsoController.creDesembolsoCabecera.indPagareImpreso}"
                                                      rendered="#{creDesembolsoController.creDesembolsoCabecera.id != null}"
@@ -630,6 +637,19 @@
                                              onclick="PF('imprimirPagareDialog').hide()"/>
                         </p:confirmDialog>
 
+                        <p:confirmDialog widgetVar="imprimirProformaDialog" showEffect="fade"
+                                         width="300" message="Esta seguro que desea Imprimir?"
+                                         header="Confirmacion" severity="warn">
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             id="btnImprimirProforma"
+                                             ajax="false"
+                                             onclick="actualizarCampos('PROFORMA')"
+                                             actionListener="#{creDesembolsoController.imprimir('PROFORMA')}"/>
+                            <p:commandButton value="No" type="button"
+                                             styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('imprimirProformaDialog').hide()"/>
+                        </p:confirmDialog>
+
                         <p:confirmDialog widgetVar="deleteModuloDialog" showEffect="fade"
                                          width="300" message="Esta seguro que desea eliminar el registro?"
                                          header="Confirmacion" severity="warn">
@@ -645,8 +665,16 @@
             </div>
             <script>
                 function actualizarCampos(tipo) {
-
-                    var buttonId = tipo === 'CONTRATO' ? 'form:btnImpContrato' : 'form:btnImpPagare';
+                    var buttonId;
+                    if(tipo === 'CONTRATO'){
+                        buttonId = 'form:btnImpContrato';
+                    }
+                    if(tipo === 'PROFORMA'){
+                        buttonId = 'form:btnImpProforma';
+                    }
+                    if(tipo === 'PAGARE'){
+                        buttonId = 'form:btnImpPagare';
+                    }
                     var button = document.getElementById(buttonId);
                     if (button) {
                         console.log("Se encontro el boton: " + buttonId);
@@ -679,10 +707,13 @@
                     }
                     if (tipo === 'CONTRATO') {
                         PF('imprimirDialog').hide();
-                    } else {
+                    }
+                    if (tipo === 'PAGARE') {
                         PF('imprimirPagareDialog').hide();
                     }
-                    console.log("en teoria se ejecuto todo");
+                    if (tipo === 'PROFORMA') {
+                        PF('imprimirProformaDialog').hide();
+                    }
                     rc();
 
                 }

@@ -72,6 +72,7 @@ public class CreDesembolsoController {
 
     private boolean esContratoImpreso = true;
     private boolean esPagareImpreso = true;
+    private boolean esProformaImpreso = true;
 
     private static final String DT_NAME = "dt-desembolso";
     private static final String DT_DIALOG_NAME = "manageDesembolsoDialog";
@@ -153,6 +154,9 @@ public class CreDesembolsoController {
                 creDesembolsoCabecera = new CreDesembolsoCabecera();
                 creDesembolsoCabecera.setFechaDesembolso(LocalDate.now());
                 creDesembolsoCabecera.setEstado(Estado.ACTIVO.getEstado());
+                creDesembolsoCabecera.setIndPagareImpreso(false);
+                creDesembolsoCabecera.setIndContratoImpreso(false);
+                creDesembolsoCabecera.setIndProformaImpreso(false);
                 creDesembolsoCabecera.setTazaAnual(new BigDecimal(tazaAnualValorParametrizado));
                 creDesembolsoCabecera.setTazaMora(new BigDecimal(tazaMoraValorParametrizado));
                 creDesembolsoCabecera.setBsEmpresa(new BsEmpresa());
@@ -203,6 +207,7 @@ public class CreDesembolsoController {
             this.esVisibleFormulario = true;
             this.esContratoImpreso = creDesembolsoCabeceraSelected.getIndContratoImpreso();
             this.esPagareImpreso = creDesembolsoCabeceraSelected.getIndPagareImpreso();
+            this.esProformaImpreso = creDesembolsoCabeceraSelected.getIndProformaImpreso();
             creDesembolsoCabeceraSelected = null;
         }
         this.creDesembolsoCabeceraSelected = creDesembolsoCabeceraSelected;
@@ -305,6 +310,14 @@ public class CreDesembolsoController {
 
     public void setEsPagareImpreso(boolean esPagareImpreso) {
         this.esPagareImpreso = esPagareImpreso;
+    }
+
+    public boolean isEsProformaImpreso() {
+        return esProformaImpreso;
+    }
+
+    public void setEsProformaImpreso(boolean esProformaImpreso) {
+        this.esProformaImpreso = esProformaImpreso;
     }
 
     public CreDesembolsoService getCreDesembolsoServiceImpl() {
@@ -962,6 +975,19 @@ public class CreDesembolsoController {
                         .whereEq("bs_empresa_id", commonsUtilitiesController.getIdEmpresaLogueada())
                         .whereEq("id", this.creDesembolsoCabecera.getId());
 
+            } else if (StringUtils.equalsAny(tipo, "PROFORMA")) {
+                this.parametrosReporte.setReporte("CreProformaCredito");
+                // key
+                this.parametrosReporte.getParametros().add("p_empresa_id");
+                this.parametrosReporte.getParametros().add("p_desembolso_id");
+
+                // values
+                this.parametrosReporte.getValores().add(this.commonsUtilitiesController.getIdEmpresaLogueada());
+                this.parametrosReporte.getValores().add(this.creDesembolsoCabecera.getId());
+                ub = SqlUpdateBuilder.table("public.cre_desembolso_cabecera")
+                        .set("ind_proforma_impreso", "S")
+                        .whereEq("bs_empresa_id", commonsUtilitiesController.getIdEmpresaLogueada())
+                        .whereEq("id", this.creDesembolsoCabecera.getId());
             } else {
                 this.parametrosReporte.setReporte("CreContrato");
                 // key
@@ -987,6 +1013,8 @@ public class CreDesembolsoController {
                     this.generarReporte.procesarReporte(parametrosReporte);
                     if (StringUtils.equalsAny(tipo, "PAGARE")) {
                         this.esPagareImpreso = creDesembolsoCabecera.getIndPagareImpreso();
+                    } else if (StringUtils.equalsAny(tipo, "PROFORMA")) {
+                        this.esProformaImpreso = creDesembolsoCabecera.getIndProformaImpreso();
                     } else {
                         this.esContratoImpreso = creDesembolsoCabecera.getIndContratoImpreso();
                     }
@@ -1004,7 +1032,8 @@ public class CreDesembolsoController {
                 return;
             }
 
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             LOGGER.error("Ocurrio un error al Imprimir", e);
             // e.printStackTrace(System.err);
             String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
@@ -1012,6 +1041,7 @@ public class CreDesembolsoController {
             PrimeFaces.current().ajax().update(":form");
 
         }
+
     }
 
     /*
