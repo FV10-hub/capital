@@ -134,8 +134,8 @@
                                                      update=":form" styleClass="ui-button-info"
                                                      style="margin-right: .5rem"/>
                                     <p:commandButton
-                                            value="#{tesPagoController.estaAutorizado ? 'Imprimir' : 'OP'}"
-                                            id="btnImpContrato" disabled="#{tesPagoController.estaAutorizado}"
+                                            value="Imprimir OP"
+                                            id="btnImprimirOP" disabled="#{tesPagoController.estaAutorizado}"
                                             icon="pi pi-file-pdf"
                                             onclick="PF('imprimirDialog').show()"
                                             styleClass="ui-button-warning" style="margin-right: .5rem"/>
@@ -914,13 +914,16 @@
                                              onclick="PF('deleteFacturaDialog').hide()"/>
                         </p:confirmDialog>
 
+                        <p:remoteCommand name="rc" update=":form:messages"
+                                         action="#{tesPagoController.execute}"/>
                         <p:confirmDialog widgetVar="imprimirDialog" showEffect="fade"
                                          width="300" message="Esta seguro que desea Imprimir?"
                                          header="Confirmacion" severity="warn">
-                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
-                                             id="btnImprimirContratoReporte" onclick="handleImprimirButtonClick();"
-                                             actionListener="#{tesPagoController.imprimir('OP')}">
-                            </p:commandButton>
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             id="btnImprimir"
+                                             ajax="false"
+                                             onclick="actualizarCampos()"
+                                             actionListener="#{tesPagoController.imprimir()}"/>
                             <p:commandButton value="No" type="button"
                                              styleClass="ui-button-secondary" icon="pi pi-times"
                                              onclick="PF('imprimirDialog').hide()"/>
@@ -930,41 +933,41 @@
                 </div>
             </div>
             <script>
+                function actualizarCampos() {
+                    var buttonId = 'form:btnImprimirOP';
 
-				PrimeFaces.locales['es'] = {
-						closeText : 'Cerrar',
-						prevText : 'Anterior',
-						nextText : 'Siguiente',
-						monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
-								'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
-								'Noviembre', 'Diciembre' ],
-						monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-								'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
-						dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
-								'Jueves', 'Viernes', 'Sábado' ],
-						dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
-								'Sab' ],
-						dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
-						weekHeader : 'Semana',
-						firstDay : 1,
-						isRTL : false,
-						showMonthAfterYear : false,
-						yearSuffix : '',
-						timeOnlyTitle : 'Sólo hora',
-						timeText : 'Tiempo',
-						hourText : 'Hora',
-						minuteText : 'Minuto',
-						secondText : 'Segundo',
-						millisecondText : 'Milisegundo',
-						currentText : 'Fecha actual',
-						ampm : false,
-						month : 'Mes',
-						week : 'Semana',
-						day : 'Día',
-						allDayText : 'Todo el día',
-						today : 'Hoy',
-						clear : 'Claro'
-					};
+                    var button = document.getElementById(buttonId);
+                    if (button) {
+                        button.disabled = true;
+
+                        button.classList.remove('ui-state-default');
+                        button.classList.remove('ui-state-hover');
+                        button.classList.remove('ui-state-active');
+                        button.classList.add('ui-state-disabled');
+
+                        var iconSpan = button.querySelector('.ui-button-icon-left');
+                        if (iconSpan) {
+                            iconSpan.style.opacity = '0.5';
+                        }
+
+                        var textSpan = button.querySelector('.ui-button-text');
+                        if (textSpan) {
+                            textSpan.style.opacity = '0.5';
+                        }
+
+                        button.style.cursor = 'not-allowed';
+
+                        button.onclick = null;
+                        button.setAttribute('onclick', 'return false;');
+                    }
+                    PF('imprimirDialog').hide();
+
+                    rc();
+
+                }
+
+
+
 
 
 

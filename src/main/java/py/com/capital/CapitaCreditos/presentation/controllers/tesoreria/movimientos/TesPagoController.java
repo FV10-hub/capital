@@ -12,6 +12,8 @@ import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import py.com.capital.CapitaCreditos.dtos.SqlUpdateBuilder;
+import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 import py.com.capital.CapitaCreditos.entities.base.*;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCliente;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobHabilitacionCaja;
@@ -22,6 +24,7 @@ import py.com.capital.CapitaCreditos.entities.tesoreria.*;
 import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.*;
+import py.com.capital.CapitaCreditos.services.UtilsService;
 import py.com.capital.CapitaCreditos.services.base.BsModuloService;
 import py.com.capital.CapitaCreditos.services.base.BsTipoValorService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobClienteService;
@@ -39,6 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -98,6 +103,8 @@ public class TesPagoController {
 
     private static final String DT_NAME = "dt-pagos";
 
+    private ParametrosReporte parametrosReporte;
+
     // services
     @Autowired
     private TesPagoService tesPagoServiceImpl;
@@ -122,6 +129,12 @@ public class TesPagoController {
 
     @Autowired
     private ComSaldoService comSaldoServiceImpl;
+
+    @Autowired
+    private UtilsService utilsService;
+
+    @Autowired
+    private GenerarReporte generarReporte;
 
     /**
      * Propiedad de la logica de negocio inyectada con JSF y Spring.
@@ -535,6 +548,36 @@ public class TesPagoController {
             this.procesarCheque(bsTipoValorSelected);
         }
         this.bsTipoValorSelected = bsTipoValorSelected;
+    }
+
+    public ParametrosReporte getParametrosReporte() {
+        if (Objects.isNull(parametrosReporte)) {
+            parametrosReporte = new ParametrosReporte();
+            parametrosReporte.setCodModulo(Modulos.TESORERIA.getModulo());
+            parametrosReporte.setReporte("TesOrdenPago");
+            parametrosReporte.setFormato("PDF");
+        }
+        return parametrosReporte;
+    }
+
+    public void setParametrosReporte(ParametrosReporte parametrosReporte) {
+        this.parametrosReporte = parametrosReporte;
+    }
+
+    public UtilsService getUtilsService() {
+        return utilsService;
+    }
+
+    public void setUtilsService(UtilsService utilsService) {
+        this.utilsService = utilsService;
+    }
+
+    public GenerarReporte getGenerarReporte() {
+        return generarReporte;
+    }
+
+    public void setGenerarReporte(GenerarReporte generarReporte) {
+        this.generarReporte = generarReporte;
     }
 
     // LAZY
@@ -1072,6 +1115,99 @@ public class TesPagoController {
     }
 
     //TODO debo implementar la impresion de OP
+
+    public void imprimir() {
+        try {
+            this.parametrosReporte = null;
+            getParametrosReporte();
+            this.prepareParams();
+            SqlUpdateBuilder ub;
+            // key
+            this.parametrosReporte.getParametros().add("p_empresa_id");
+            this.parametrosReporte.getParametros().add("p_nro_op");
+            this.parametrosReporte.getParametros().add("p_fecha");
+            this.parametrosReporte.getParametros().add("p_pago_id");
+
+            // values
+            this.parametrosReporte.getValores().add(this.sessionBean.getUsuarioLogueado().getBsEmpresa().getId());
+            this.parametrosReporte.getValores().add(this.tesPagoCabecera.getNroPago().longValue());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            this.parametrosReporte.getValores().add(this.tesPagoCabecera.getFechaPago().format(formatter));
+            this.parametrosReporte.getValores().add(this.tesPagoCabecera.getId());
+
+            if (!(Objects.isNull(parametrosReporte) && Objects.isNull(parametrosReporte.getFormato()))
+                    && CollectionUtils.isNotEmpty(this.parametrosReporte.getParametros())
+                    && CollectionUtils.isNotEmpty(this.parametrosReporte.getValores())) {
+
+                if (this.generarReporte.procesarReporte(parametrosReporte)) {
+                    //TODO: aca restrinjo el registro si es pagare
+                    ub = SqlUpdateBuilder.table("public.tes_pagos_cabecera")
+                            .set("ind_impreso", "S")
+                            .whereEq("bs_empresa_id", this.sessionBean.getUsuarioLogueado().getBsEmpresa().getId())
+                            .whereEq("id", this.tesPagoCabecera.getId());
+                    this.utilsService.updateDinamico(ub);
+                    this.tesPagoCabecera = this.utilsService.reload(this.tesPagoCabecera.getClass(), this.tesPagoCabecera.getId());
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                            "Se imprimio correctamente.");
+                } else {
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
+                            "No se pudo actualizar el registro.");
+                    return;
+                }
+
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
+                        "Debes seccionar los parametros validos.");
+                return;
+            }
+
+        } catch (
+                Exception e) {
+            LOGGER.error("Ocurrio un error al Imprimir", e);
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+            PrimeFaces.current().ajax().update(":form");
+
+        }
+
+    }
+
+    private void prepareParams() {
+        // basicos
+        // Obtener la fecha y hora actual
+        LocalDateTime now = LocalDateTime.now();
+
+        DateTimeFormatter formatterDiaHora = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String formattedDateTimeDiaHora = now.format(formatterDiaHora);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMAGEN_PATH);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_NOMBRE_IMAGEN);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMPRESO_POR);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DIA_HORA);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DESC_EMPRESA);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.SUB_PARAM_REPORT_DIR);
+
+        this.parametrosReporte.getValores().add(ApplicationConstant.PATH_IMAGEN_EMPRESA);
+        this.parametrosReporte.getValores().add(ApplicationConstant.IMAGEN_EMPRESA_NAME);
+        this.parametrosReporte.getValores()
+                .add(this.sessionBean.getUsuarioLogueado().getBsPersona().getNombreCompleto());
+        this.parametrosReporte.getValores().add(formattedDateTimeDiaHora);
+        this.parametrosReporte.getValores()
+                .add(this.sessionBean.getUsuarioLogueado().getBsEmpresa().getNombreFantasia());
+        this.parametrosReporte.getValores().add(ApplicationConstant.SUB_REPORT_DIR);
+        // basico
+
+        DateTimeFormatter formatToDateParam = DateTimeFormatter.ofPattern("dd/MM/yyy");
+
+
+    }
+
+    public void execute() {
+        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                "Se imprimio correctamente.");
+        System.out.println("paso por aca");
+        PrimeFaces.current().ajax().update(":form:messages");
+    }
 
 
 }
