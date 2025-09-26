@@ -6,6 +6,8 @@ import py.com.capital.CapitaCreditos.dtos.SqlUpdateBuilder;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
+import java.util.Map;
 
 /*
  * 25 ene. 2024 - Elitebook
@@ -56,4 +58,21 @@ public class UtilsRepository {
         em.clear();
         return em.find(type, id);  // trae fresco de la DB
     }
+
+    @Transactional
+    public List<Object[]> ejecutarQuery(String sql, Map<String, Object> params) {
+        try {
+            var q = em.createNativeQuery(sql);
+            if (params != null) {
+                params.forEach(q::setParameter);
+            }
+            @SuppressWarnings("unchecked")
+            List<Object[]> rows = q.getResultList();
+            return rows;
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            return List.of();
+        }
+    }
+
 }

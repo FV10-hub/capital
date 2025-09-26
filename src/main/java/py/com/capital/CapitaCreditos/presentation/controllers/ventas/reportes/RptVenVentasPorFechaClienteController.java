@@ -208,6 +208,7 @@ public class RptVenVentasPorFechaClienteController {
         this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMPRESO_POR);
         this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DIA_HORA);
         this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DESC_EMPRESA);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.SUB_PARAM_REPORT_DIR);
 
         this.parametrosReporte.getValores().add(ApplicationConstant.PATH_IMAGEN_EMPRESA);
         this.parametrosReporte.getValores().add(ApplicationConstant.IMAGEN_EMPRESA_NAME);
@@ -216,6 +217,7 @@ public class RptVenVentasPorFechaClienteController {
         this.parametrosReporte.getValores().add(formattedDateTimeDiaHora);
         this.parametrosReporte.getValores()
                 .add(this.sessionBean.getUsuarioLogueado().getBsEmpresa().getNombreFantasia());
+        this.parametrosReporte.getValores().add(ApplicationConstant.SUB_REPORT_DIR);
         // basico
 
         DateTimeFormatter formatToDateParam = DateTimeFormatter.ofPattern("dd/MM/yyy");

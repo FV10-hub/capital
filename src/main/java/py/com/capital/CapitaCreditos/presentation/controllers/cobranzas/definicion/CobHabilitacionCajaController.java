@@ -10,13 +10,16 @@ import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import py.com.capital.CapitaCreditos.dtos.SqlSelectBuilder;
+import py.com.capital.CapitaCreditos.dtos.SqlUpdateBuilder;
+import py.com.capital.CapitaCreditos.entities.ParametrosReporte;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobArqueosCajas;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCaja;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobHabilitacionCaja;
+import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
-import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
-import py.com.capital.CapitaCreditos.presentation.utils.Estado;
-import py.com.capital.CapitaCreditos.presentation.utils.GenericLazyDataModel;
+import py.com.capital.CapitaCreditos.presentation.utils.*;
+import py.com.capital.CapitaCreditos.services.UtilsService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobArqueosCajaService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobCajaService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobHabilitacionCajaService;
@@ -26,11 +29,10 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /*
  * 28 dic. 2023 - Elitebook
@@ -58,6 +60,12 @@ public class CobHabilitacionCajaController {
     private boolean tieneHabilitacionAbiertaRendered;
     DateTimeFormatter horaFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    private BigDecimal montoCheque;
+    private BigDecimal montoEfectivo;
+    private BigDecimal montoTarjeta;
+
+    private ParametrosReporte parametrosReporte;
+
     @Autowired
     private CobHabilitacionCajaService cobHabilitacionCajaServiceImpl;
 
@@ -66,6 +74,12 @@ public class CobHabilitacionCajaController {
 
     @Autowired
     private CobArqueosCajaService cobArqueosCajaServiceImpl;
+
+    @Autowired
+    private UtilsService utilsService;
+
+    @Autowired
+    private GenerarReporte generarReporte;
 
     /**
      * Propiedad de la logica de negocio inyectada con JSF y Spring.
@@ -105,6 +119,7 @@ public class CobHabilitacionCajaController {
         if (Objects.isNull(cobHabilitacionCaja)) {
             this.cobHabilitacionCaja = new CobHabilitacionCaja();
             this.cobHabilitacionCaja.setFechaApertura(LocalDateTime.now());
+            this.cobHabilitacionCaja.setIndImpreso(false);
             this.cobHabilitacionCaja.setFechaCierre(null);
             this.cobHabilitacionCaja.setHoraApertura(LocalDateTime.now().format(horaFormatter));
             this.cobHabilitacionCaja.setHoraCierre(null);
@@ -138,6 +153,9 @@ public class CobHabilitacionCajaController {
     public void setCobHabilitacionCajaSelected(CobHabilitacionCaja cobHabilitacionCajaSelected) {
         if (!Objects.isNull(cobHabilitacionCajaSelected)) {
             this.cobHabilitacionCaja = cobHabilitacionCajaSelected;
+            this.resumenCobros(this.sessionBean.getUsuarioLogueado().getBsEmpresa().getId(),
+                    this.sessionBean.getUsuarioLogueado().getId(),
+                    this.cobHabilitacionCaja.getNroHabilitacion().longValue());
             cobHabilitacionCajaSelected = null;
             this.esNuegoRegistro = false;
             var listaAux = this.cobArqueosCajaServiceImpl.buscarCobArqueosCajasActivosLista
@@ -270,6 +288,60 @@ public class CobHabilitacionCajaController {
         this.puedeEliminar = puedeEliminar;
     }
 
+    public ParametrosReporte getParametrosReporte() {
+        if (Objects.isNull(parametrosReporte)) {
+            parametrosReporte = new ParametrosReporte();
+            parametrosReporte.setCodModulo(Modulos.COBRANZAS.getModulo());
+            parametrosReporte.setReporte("CobRendicionCaja");
+            parametrosReporte.setFormato("PDF");
+        }
+        return parametrosReporte;
+    }
+
+    public void setParametrosReporte(ParametrosReporte parametrosReporte) {
+        this.parametrosReporte = parametrosReporte;
+    }
+
+    public UtilsService getUtilsService() {
+        return utilsService;
+    }
+
+    public void setUtilsService(UtilsService utilsService) {
+        this.utilsService = utilsService;
+    }
+
+    public GenerarReporte getGenerarReporte() {
+        return generarReporte;
+    }
+
+    public void setGenerarReporte(GenerarReporte generarReporte) {
+        this.generarReporte = generarReporte;
+    }
+
+    public BigDecimal getMontoCheque() {
+        return montoCheque;
+    }
+
+    public void setMontoCheque(BigDecimal montoCheque) {
+        this.montoCheque = montoCheque;
+    }
+
+    public BigDecimal getMontoEfectivo() {
+        return montoEfectivo;
+    }
+
+    public void setMontoEfectivo(BigDecimal montoEfectivo) {
+        this.montoEfectivo = montoEfectivo;
+    }
+
+    public BigDecimal getMontoTarjeta() {
+        return montoTarjeta;
+    }
+
+    public void setMontoTarjeta(BigDecimal montoTarjeta) {
+        this.montoTarjeta = montoTarjeta;
+    }
+
     // METODOS
     public void validarCajaDelUsuario(CobCaja caja) {
         if (Objects.isNull(caja)) {
@@ -387,7 +459,7 @@ public class CobHabilitacionCajaController {
     public void addArqueoCaja() {
         if (!Objects.isNull(cobArqueosCajas)) {
             arqueosCajasList.add(cobArqueosCajas);
-            PrimeFaces.current().ajax().update("form:messages", ":form:dt-arqueos", ":form:btnAddArqueo", ":form:btnGuardar");
+            PrimeFaces.current().ajax().update("form:messages", ":form:dt-arqueos", ":form:btnAddArqueo", ":form:btnGuardar", ":form:btnImpImprimir");
             PrimeFaces.current().executeScript("PF('manageArqueoDialog').hide()");
         }
     }
@@ -425,6 +497,186 @@ public class CobHabilitacionCajaController {
             return pagina;
         }
         return null;
+    }
+
+    public void imprimir() {
+        try {
+            this.parametrosReporte = null;
+            getParametrosReporte();
+            this.prepareParams();
+            SqlUpdateBuilder ub;
+            // key
+            this.parametrosReporte.getParametros().add("p_empresa_id");
+            this.parametrosReporte.getParametros().add("p_usuario_id");
+            this.parametrosReporte.getParametros().add("p_nro_habilitacion");
+            this.parametrosReporte.getParametros().add("p_usuario");
+            this.parametrosReporte.getParametros().add("p_periodo");
+
+            // values
+            this.parametrosReporte.getValores().add(this.sessionBean.getUsuarioLogueado().getBsEmpresa().getId());
+            this.parametrosReporte.getValores().add(this.sessionBean.getUsuarioLogueado().getId());
+            this.parametrosReporte.getValores().add(this.cobHabilitacionCaja.getNroHabilitacion().longValue());
+            this.parametrosReporte.getValores().add(this.sessionBean.getUsuarioLogueado().getCodUsuario());
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            this.parametrosReporte.getValores().add(String.format("Del %s al %s.",
+                    this.cobHabilitacionCaja.getFechaApertura().format(formatter),
+                    this.cobHabilitacionCaja.isIndCerradoBoolean() ? this.cobHabilitacionCaja.getFechaCierre().format(formatter) : now.format(formatter)));
+
+            //TODO: aca restrinjo el registro si es pagare
+            ub = SqlUpdateBuilder.table("public.cob_habilitaciones_cajas")
+                    .set("ind_impreso", "S")
+                    .whereEq("id", this.cobHabilitacionCaja.getId());
+
+            if (!(Objects.isNull(parametrosReporte) && Objects.isNull(parametrosReporte.getFormato()))
+                    && CollectionUtils.isNotEmpty(this.parametrosReporte.getParametros())
+                    && CollectionUtils.isNotEmpty(this.parametrosReporte.getValores())) {
+
+                if (this.utilsService.updateDinamico(ub)) {
+                    this.cobHabilitacionCaja = this.utilsService.reload(this.cobHabilitacionCaja.getClass(), this.cobHabilitacionCaja.getId());
+                    this.generarReporte.procesarReporte(parametrosReporte);
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                            "Se imprimio correctamente.");
+                } else {
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
+                            "No se pudo actualizar el registro.");
+                    return;
+                }
+
+            } else {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
+                        "Debes seccionar los parametros validos.");
+                return;
+            }
+
+        } catch (
+                Exception e) {
+            LOGGER.error("Ocurrio un error al Imprimir", e);
+            // e.printStackTrace(System.err);
+            String mensajeAmigable = ExceptionUtils.obtenerMensajeUsuario(e);
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", mensajeAmigable);
+            PrimeFaces.current().ajax().update(":form");
+
+        }
+
+    }
+
+    private void prepareParams() {
+        // basicos
+        // Obtener la fecha y hora actual
+        LocalDateTime now = LocalDateTime.now();
+
+        DateTimeFormatter formatterDiaHora = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String formattedDateTimeDiaHora = now.format(formatterDiaHora);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMAGEN_PATH);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_NOMBRE_IMAGEN);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMPRESO_POR);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DIA_HORA);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DESC_EMPRESA);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.SUB_PARAM_REPORT_DIR);
+
+        this.parametrosReporte.getValores().add(ApplicationConstant.PATH_IMAGEN_EMPRESA);
+        this.parametrosReporte.getValores().add(ApplicationConstant.IMAGEN_EMPRESA_NAME);
+        this.parametrosReporte.getValores()
+                .add(this.sessionBean.getUsuarioLogueado().getBsPersona().getNombreCompleto());
+        this.parametrosReporte.getValores().add(formattedDateTimeDiaHora);
+        this.parametrosReporte.getValores()
+                .add(this.sessionBean.getUsuarioLogueado().getBsEmpresa().getNombreFantasia());
+        this.parametrosReporte.getValores().add(ApplicationConstant.SUB_REPORT_DIR);
+        // basico
+
+        DateTimeFormatter formatToDateParam = DateTimeFormatter.ofPattern("dd/MM/yyy");
+
+
+    }
+
+    public void execute() {
+        //TODO esto sirve para ejecutar un comportamiento en paralelo con JS
+        /*String mensaje = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("mensaje");
+        String boton = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("boton");
+        if (mensaje != null || boton != null) {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                    "Se imprimio correctamente.");
+        } else {
+            CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡CUIDADO!",
+                    "Debes seccionar los parametros validos.");
+        }
+
+        PrimeFaces.current().executeScript("PF('imprimirDialog').hide();");
+        PrimeFaces.current().executeScript("PF('imprimirPagareDialog').hide();");*/
+        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                "Se imprimio correctamente.");
+        System.out.println("paso por aca");
+        PrimeFaces.current().ajax().update(":form:messages");
+
+        //retorna un valor al front
+        //PrimeFaces.current().ajax().addCallbackParam("serverTime", System.currentTimeMillis());
+
+        //html como atraparlo
+        //<p:remoteCommand name="rc" update="msgs" action="#{remoteCommandView.execute}"
+        //oncomplete="alert('Return value from server: ' + args.serverTime)"/>
+
+
+    }
+
+    public void resumenCobros(Long empresaId, Long usuarioId, Long habilitacion) {
+        // 1. construir cada bloque con tu SqlSelectBuilder
+        SqlSelectBuilder facturas = SqlSelectBuilder.from("ven_facturas_cabecera c")
+                .select("tv.cod_tipo || ' - ' || tv.descripcion AS tipo_valor")
+                .select("SUM(COALESCE(c.monto_total_factura,0)) AS tot_comprobante")
+                .join("cob_habilitaciones_cajas hab ON hab.id = c.cob_habilitacion_caja_id")
+                .join("cob_cajas caj ON hab.bs_cajas_id = caj.id AND hab.bs_usuario_id = caj.bs_usuario_id AND caj.bs_empresa_id = c.bs_empresa_id")
+                .join("bs_talonarios tal ON c.bs_talonario_id = tal.id")
+                .join("bs_tipo_comprobantes tip ON tal.bs_tipo_comprobante_id = tip.id")
+                .join("cob_cobros_valores val ON c.bs_empresa_id = val.bs_empresa_id AND c.id = val.id_comprobante")
+                .join("bs_tipo_valor tv ON val.bs_empresa_id = tv.bs_empresa_id AND val.bs_tipo_valor_id = tv.id")
+                .where("c.bs_empresa_id = :empresaId")
+                .where("caj.bs_usuario_id = :usuarioId")
+                .where("hab.nro_habilitacion = :habilitacion")
+                .where("tip.cod_tip_comprobante = 'CON'")
+                .groupBy("tv.cod_tipo, tv.descripcion");
+
+        SqlSelectBuilder recibos = SqlSelectBuilder.from("cob_recibos_cabecera c")
+                .select("tv.cod_tipo || ' - ' || tv.descripcion AS tipo_valor")
+                .select("SUM(COALESCE(c.monto_total_recibo,0)) AS tot_comprobante")
+                .join("cob_habilitaciones_cajas hab ON hab.id = c.cob_habilitacion_id")
+                .join("cob_cajas caj ON hab.bs_cajas_id = caj.id AND hab.bs_usuario_id = caj.bs_usuario_id AND caj.bs_empresa_id = c.bs_empresa_id")
+                .join("bs_talonarios tal ON c.bs_talonario_id = tal.id")
+                .join("bs_tipo_comprobantes tip ON tal.bs_tipo_comprobante_id = tip.id")
+                .join("cob_cobros_valores val ON c.bs_empresa_id = val.bs_empresa_id AND c.id = val.id_comprobante")
+                .join("bs_tipo_valor tv ON val.bs_empresa_id = tv.bs_empresa_id AND val.bs_tipo_valor_id = tv.id")
+                .where("c.bs_empresa_id = :empresaId")
+                .where("caj.bs_usuario_id = :usuarioId")
+                .where("hab.nro_habilitacion = :habilitacion")
+                .where("tip.cod_tip_comprobante = 'REC'")
+                .groupBy("tv.cod_tipo, tv.descripcion");
+
+        // 2. Unión manual
+        String sql = "SELECT resumen.tipo_valor, SUM(resumen.tot_comprobante) AS total_cobrado " +
+                "FROM (" + facturas.build() + " UNION ALL " + recibos.build() + ") resumen " +
+                "GROUP BY resumen.tipo_valor " +
+                "ORDER BY resumen.tipo_valor";
+
+        Map<String, Object> params = Map.of(
+                "empresaId", empresaId,
+                "usuarioId", usuarioId,
+                "habilitacion", habilitacion
+        );
+
+        List<Object[]> cobros = utilsService.ejecutarQuery(sql, params);
+        Map<String, BigDecimal> montos = new HashMap<>();
+
+        for (Object[] row : cobros) {
+            String tipoValor = (String) row[0];
+            BigDecimal monto = (BigDecimal) row[1];
+            montos.put(tipoValor, monto);
+        }
+
+        this.montoCheque = montos.getOrDefault("CHE - CHEQUE", BigDecimal.ZERO);
+        this.montoEfectivo = montos.getOrDefault("EFE - EFECTIVO", BigDecimal.ZERO);
+        this.montoTarjeta = montos.getOrDefault("TAR - TARJETA", BigDecimal.ZERO);
+
+
     }
 
 

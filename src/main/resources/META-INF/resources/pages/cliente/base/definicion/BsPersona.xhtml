@@ -178,7 +178,11 @@
                                             <f:selectItem itemLabel="FISICA" itemValue="FISICA"/>
                                         </p:selectOneMenu>
                                     </div>
-
+                                    <div class="field flex flex-column">
+                                        <p:outputLabel for="esBancoLb">Es Banco? </p:outputLabel>
+                                        <p:toggleSwitch id="esBancoLb"
+                                                        value="#{bsPersonaController.bsPersona.esBanco}"/>
+                                    </div>
                                     <div class="field">
                                         <p:outputLabel for="personalb">Estado</p:outputLabel>
                                         <p:selectOneMenu id="personalb"

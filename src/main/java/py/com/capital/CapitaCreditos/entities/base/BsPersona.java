@@ -1,5 +1,7 @@
 package py.com.capital.CapitaCreditos.entities.base;
 
+import py.com.capital.CapitaCreditos.entities.converter.SiNoBooleanConverter;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -58,6 +60,10 @@ public class BsPersona extends Common {
     //CI O RUC
     @Column(name = "tipo_documento", length = 100)
     private String tipoDocumento;
+
+    @Convert(converter = SiNoBooleanConverter.class)
+    @Column(name = "es_banco", nullable = true, length = 1)
+    private Boolean esBanco;
 
     public BsPersona() {
 
@@ -161,6 +167,14 @@ public class BsPersona extends Common {
 
     public void setTipoDocumento(String tipoDocumento) {
         this.tipoDocumento = tipoDocumento;
+    }
+
+    public Boolean getEsBanco() {
+        return esBanco;
+    }
+
+    public void setEsBanco(Boolean esBanco) {
+        this.esBanco = esBanco;
     }
 
     @Override

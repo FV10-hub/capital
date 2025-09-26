@@ -2,6 +2,7 @@ package py.com.capital.CapitaCreditos.entities.cobranzas;
 
 import javax.persistence.*;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
+import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.base.BsTipoValor;
 import py.com.capital.CapitaCreditos.entities.base.Common;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesDeposito;
@@ -75,6 +76,10 @@ public class CobCobrosValores extends Common implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "bs_tipo_valor_id", referencedColumnName = "id", nullable = false)
 	private BsTipoValor bsTipoValor;
+
+	@ManyToOne()
+	@JoinColumn(name = "bs_persona_juridica", referencedColumnName = "id", nullable = true)
+	private BsPersona bsPersonaJuridica;
 	
 	@ManyToOne
 	@JoinColumn(name = "bs_empresa_id", referencedColumnName = "id", nullable = false)
@@ -234,6 +239,14 @@ public class CobCobrosValores extends Common implements Serializable {
 
 	public void setTesDeposito(TesDeposito tesDeposito) {
 		this.tesDeposito = tesDeposito;
+	}
+
+	public BsPersona getBsPersonaJuridica() {
+		return bsPersonaJuridica;
+	}
+
+	public void setBsPersonaJuridica(BsPersona bsPersonaJuridica) {
+		this.bsPersonaJuridica = bsPersonaJuridica;
 	}
 
 	@Override

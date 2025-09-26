@@ -956,19 +956,15 @@ public class CreDesembolsoController {
                 this.parametrosReporte.getParametros().add("p_nombre");
                 this.parametrosReporte.getParametros().add("p_documento");
                 this.parametrosReporte.getParametros().add("p_monto");
-                this.parametrosReporte.getParametros().add("p_vencimiento");
-                this.parametrosReporte.getParametros().add("p_fecha");
                 this.parametrosReporte.getParametros().add("p_cant_cuota");
                 this.parametrosReporte.getParametros().add("p_monto_cuota");
 
                 // values
                 this.parametrosReporte.getValores().add(this.creDesembolsoCabecera.getCreSolicitudCredito().getCobCliente().getBsPersona().getNombreCompleto());
-                this.parametrosReporte.getValores().add("documento aqui");
+                this.parametrosReporte.getValores().add(this.creDesembolsoCabecera.getCreSolicitudCredito().getCobCliente().getBsPersona().getDocumento());
                 this.parametrosReporte.getValores().add(String.valueOf(this.creDesembolsoCabecera.getMontoTotalCredito()));
-                this.parametrosReporte.getValores().add("vencimiento aqui");
-                this.parametrosReporte.getValores().add("fecha aqui");
-                this.parametrosReporte.getValores().add("cantidad_cuota aqui");
-                this.parametrosReporte.getValores().add("monto de cuota aqui");
+                this.parametrosReporte.getValores().add(String.valueOf(this.creDesembolsoCabecera.getCreSolicitudCredito().getPlazo()));
+                this.parametrosReporte.getValores().add(String.valueOf(this.creDesembolsoCabecera.getCreDesembolsoDetalleList().get(1).getMontoCuota()));
                 //TODO: aca restrinjo el registro si es pagare
                 ub = SqlUpdateBuilder.table("public.cre_desembolso_cabecera")
                         .set("ind_pagare_impreso", "S")
@@ -997,7 +993,7 @@ public class CreDesembolsoController {
 
                 // values
                 this.parametrosReporte.getValores().add(this.creDesembolsoCabecera.getCreSolicitudCredito().getCobCliente().getBsPersona().getNombreCompleto());
-                this.parametrosReporte.getValores().add("documento aqui");
+                this.parametrosReporte.getValores().add(this.creDesembolsoCabecera.getCreSolicitudCredito().getCobCliente().getBsPersona().getDocumento());
                 this.parametrosReporte.getValores().add(String.valueOf(this.creDesembolsoCabecera.getMontoTotalCredito()));
                 ub = SqlUpdateBuilder.table("public.cre_desembolso_cabecera")
                         .set("ind_contrato_impreso", "S")
@@ -1061,6 +1057,7 @@ public class CreDesembolsoController {
         this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_IMPRESO_POR);
         this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DIA_HORA);
         this.parametrosReporte.getParametros().add(ApplicationConstant.REPORT_PARAM_DESC_EMPRESA);
+        this.parametrosReporte.getParametros().add(ApplicationConstant.SUB_PARAM_REPORT_DIR);
 
         this.parametrosReporte.getValores().add(ApplicationConstant.PATH_IMAGEN_EMPRESA);
         this.parametrosReporte.getValores().add(ApplicationConstant.IMAGEN_EMPRESA_NAME);
@@ -1069,7 +1066,15 @@ public class CreDesembolsoController {
         this.parametrosReporte.getValores().add(formattedDateTimeDiaHora);
         this.parametrosReporte.getValores()
                 .add(this.sessionBean.getUsuarioLogueado().getBsEmpresa().getNombreFantasia());
+        this.parametrosReporte.getValores().add(ApplicationConstant.SUB_REPORT_DIR);
         // basico
+
+        this.parametrosReporte.getParametros().add("p_fecha");
+        this.parametrosReporte.getParametros().add("p_vencimiento");
+
+        this.parametrosReporte.getValores().add(formattedDateTimeDiaHora);
+        this.parametrosReporte.getValores().add(formattedDateTimeDiaHora);
+
 
         DateTimeFormatter formatToDateParam = DateTimeFormatter.ofPattern("dd/MM/yyy");
 

@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import py.com.capital.CapitaCreditos.dtos.SqlUpdateBuilder;
 import py.com.capital.CapitaCreditos.repositories.base.UtilsRepository;
 
+import java.util.List;
+import java.util.Map;
+
 /*
  * 25 ene. 2024 - Elitebook
  */
@@ -27,7 +30,11 @@ public class UtilsService {
     }
 
     public <T, ID> T reload(Class<T> type, Long id) {
-        return this.repository.reload(type,id);
+        return this.repository.reload(type, id);
+    }
+
+    public List<Object[]> ejecutarQuery(String sql, Map<String, Object> params) {
+        return this.repository.ejecutarQuery(sql, params);
     }
 
 }

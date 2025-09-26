@@ -12,11 +12,13 @@ public final class ApplicationConstant {
 	public static final String PATH_IMAGEN_EMPRESA = "D:\\reportes\\imagenes\\";
 	//public static final String PATH_IMAGEN_EMPRESA = "/app/jasper/imagenes/";
 	public static final String IMAGEN_EMPRESA_NAME = "empresa.png";
-	
+	public static final String SUB_REPORT_DIR = "D:\\reportes\\subreport\\";
+
 	//PARAMETROS BASICOS DE REPORTES	
 	public static final String REPORT_PARAM_IMAGEN_PATH = "imagenPath";
 	public static final String REPORT_PARAM_NOMBRE_IMAGEN = "nombreImagen";
 	public static final String REPORT_PARAM_IMPRESO_POR = "impresoPor";
 	public static final String REPORT_PARAM_DIA_HORA = "DiaHora";
 	public static final String REPORT_PARAM_DESC_EMPRESA = "descEmpresa";
+	public static final String SUB_PARAM_REPORT_DIR = "subreport_dir";
 }

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 
 public class SqlSelectBuilder {
-    private String table;                       // FROM ...
+    private String table;
     private final List<String> selectFields = new ArrayList<>();
     private final List<String> joins = new ArrayList<>();
     private final List<String> whereClauses = new ArrayList<>();
@@ -183,4 +183,64 @@ public List<Object[]> buscarBancos(Long empresaId, String texto, int limit) {
     .having("COALESCE(SUM(m.importe),0) >= :minimo")
     .orderBy("movs_mes", "DESC")
     .build();
+* */
+
+/* asi usar union all ejemplo en habilitacion de caja
+public void resumenCobros(Long empresaId, Long usuarioId, Long habilitacion) {
+        // 1. construir cada bloque con tu SqlSelectBuilder
+        SqlSelectBuilder facturas = SqlSelectBuilder.from("ven_facturas_cabecera c")
+                .select("tv.cod_tipo || ' - ' || tv.descripcion AS tipo_valor")
+                .select("SUM(COALESCE(c.monto_total_factura,0)) AS tot_comprobante")
+                .join("cob_habilitaciones_cajas hab ON hab.id = c.cob_habilitacion_caja_id")
+                .join("cob_cajas caj ON hab.bs_cajas_id = caj.id AND hab.bs_usuario_id = caj.bs_usuario_id AND caj.bs_empresa_id = c.bs_empresa_id")
+                .join("bs_talonarios tal ON c.bs_talonario_id = tal.id")
+                .join("bs_tipo_comprobantes tip ON tal.bs_tipo_comprobante_id = tip.id")
+                .join("cob_cobros_valores val ON c.bs_empresa_id = val.bs_empresa_id AND c.id = val.id_comprobante")
+                .join("bs_tipo_valor tv ON val.bs_empresa_id = tv.bs_empresa_id AND val.bs_tipo_valor_id = tv.id")
+                .where("c.bs_empresa_id = :empresaId")
+                .where("caj.bs_usuario_id = :usuarioId")
+                .where("hab.nro_habilitacion = :habilitacion")
+                .where("tip.cod_tip_comprobante = 'CON'")
+                .groupBy("tv.cod_tipo, tv.descripcion");
+
+        SqlSelectBuilder recibos = SqlSelectBuilder.from("cob_recibos_cabecera c")
+                .select("tv.cod_tipo || ' - ' || tv.descripcion AS tipo_valor")
+                .select("SUM(COALESCE(c.monto_total_recibo,0)) AS tot_comprobante")
+                .join("cob_habilitaciones_cajas hab ON hab.id = c.cob_habilitacion_id")
+                .join("cob_cajas caj ON hab.bs_cajas_id = caj.id AND hab.bs_usuario_id = caj.bs_usuario_id AND caj.bs_empresa_id = c.bs_empresa_id")
+                .join("bs_talonarios tal ON c.bs_talonario_id = tal.id")
+                .join("bs_tipo_comprobantes tip ON tal.bs_tipo_comprobante_id = tip.id")
+                .join("cob_cobros_valores val ON c.bs_empresa_id = val.bs_empresa_id AND c.id = val.id_comprobante")
+                .join("bs_tipo_valor tv ON val.bs_empresa_id = tv.bs_empresa_id AND val.bs_tipo_valor_id = tv.id")
+                .where("c.bs_empresa_id = :empresaId")
+                .where("caj.bs_usuario_id = :usuarioId")
+                .where("hab.nro_habilitacion = :habilitacion")
+                .where("tip.cod_tip_comprobante = 'REC'")
+                .groupBy("tv.cod_tipo, tv.descripcion");
+
+        // 2. Unión manual
+        String sql = "SELECT resumen.tipo_valor, SUM(resumen.tot_comprobante) AS total_cobrado " +
+                "FROM (" + facturas.build() + " UNION ALL " + recibos.build() + ") resumen " +
+                "GROUP BY resumen.tipo_valor " +
+                "ORDER BY resumen.tipo_valor";
+
+        Map<String, Object> params = Map.of(
+                "empresaId", empresaId,
+                "usuarioId", usuarioId,
+                "habilitacion", habilitacion
+        );
+
+        List<Object[]> cobros = utilsService.ejecutarQuery(sql, params);
+        Map<String, BigDecimal> montos = new HashMap<>();
+
+        for (Object[] row : cobros) {
+            String tipoValor = (String) row[0];
+            BigDecimal monto = (BigDecimal) row[1];
+            montos.put(tipoValor, monto);
+        }
+
+        this.montoCheque = montos.getOrDefault("CHE - CHEQUE", BigDecimal.ZERO);
+        this.montoEfectivo = montos.getOrDefault("EFE - EFECTIVO", BigDecimal.ZERO);
+        this.montoTarjeta = montos.getOrDefault("TAR - TARJETA", BigDecimal.ZERO);
+    }
 * */

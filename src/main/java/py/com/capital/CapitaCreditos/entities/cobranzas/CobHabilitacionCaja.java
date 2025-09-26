@@ -3,6 +3,7 @@ package py.com.capital.CapitaCreditos.entities.cobranzas;
 import javax.persistence.*;
 import py.com.capital.CapitaCreditos.entities.base.BsUsuario;
 import py.com.capital.CapitaCreditos.entities.base.Common;
+import py.com.capital.CapitaCreditos.entities.converter.SiNoBooleanConverter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -41,6 +42,10 @@ public class CobHabilitacionCaja extends Common implements Serializable {
 
 	@Column(name = "ind_cerrado")
 	private String indCerrado;
+
+	@Convert(converter = SiNoBooleanConverter.class)
+	@Column(name = "ind_impreso", nullable = true, length = 1)
+	private Boolean indImpreso;
 
 	@Transient
 	private boolean indCerradoBoolean;
@@ -146,6 +151,14 @@ public class CobHabilitacionCaja extends Common implements Serializable {
 	public void setIndCerradoBoolean(boolean indCerradoBoolean) {
 		indCerrado = indCerradoBoolean ? "S" : "N";
 		this.indCerradoBoolean = indCerradoBoolean;
+	}
+
+	public Boolean getIndImpreso() {
+		return indImpreso;
+	}
+
+	public void setIndImpreso(Boolean indImpreso) {
+		this.indImpreso = indImpreso;
 	}
 
 	@Override

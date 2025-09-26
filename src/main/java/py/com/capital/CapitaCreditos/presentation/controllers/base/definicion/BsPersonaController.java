@@ -84,6 +84,7 @@ public class BsPersonaController {
             this.bsPersona = new BsPersona();
             this.bsPersona.setEstado(Estado.ACTIVO.getEstado());
             this.bsPersona.setTipoPersona("JURIDICA");
+            this.bsPersona.setEsBanco(false);
             this.bsPersona.setTipoDocumento("CI");
         }
         return bsPersona;
