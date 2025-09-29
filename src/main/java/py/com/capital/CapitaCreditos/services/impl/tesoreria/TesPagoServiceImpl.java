@@ -1,6 +1,7 @@
 package py.com.capital.CapitaCreditos.services.impl.tesoreria;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoCabecera;
 import py.com.capital.CapitaCreditos.repositories.tesoreria.TesPagoRepository;
 import py.com.capital.CapitaCreditos.services.impl.CommonServiceImpl;
@@ -37,6 +38,18 @@ public class TesPagoServiceImpl extends CommonServiceImpl<TesPagoCabecera, TesPa
     }
 
     @Override
+    @Transactional
+    public int marcarPagosComoConciliado(Long empresaId, List<Long> idsSaldo, String usuario) {
+        return this.repository.marcarPagosComoConciliado(empresaId, idsSaldo, usuario);
+    }
+
+    @Override
+    @Transactional
+    public int revertirPagosConciliados(Long empresaId, List<Long> idsPago, String usuario) {
+        return this.repository.revertirPagosConciliados(empresaId, idsPago, usuario);
+    }
+
+    @Override
     public Long calcularNroPagoDisponible(Long idEmpresa, Long idTalonario) {
         return this.repository.calcularNroPagoDisponible(idEmpresa, idTalonario);
     }
@@ -45,5 +58,6 @@ public class TesPagoServiceImpl extends CommonServiceImpl<TesPagoCabecera, TesPa
 	public TesPagoCabecera recuperarPagosConDetalle(Long idEmpresa, Long idPago) {
 		return this.repository.recuperarPagosConDetalle(idEmpresa, idPago);
 	}*/
+
 
 }

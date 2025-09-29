@@ -22,4 +22,7 @@ public interface BsTipoValorRepository extends JpaRepository<BsTipoValor, Long> 
 	@Query("SELECT m FROM BsTipoValor m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1")
 	List<BsTipoValor> buscarTipoValorActivosLista(Long idEmpresa);
 
+	@Query("SELECT m FROM BsTipoValor m where m.estado = 'ACTIVO' and m.bsEmpresa.id = ?1 and m.bsModulo.codigo = ?2 and m.codTipo = ?3")
+	BsTipoValor buscarTipoValorModuloTipo(Long idEmpresa, String codModulo, String codTipo);
+
 }

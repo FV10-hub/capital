@@ -84,7 +84,7 @@ public class CobCobrosValores extends Common implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "bs_empresa_id", referencedColumnName = "id", nullable = false)
 	private BsEmpresa bsEmpresa;
-	
+	//TODO: mas adelante ver de agregar la moneda para poner manejar separado
 	@PrePersist
 	private void preInsert() {
 		this.setEstado("ACTIVO");
@@ -215,9 +215,9 @@ public class CobCobrosValores extends Common implements Serializable {
 
 	public boolean isIndConciliadoBoolean() {
 		if (!Objects.isNull(indConciliado)) {
-			indDepositadoBoolean = indConciliado.equalsIgnoreCase("S");
+			indConciliadoBoolean = indConciliado.equalsIgnoreCase("S");
 		}
-		return indDepositadoBoolean;
+		return indConciliadoBoolean;
 	}
 
 	public void setIndConciliadoBoolean(boolean indConciliadoBoolean) {

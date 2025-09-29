@@ -51,4 +51,18 @@ public interface CobCobrosValoresRepository extends JpaRepository<CobCobrosValor
 									@Param("idsSaldo") List<Long> idsSaldo,
 									@Param("usuario") String usuario);
 
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Query("""
+       UPDATE CobCobrosValores s
+          SET s.indConciliado = 'N',
+              s.usuarioModificacion = :usuario,
+              s.fechaActualizacion = now()
+        WHERE s.bsEmpresa.id = :empresaId
+          AND s.id IN :idsSaldo
+          AND s.indConciliado = 'S'
+       """)
+	int revertirValoresConciliados(@Param("empresaId") Long empresaId,
+								   @Param("idsSaldo") List<Long> idsSaldo,
+								   @Param("usuario") String usuario);
+
 }

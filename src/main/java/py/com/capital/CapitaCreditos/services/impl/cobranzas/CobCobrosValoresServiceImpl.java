@@ -61,4 +61,10 @@ public class CobCobrosValoresServiceImpl extends CommonServiceImpl<CobCobrosValo
         return this.repository.marcarValoresComoConciliado(empresaId, idsSaldo,usuario);
     }
 
+    @Override
+    @Transactional
+    public int revertirValoresConciliados(Long empresaId, List<Long> idsSaldo, String usuario) {
+        return this.repository.revertirValoresConciliados(empresaId, idsSaldo, usuario);
+    }
+
 }

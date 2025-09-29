@@ -3,7 +3,9 @@ package py.com.capital.CapitaCreditos.repositories.tesoreria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoCabecera;
 
 import java.util.List;
@@ -35,5 +37,35 @@ public interface TesPagoRepository extends JpaRepository<TesPagoCabecera, Long> 
 	TesPagoCabecera recuperarPagosConDetalle(Long idEmpresa, Long idPago);*/
 
 
-	
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Query("""
+       UPDATE TesPagoValores p
+          SET p.indConciliado = 'S',
+              p.usuarioModificacion = :usuario,
+              p.fechaActualizacion = now()
+        WHERE p.bsEmpresa.id = :empresaId
+          AND p.id IN :idsPago
+          AND p.indConciliado = 'N'
+       """)
+	int marcarPagosComoConciliado(@Param("empresaId") Long empresaId,
+								  @Param("idsPago") List<Long> idsPago,
+								  @Param("usuario") String usuario);
+
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Query("""
+       UPDATE TesPagoValores p
+          SET p.indConciliado = 'N',
+              p.usuarioModificacion = :usuario,
+              p.fechaActualizacion = now()
+        WHERE p.bsEmpresa.id = :empresaId
+          AND p.id IN :idsPago
+          AND p.indConciliado = 'S'
+       """)
+	int revertirPagosConciliados(@Param("empresaId") Long empresaId,
+								 @Param("idsPago") List<Long> idsPago,
+								 @Param("usuario") String usuario);
+
+
+
+
 }

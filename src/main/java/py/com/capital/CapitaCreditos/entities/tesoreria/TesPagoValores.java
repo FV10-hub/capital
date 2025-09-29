@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /*
 * 12 ene. 2024 - Elitebook
@@ -44,6 +45,12 @@ public class TesPagoValores extends Common implements Serializable {
 
 	@Column(name = "fecha_vencimiento")
 	private LocalDate fechaVencimiento;
+
+	@Column(name = "ind_conciliado")
+	private String indConciliado;
+
+	@Transient
+	private boolean indConciliadoBoolean;
 
 	@Column(name = "ind_entregado")
 	private String indEntregado;
@@ -194,6 +201,25 @@ public class TesPagoValores extends Common implements Serializable {
 		this.tesBanco = tesBanco;
 	}
 
+	public String getIndConciliado() {
+		return indConciliado;
+	}
+
+	public void setIndConciliado(String indConciliado) {
+		this.indConciliado = indConciliado;
+	}
+
+	public boolean isIndConciliadoBoolean() {
+		if (!Objects.isNull(indConciliado)) {
+			indConciliadoBoolean = indConciliado.equalsIgnoreCase("S");
+		}
+		return indConciliadoBoolean;
+	}
+
+	public void setIndConciliadoBoolean(boolean indConciliadoBoolean) {
+		indConciliado = indConciliadoBoolean ? "S" : "N";
+		this.indConciliadoBoolean = indConciliadoBoolean;
+	}
 	
 
 	

@@ -28,6 +28,9 @@ public class TesConciliacionValor extends Common implements Serializable {
 	@Column(name = "id")
 	private Long id;
 
+	@Column(name = "tipo_operacion")
+	private String tipoOperacion;
+
 	@Column(name = "observacion")
 	private String observacion;
 
@@ -50,9 +53,16 @@ public class TesConciliacionValor extends Common implements Serializable {
 	@JoinColumn(name = "bs_tipo_valor_id", referencedColumnName = "id", nullable = false)
 	private BsTipoValor bsTipoValor;
 
+	//saque el constraint por que no necesito ahora mismo
+	//ALTER TABLE tes_conciliaciones_valores ALTER COLUMN cob_cobros_valores_id DROP NOT NULL;
+	//ALTER TABLE tes_conciliaciones_valores ALTER COLUMN tes_pagos_valores_id DROP NOT NULL;
 	@ManyToOne
-	@JoinColumn(name = "cob_cobros_valores_id", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "cob_cobros_valores_id", referencedColumnName = "id", nullable = true)
 	private CobCobrosValores cobCobrosValores;
+
+	@ManyToOne
+	@JoinColumn(name = "tes_pagos_valores_id", referencedColumnName = "id", nullable = true)
+	private TesPagoValores tesPagoValores;
 	
 	@ManyToOne
 	@JoinColumn(name = "bs_empresa_id", referencedColumnName = "id", nullable = false)
@@ -152,6 +162,22 @@ public class TesConciliacionValor extends Common implements Serializable {
 
 	public void setBsEmpresa(BsEmpresa bsEmpresa) {
 		this.bsEmpresa = bsEmpresa;
+	}
+
+	public String getTipoOperacion() {
+		return tipoOperacion;
+	}
+
+	public void setTipoOperacion(String tipoOperacion) {
+		this.tipoOperacion = tipoOperacion;
+	}
+
+	public TesPagoValores getTesPagoValores() {
+		return tesPagoValores;
+	}
+
+	public void setTesPagoValores(TesPagoValores tesPagoValores) {
+		this.tesPagoValores = tesPagoValores;
 	}
 
 	@Override

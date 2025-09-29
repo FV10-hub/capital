@@ -24,4 +24,9 @@ extends CommonServiceImpl<BsTipoValor, BsTipoValorRepository> implements BsTipoV
 		return repository.buscarTipoValorActivosLista(idEmpresa);
 	}
 
+	@Override
+	public BsTipoValor buscarTipoValorModuloTipo(Long idEmpresa, String codModulo, String codTipo) {
+		return this.repository.buscarTipoValorModuloTipo(idEmpresa, codModulo, codTipo);
+	}
+
 }

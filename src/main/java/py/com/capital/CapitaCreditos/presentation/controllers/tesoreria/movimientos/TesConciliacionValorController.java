@@ -11,26 +11,35 @@ import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import py.com.capital.CapitaCreditos.dtos.ValorConciliacionDto;
 import py.com.capital.CapitaCreditos.entities.base.BsEmpresa;
+import py.com.capital.CapitaCreditos.entities.base.BsPersona;
 import py.com.capital.CapitaCreditos.entities.base.BsTipoValor;
 import py.com.capital.CapitaCreditos.entities.cobranzas.CobCobrosValores;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesBanco;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesConciliacionValor;
+import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoValores;
 import py.com.capital.CapitaCreditos.exception.ExceptionUtils;
 import py.com.capital.CapitaCreditos.presentation.session.SessionBean;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonUtils;
 import py.com.capital.CapitaCreditos.presentation.utils.CommonsUtilitiesController;
 import py.com.capital.CapitaCreditos.presentation.utils.Estado;
 import py.com.capital.CapitaCreditos.presentation.utils.GenericLazyDataModel;
+import py.com.capital.CapitaCreditos.services.base.BsPersonaService;
+import py.com.capital.CapitaCreditos.services.base.BsTipoValorService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobCobrosValoresService;
 import py.com.capital.CapitaCreditos.services.tesoreria.TesBancoService;
 import py.com.capital.CapitaCreditos.services.tesoreria.TesConciliacionValorService;
+import py.com.capital.CapitaCreditos.services.tesoreria.TesPagoService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -45,14 +54,22 @@ public class TesConciliacionValorController {
 
     private TesConciliacionValor tesConciliacionValor, tesConciliacionValorSelected;
     private CobCobrosValores cobCobrosValoresSelected;
+
+    private BsPersona bsPersonaJuridica;
     private LazyDataModel<TesConciliacionValor> lazyModel;
     private List<CobCobrosValores> lazyModelValores;
     private LazyDataModel<TesBanco> lazyModelBanco;
+
+    private LazyDataModel<BsPersona> lazyPersonaList;
     private List<CobCobrosValores> cobrosValoresList;
 
     private List<TesConciliacionValor> conciliacionValorList;
 
-    private List<Long> idList = new ArrayList<>();
+    private List<Long> idsCobrosSeleccionados = new ArrayList<>();
+    private List<Long> idsPagosSeleccionados = new ArrayList<>();
+
+    private List<ValorConciliacionDto> valorConciliacionDtoList;
+    private List<ValorConciliacionDto> valorConciliacionDtoListSelected;
 
     private boolean esNuegoRegistro;
     private boolean esVisibleFormulario = true;
@@ -72,6 +89,9 @@ public class TesConciliacionValorController {
     private CobCobrosValoresService cobCobrosValoresServiceImpl;
 
     @Autowired
+    private TesPagoService tesPagoServiceImpl;
+
+    @Autowired
     private TesBancoService tesBancoServiceImpl;
 
     /**
@@ -83,6 +103,12 @@ public class TesConciliacionValorController {
     @Autowired
     private CommonsUtilitiesController commonsUtilitiesController;
 
+    @Autowired
+    private BsPersonaService bsPersonaServiceImpl;
+
+    @Autowired
+    private BsTipoValorService bsTipoValorServiceImpl;
+
     @PostConstruct
     public void init() {
         this.cleanFields();
@@ -93,15 +119,22 @@ public class TesConciliacionValorController {
         this.tesConciliacionValor = null;
         this.tesConciliacionValorSelected = null;
         this.cobCobrosValoresSelected = null;
+        this.bsPersonaJuridica = null;
 
         this.lazyModel = null;
         this.lazyModelValores = null;
         this.lazyModelBanco = null;
+        this.lazyPersonaList = null;
+        this.valorConciliacionDtoList = null;
+        this.valorConciliacionDtoListSelected = null;
 
         this.esNuegoRegistro = true;
         this.esVisibleFormulario = !esVisibleFormulario;
         this.cobrosValoresList = new ArrayList<>();
         this.conciliacionValorList = new ArrayList<>();
+        this.montoTotalConciliado = BigDecimal.ZERO;
+        this.idsCobrosSeleccionados = new ArrayList<>();
+        this.idsPagosSeleccionados = new ArrayList<>();
 
     }
 
@@ -163,6 +196,21 @@ public class TesConciliacionValorController {
         this.cobCobrosValoresSelected = cobCobrosValoresSelected;
     }
 
+    public BsPersona getBsPersonaJuridica() {
+        if (Objects.isNull(bsPersonaJuridica)) {
+            this.bsPersonaJuridica = new BsPersona();
+            this.bsPersonaJuridica.setEstado(Estado.ACTIVO.getEstado());
+            this.bsPersonaJuridica.setTipoPersona("JURIDICA");
+            this.bsPersonaJuridica.setEsBanco(false);
+            this.bsPersonaJuridica.setTipoDocumento("CI");
+        }
+        return bsPersonaJuridica;
+    }
+
+    public void setBsPersonaJuridica(BsPersona bsPersonaJuridica) {
+        this.bsPersonaJuridica = bsPersonaJuridica;
+    }
+
     public LazyDataModel<TesConciliacionValor> getLazyModel() {
         if (Objects.isNull(lazyModel)) {
             lazyModel = new GenericLazyDataModel<TesConciliacionValor>(this.tesConciliacionValorServiceImpl
@@ -190,6 +238,25 @@ public class TesConciliacionValorController {
         this.lazyModelValores = lazyModelValores;
     }
 
+    public List<ValorConciliacionDto> getValorConciliacionDtoList() {
+        return valorConciliacionDtoList;
+    }
+
+    public void setValorConciliacionDtoList(List<ValorConciliacionDto> valorConciliacionDtoList) {
+        this.valorConciliacionDtoList = valorConciliacionDtoList;
+    }
+
+    public List<ValorConciliacionDto> getValorConciliacionDtoListSelected() {
+        if (Objects.isNull(valorConciliacionDtoListSelected)) {
+            valorConciliacionDtoListSelected = new ArrayList<>();
+        }
+        return valorConciliacionDtoListSelected;
+    }
+
+    public void setValorConciliacionDtoListSelected(List<ValorConciliacionDto> valorConciliacionDtoListSelected) {
+        this.valorConciliacionDtoListSelected = valorConciliacionDtoListSelected;
+    }
+
     public LazyDataModel<TesBanco> getLazyModelBanco() {
         if (Objects.isNull(lazyModelBanco)) {
             lazyModelBanco = new GenericLazyDataModel<TesBanco>((List<TesBanco>) tesBancoServiceImpl
@@ -201,6 +268,22 @@ public class TesConciliacionValorController {
     public void setLazyModelBanco(LazyDataModel<TesBanco> lazyModelBanco) {
         this.lazyModelBanco = lazyModelBanco;
     }
+
+    public LazyDataModel<BsPersona> getLazyPersonaList() {
+        if (Objects.isNull(lazyPersonaList)) {
+            lazyPersonaList = new GenericLazyDataModel<BsPersona>(bsPersonaServiceImpl
+                    .buscarTodosLista()
+                    .stream()
+                    .filter(bsPersona -> bsPersona.getEsBanco())
+                    .collect(Collectors.toList()));
+        }
+        return lazyPersonaList;
+    }
+
+    public void setLazyPersonaList(LazyDataModel<BsPersona> lazyPersonaList) {
+        this.lazyPersonaList = lazyPersonaList;
+    }
+
 
     public CobCobrosValoresService getCobCobrosValoresServiceImpl() {
         return cobCobrosValoresServiceImpl;
@@ -274,6 +357,14 @@ public class TesConciliacionValorController {
         this.tesBancoServiceImpl = tesBancoServiceImpl;
     }
 
+    public TesPagoService getTesPagoServiceImpl() {
+        return tesPagoServiceImpl;
+    }
+
+    public void setTesPagoServiceImpl(TesPagoService tesPagoServiceImpl) {
+        this.tesPagoServiceImpl = tesPagoServiceImpl;
+    }
+
     public LocalDate getFecDesde() {
         if (Objects.isNull(fecDesde))
             fecDesde = LocalDate.now();
@@ -302,13 +393,30 @@ public class TesConciliacionValorController {
         this.indConciliado = indConciliado;
     }
 
+    public BsPersonaService getBsPersonaServiceImpl() {
+        return bsPersonaServiceImpl;
+    }
+
+    public void setBsPersonaServiceImpl(BsPersonaService bsPersonaServiceImpl) {
+        this.bsPersonaServiceImpl = bsPersonaServiceImpl;
+    }
+
+    public BsTipoValorService getBsTipoValorServiceImpl() {
+        return bsTipoValorServiceImpl;
+    }
+
+    public void setBsTipoValorServiceImpl(BsTipoValorService bsTipoValorServiceImpl) {
+        this.bsTipoValorServiceImpl = bsTipoValorServiceImpl;
+    }
+
     public void consultarValoresAConciliar() {
-        this.lazyModelValores = this.cobCobrosValoresServiceImpl
-                .buscarValoresParaConciliarPorFechas(
-                        this.commonsUtilitiesController.getIdEmpresaLogueada(),
-                        this.fecDesde,
-                        this.fecHasta,
-                        indConciliado);
+        this.valorConciliacionDtoList = this.tesConciliacionValorServiceImpl.buscarValoresConciliacion(
+                this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                this.fecDesde,
+                this.fecHasta,
+                indConciliado,
+                this.bsPersonaJuridica.getId()
+        );
         this.esVisibleFormulario = true;
         PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
     }
@@ -317,93 +425,127 @@ public class TesConciliacionValorController {
         this.cobrosValoresList = new ArrayList<>();
         this.montoTotalConciliado = BigDecimal.ZERO;
         this.esVisibleFormulario = false;
-        this.idList = new ArrayList<>();
+        this.idsCobrosSeleccionados = new ArrayList<>();
+        this.idsPagosSeleccionados = new ArrayList<>();
         PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME);
     }
 
-    public void calcularTotalesDetalle() {
-        this.montoTotalConciliado = BigDecimal.ZERO;
-        // IDs ya presentes en la lista (evita duplicados)
-        Set<Long> idsYaAgregados = this.conciliacionValorList.stream()
-                .map(cv -> cv.getCobCobrosValores())
-                .filter(Objects::nonNull)
-                .map(cv -> cv.getId())
-                .filter(Objects::nonNull)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        for (CobCobrosValores valor : this.cobrosValoresList) {
-            if (valor == null || valor.getId() == null) {
-                continue;
-            }
-
-            // si ya existe, saltar
-            if (!idsYaAgregados.add(valor.getId())) {
-                continue;
-            }
-
-            TesConciliacionValor item = getTesConciliacionValorSelected();
-            item.setObservacion("CONCILIADO");
-            item.setUsuarioModificacion(this.commonsUtilitiesController.getCodUsuarioLogueada());
-            item.setNroValor(valor.getNroValor());
-            item.setMontoValor(valor.getMontoValor());
-            item.setFechaValor(valor.getFechaValor());
-            item.setIndConciliadoBoolean(true);
-            item.setBsTipoValor(valor.getBsTipoValor());
-            item.setBsEmpresa(this.commonsUtilitiesController.getCajaUsuarioLogueado().getBsEmpresa());
-            item.setCobCobrosValores(valor);
-
-            this.conciliacionValorList.add(item);
-
-            // si mantenés una lista de IDs, no dupliques:
-            if (this.idList != null && !this.idList.contains(valor.getId())) {
-                this.idList.add(valor.getId());
-            }
-
-            if (valor.getMontoValor() != null) {
-                montoTotalConciliado = montoTotalConciliado.add(valor.getMontoValor());
-            }
+    public void onRowSelect(SelectEvent<ValorConciliacionDto> event) {
+        ValorConciliacionDto seleccionado = event.getObject();
+        if (seleccionado == null || seleccionado.getId() == null) {
+            return;
         }
 
-        this.tesConciliacionValorSelected = null;
+        TesConciliacionValor item = new TesConciliacionValor();
+        item.setObservacion("CONCILIADO");
+        item.setUsuarioModificacion(this.commonsUtilitiesController.getCodUsuarioLogueada());
+        item.setNroValor(seleccionado.getNroValor());
+        item.setMontoValor(seleccionado.getMontoValor());
+        item.setFechaValor(seleccionado.getFechaValor());
+        item.setIndConciliado("S");
+        item.setBsEmpresa(this.commonsUtilitiesController.getCajaUsuarioLogueado().getBsEmpresa());
+        BsTipoValor tipoValor = new BsTipoValor();
+        if ("INGRESOS".equalsIgnoreCase(seleccionado.getTipoRegistro())) {
+            tipoValor = getTipoValorFromOperacion("COB", seleccionado.getTipoValor());
+            if (Objects.isNull(tipoValor)){
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡ERROR!",
+                        "No se encontro el tipo de valor con estos parametros para el Modulo.");
+                PrimeFaces.current().ajax().update(":form:messages");
+                return;
+            }
+            CobCobrosValores cobro = new CobCobrosValores();
+            cobro.setId(seleccionado.getId());
+            item.setCobCobrosValores(cobro);
+            item.setTipoOperacion("INGRESOS");
+            item.setBsTipoValor(tipoValor);
+            this.idsCobrosSeleccionados.add(seleccionado.getId());
+        } else if ("EGRESOS".equalsIgnoreCase(seleccionado.getTipoRegistro())) {
+            tipoValor = getTipoValorFromOperacion("TES", seleccionado.getTipoValor());
+            if (Objects.isNull(tipoValor)){
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡ERROR!",
+                        "No se encontro el tipo de valor con estos parametros para el Modulo.");
+                PrimeFaces.current().ajax().update(":form:messages");
+                return;
+            }
+            TesPagoValores pago = new TesPagoValores();
+            pago.setId(seleccionado.getId());
+            item.setTesPagoValores(pago);
+            item.setTipoOperacion("EGRESOS");
+            item.setBsTipoValor(tipoValor);
+            this.idsPagosSeleccionados.add(seleccionado.getId());
+        }
+
+        this.conciliacionValorList.add(item);
+        if (seleccionado.getMontoValor() != null) {
+            montoTotalConciliado = montoTotalConciliado.add(seleccionado.getMontoValor());
+        }
+        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion",
+                "form:" + DT_NAME, ":form:btnGuardar", ":form:btnLimpiar", ":form:btnEliminar");
     }
 
-    public void onRowSelect(SelectEvent<CobCobrosValores> event) {
-        this.cobCobrosValoresSelected = event.getObject();
-        this.calcularTotalesDetalle();
-        this.cobCobrosValoresSelected = null;
-        getCobCobrosValoresSelected();
-        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME,
-                ":form:btnGuardar", ":form:btnLimpiar", ":form:btnEliminar");
+    private BsTipoValor getTipoValorFromOperacion(String codModulo, String tipoValor) {
+        return this.bsTipoValorServiceImpl
+                .buscarTipoValorModuloTipo(
+                        this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                        codModulo,
+                        tipoValor);
     }
 
-    public void onRowUnselect(UnselectEvent<CobCobrosValores> event) {
-        this.cobCobrosValoresSelected = event.getObject();
-        this.calcularTotalesDetalle();
-        this.cobCobrosValoresSelected = null;
-        getCobCobrosValoresSelected();
-        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion", "form:" + DT_NAME,
-                ":form:btnGuardar", ":form:btnLimpiar", ":form:btnEliminar");
+
+    public void onRowUnselect(UnselectEvent<ValorConciliacionDto> event) {
+        ValorConciliacionDto seleccionado = event.getObject();
+        if (seleccionado == null || seleccionado.getId() == null) {
+            return;
+        }
+
+        this.conciliacionValorList.removeIf(item ->
+                ("INGRESOS".equalsIgnoreCase(seleccionado.getTipoRegistro()) &&
+                        item.getCobCobrosValores() != null &&
+                        seleccionado.getId().equals(item.getCobCobrosValores().getId()))
+                        || ("EGRESOS".equalsIgnoreCase(seleccionado.getTipoRegistro()) &&
+                        item.getTesPagoValores() != null &&
+                        seleccionado.getId().equals(item.getTesPagoValores().getId()))
+        );
+        if (seleccionado.getMontoValor() != null) {
+            montoTotalConciliado = montoTotalConciliado.subtract(seleccionado.getMontoValor());
+        }
+
+        PrimeFaces.current().ajax().update(":form:messages", ":form:manage-conciliacion",
+                "form:" + DT_NAME, ":form:btnGuardar", ":form:btnLimpiar", ":form:btnEliminar");
     }
+
 
     public void guardar() {
         try {
             if (CollectionUtils.isNotEmpty(conciliacionValorList) && conciliacionValorList.size() > 0) {
                 if (CollectionUtils.isNotEmpty(this.tesConciliacionValorServiceImpl.saveAll(conciliacionValorList))) {
-                    var valores_actualizados = this.cobCobrosValoresServiceImpl.marcarValoresComoConciliado(
-                            this.commonsUtilitiesController.getIdEmpresaLogueada(),
-                            this.idList,
-                            this.commonsUtilitiesController.getCodUsuarioLogueada()
-                    );
-                    if (valores_actualizados > 0) {
-                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                                "El registro se guardo correctamente.");
+                    int actualizadosCobros = 0;
+                    int actualizadosPagos = 0;
+
+                    if (CollectionUtils.isNotEmpty(idsCobrosSeleccionados)) {
+                        actualizadosCobros = this.cobCobrosValoresServiceImpl.marcarValoresComoConciliado(
+                                this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                                this.idsCobrosSeleccionados,
+                                this.commonsUtilitiesController.getCodUsuarioLogueada()
+                        );
                     }
+
+                    if (CollectionUtils.isNotEmpty(idsPagosSeleccionados)) {
+                        actualizadosPagos = this.tesPagoServiceImpl.marcarPagosComoConciliado(
+                                this.commonsUtilitiesController.getIdEmpresaLogueada(),
+                                this.idsPagosSeleccionados,
+                                this.commonsUtilitiesController.getCodUsuarioLogueada()
+                        );
+                    }
+                    CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                            "El registro se guardo correctamente.");
+
                 }
             } else {
                 CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debes seleccionar por lo menos un registro a conciliar.");
             }
             this.cleanFields();
-            PrimeFaces.current().ajax().update(":form","form:messages", "form:" + DT_NAME);
+            PrimeFaces.current().ajax().update(":form", "form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al Guardar", e);
             // e.printStackTrace(System.err);
@@ -417,26 +559,30 @@ public class TesConciliacionValorController {
 
     public void delete() {
         try {
-            if (this.indConciliado.equalsIgnoreCase("S")) {
-                List<TesConciliacionValor> conciliacionesAEliminar;
-                if (CollectionUtils.isNotEmpty(idList) && idList.size() > 0) {
-                    conciliacionesAEliminar = this.tesConciliacionValorServiceImpl.buscarTesConciliacionValorPorIds(
-                            this.commonsUtilitiesController.getIdEmpresaLogueada(),
-                            this.idList
-                    );
-                    if (CollectionUtils.isNotEmpty(this.tesConciliacionValorServiceImpl.deleteAll(conciliacionesAEliminar))) {
+            if (!"S".equalsIgnoreCase(this.indConciliado)) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!",
+                        "Debes seleccionar por lo menos un registro conciliado.");
+                return;
+            }
+            boolean huboCambios = false;
 
-                        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
-                                "Las conciliaciones se revirtieron correctamente.");
-                    }
-                }
+            // Procesar ingresos
+            if (CollectionUtils.isNotEmpty(idsCobrosSeleccionados)) {
+                huboCambios |= eliminarConciliacionesCobros(idsCobrosSeleccionados);
+            }
 
-            } else {
-                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_ERROR, "¡ERROR!", "Debes seleccionar por lo menos un registro conciliado.");
+            // Procesar egresos
+            if (CollectionUtils.isNotEmpty(idsPagosSeleccionados)) {
+                huboCambios |= eliminarConciliacionesPagos(idsPagosSeleccionados);
+            }
+
+            if (huboCambios) {
+                CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                        "Las conciliaciones se revirtieron correctamente.");
             }
 
             this.cleanFields();
-            PrimeFaces.current().ajax().update(":form","form:messages", "form:" + DT_NAME);
+            PrimeFaces.current().ajax().update(":form", "form:messages", "form:" + DT_NAME);
         } catch (Exception e) {
             LOGGER.error("Ocurrio un error al Guardar", e);
             e.printStackTrace(System.err);
@@ -445,5 +591,50 @@ public class TesConciliacionValorController {
         }
 
     }
+
+    private boolean eliminarConciliacionesCobros(List<Long> ids) {
+        List<TesConciliacionValor> conciliaciones =
+                tesConciliacionValorServiceImpl.buscarTesConciliacionValorPorIds(
+                        commonsUtilitiesController.getIdEmpresaLogueada(), ids);
+
+        if (CollectionUtils.isEmpty(conciliaciones)) {
+            return false;
+        }
+
+        boolean eliminados = CollectionUtils.isNotEmpty(tesConciliacionValorServiceImpl.deleteAll(conciliaciones));
+
+        if (eliminados) {
+            cobCobrosValoresServiceImpl.revertirValoresConciliados(
+                    commonsUtilitiesController.getIdEmpresaLogueada(),
+                    ids,
+                    commonsUtilitiesController.getCodUsuarioLogueada()
+            );
+            LOGGER.info("Se revirtieron conciliaciones de cobros: {}", ids.size());
+        }
+        return eliminados;
+    }
+
+    private boolean eliminarConciliacionesPagos(List<Long> ids) {
+        List<TesConciliacionValor> conciliaciones =
+                tesConciliacionValorServiceImpl.buscarTesConciliacionPagosValorPorIds(
+                        commonsUtilitiesController.getIdEmpresaLogueada(), ids);
+
+        if (CollectionUtils.isEmpty(conciliaciones)) {
+            return false;
+        }
+
+        boolean eliminados = CollectionUtils.isNotEmpty(tesConciliacionValorServiceImpl.deleteAll(conciliaciones));
+
+        if (eliminados) {
+            tesPagoServiceImpl.revertirPagosConciliados(
+                    commonsUtilitiesController.getIdEmpresaLogueada(),
+                    ids,
+                    commonsUtilitiesController.getCodUsuarioLogueada()
+            );
+            LOGGER.info("Se revirtieron conciliaciones de pagos: {}", ids.size());
+        }
+        return eliminados;
+    }
+
 
 }

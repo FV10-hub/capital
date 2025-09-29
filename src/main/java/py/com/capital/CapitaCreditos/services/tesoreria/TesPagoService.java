@@ -1,5 +1,6 @@
 package py.com.capital.CapitaCreditos.services.tesoreria;
 
+import org.springframework.data.repository.query.Param;
 import py.com.capital.CapitaCreditos.entities.tesoreria.TesPagoCabecera;
 import py.com.capital.CapitaCreditos.services.CommonService;
 
@@ -16,5 +17,13 @@ public interface TesPagoService extends CommonService<TesPagoCabecera> {
 	List<TesPagoCabecera> buscarTesPagoCabeceraPorTipoOperacionLista(Long idEmpresa, String tipoOperacion);
 	
 	//TesPagoCabecera recuperarPagosConDetalle(Long idEmpresa, Long idPago);
+
+	int marcarPagosComoConciliado(Long empresaId,
+									List<Long> idsSaldo,
+									String usuario);
+
+	int revertirPagosConciliados(Long empresaId,
+								 List<Long> idsPago,
+								 String usuario);
 
 }

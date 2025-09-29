@@ -26,4 +26,9 @@ public interface CobCobrosValoresService extends CommonService<CobCobrosValores>
     int marcarValoresComoConciliado(Long empresaId,
                                     List<Long> idsSaldo,
                                     String usuario);
+
+    int revertirValoresConciliados(Long empresaId,
+                                   List<Long> idsSaldo,
+                                   String usuario);
+
 }

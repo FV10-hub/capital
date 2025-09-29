@@ -3,8 +3,10 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
-    <h:head>
-        <script>
+    <ui:define name="title">Conciliacion Bancaria</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <script>
 			PrimeFaces.locales['es'] = {
 				closeText : 'Cerrar',
 				prevText : 'Anterior',
@@ -45,16 +47,33 @@
 
 
 
-        </script>
-    </h:head>
-    <ui:define name="title">Conciliacion Bancaria</ui:define>
-    <ui:define name="content">
-        <h:form id="form">
+        
+            
+
+
+            </script>
             <div class="grid crud-demo">
                 <div class="col-12">
-                    <p:growl id="messages" showDetail="true"/>
+                    <p:growl id="messages" showDetail="true" autoUpdate="true" closable="true"/>
                     <div class="card ui-fluid">
                         <h5>Conciliacion Bancaria</h5>
+                        <div class="field grid">
+                            <p:outputLabel for="bancoLb"
+                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Banco
+                            </p:outputLabel>
+                            <div class="col-12 md:col-2">
+                                <p:inputText id="bancoLb" placeholder="Pulse F9 para seleccionar banco"
+                                             autocomplete="off"
+                                             value="#{tesConciliacionValorController.bsPersonaJuridica.nombreCompleto}"
+                                             required="true"
+                                             requiredMessage="Debe seleccionar un banco"
+                                             styleClass="ui-state-error"
+                                             onkeydown="if (event.keyCode == 120) {
+										PF('dlgBanco').show()
+									}"/>
+                                <p:message for="bancoLb"/>
+                            </div>
+                        </div>
                         <div class="field grid">
                             <p:outputLabel for="fecdesde"
                                            styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Desde
@@ -103,13 +122,15 @@
                                     <p:commandButton
                                             actionListener="#{tesConciliacionValorController.consultarValoresAConciliar}"
                                             value="Consultar"
+                                            process="@form"
+                                            update=":form:messages :form:bancoLb"
                                             icon="pi pi-cloud-download"
                                             styleClass="ui-button-info"/>
                                 </div>
                                 <div class="field md:col-2">
                                     <p:commandButton value="Guardar" icon="pi pi-save"
                                                      id="btnGuardar"
-                                                     disabled="#{tesConciliacionValorController.cobrosValoresList.size() == 0}"
+                                                     disabled="#{tesConciliacionValorController.valorConciliacionDtoListSelected.size() == 0}"
                                                      actionListener="#{tesConciliacionValorController.guardar}"
                                                      update=":form" styleClass="ui-button-success"
                                                      style="margin-right: .5rem"/>
@@ -117,7 +138,7 @@
                                 <div class="field md:col-2">
                                     <p:commandButton value="Limpiar Detalles" icon="pi pi-bolt"
                                                      id="btnLimpiar"
-                                                     disabled="#{tesConciliacionValorController.cobrosValoresList.size() == 0}"
+                                                     disabled="#{tesConciliacionValorController.valorConciliacionDtoListSelected.size() == 0}"
                                                      actionListener="#{tesConciliacionValorController.limpiarDetalle}"
                                                      process="@this"
                                                      update=":form:dt-conciliacion :form:btnGuardar"
@@ -128,7 +149,7 @@
                                     <p:commandButton
                                             id="btnEliminar"
                                             value="Eliminar" icon="pi pi-trash"
-                                            disabled="#{tesConciliacionValorController.cobrosValoresList.size() == 0}"
+                                            disabled="#{tesConciliacionValorController.valorConciliacionDtoListSelected.size() == 0}"
                                             actionListener="#{tesConciliacionValorController.delete}"
                                             update=":form" styleClass="ui-button-danger"
                                             style="margin-right: .5rem"/>
@@ -143,8 +164,8 @@
                     <p:panel id="manage-conciliacion">
                         <p:dataTable id="dt-conciliacion" widgetVar="dtConciliacion" var="valor"
                                      rendered="#{tesConciliacionValorController.esVisibleFormulario}"
-                                     value="#{tesConciliacionValorController.lazyModelValores}"
-                                     selection="#{tesConciliacionValorController.cobrosValoresList}"
+                                     value="#{tesConciliacionValorController.valorConciliacionDtoList}"
+                                     selection="#{tesConciliacionValorController.valorConciliacionDtoListSelected}"
                                      paginator="true" rows="10" paginatorPosition="bottom"
                                      rowKey="#{valor.id}" selectionPageOnly="false"
                                      emptyMessage="No hay Registros">
@@ -168,15 +189,20 @@
                                     listener="#{tesConciliacionValorController.onRowUnselect}"/>
                             <p:column selectionMode="multiple"
                                       style="width:16px;text-align:center"/>
+                            <p:column headerText="Tipo Registro"
+                                      sortBy="#{valor.tipoRegistro}"
+                                      filterBy="#{valor.tipoRegistro}">
+                                <h:outputText value="#{valor.tipoRegistro}"/>
+                            </p:column>
                             <p:column headerText="Tipo Valor"
-                                      sortBy="#{valor.bsTipoValor.descripcion}"
-                                      filterBy="#{valor.bsTipoValor.descripcion}">
-                                <h:outputText value="#{valor.bsTipoValor.descripcion}"/>
+                                      sortBy="#{valor.tipoValor}"
+                                      filterBy="#{valor.tipoValor}">
+                                <h:outputText value="#{valor.tipoValor}"/>
                             </p:column>
                             <p:column headerText="Nro. Comprobante"
-                                      sortBy="#{valor.nroComprobanteCompleto}"
-                                      filterBy="#{valor.nroComprobanteCompleto}">
-                                <h:outputText value="#{valor.nroComprobanteCompleto}"/>
+                                      sortBy="#{valor.nroComprobante}"
+                                      filterBy="#{valor.nroComprobante}">
+                                <h:outputText value="#{valor.nroComprobante}"/>
                             </p:column>
                             <p:column headerText="Tipo Comprobante"
                                       sortBy="#{valor.tipoComprobante}"
@@ -219,7 +245,40 @@
                     </p:panel>
 
                 </div>
-
+                <p:dialog widgetVar="dlgBanco" header="Buscar Persona"
+                          width="850" showEffect="fade" modal="true">
+                    <p:dataTable widgetVar="dtPersona" var="persona"
+                                 value="#{tesConciliacionValorController.lazyPersonaList}" id="dt-persona"
+                                 paginator="true" rows="10" paginatorPosition="bottom"
+                                 emptyMessage="No hay Registros">
+                        <f:facet name="header">
+                            <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtPersona').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                            </div>
+                        </f:facet>
+                        <p:column style="width:3rem;text-align: center">
+                            <p:commandButton oncomplete="PF('dlgBanco').hide()"
+                                             process="@this"
+                                             icon="pi pi-check-circle" title="Seleccionar"
+                                             update=":form:bancoLb">
+                                <f:setPropertyActionListener value="#{persona}"
+                                                             target="#{tesConciliacionValorController.bsPersonaJuridica}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
+                                  filterBy="#{persona.nombreCompleto}">
+                            <h:outputText value="#{persona.nombreCompleto}"/>
+                        </p:column>
+                        <p:column headerText="Documento" sortBy="#{persona.documento}"
+                                  filterBy="#{persona.documento}">
+                            <h:outputText value="#{persona.documento}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
             </div>
         </h:form>
     </ui:define>

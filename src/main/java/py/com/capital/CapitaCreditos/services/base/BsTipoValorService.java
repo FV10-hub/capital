@@ -12,4 +12,6 @@ public interface BsTipoValorService extends CommonService<BsTipoValor> {
 	 * public Curso findCursoByAlumnoId(Long id);
 	 * */
 	List<BsTipoValor> buscarTipoValorActivosLista(Long idEmpresa);
+
+	BsTipoValor buscarTipoValorModuloTipo(Long idEmpresa, String codModulo, String codTipo);
 }
