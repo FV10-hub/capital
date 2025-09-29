@@ -19,6 +19,7 @@ import py.com.capital.CapitaCreditos.presentation.utils.*;
 import py.com.capital.CapitaCreditos.services.UtilsService;
 import py.com.capital.CapitaCreditos.services.base.BsModuloService;
 import py.com.capital.CapitaCreditos.services.base.BsParametroService;
+import py.com.capital.CapitaCreditos.services.base.BsPersonaService;
 import py.com.capital.CapitaCreditos.services.base.BsTipoValorService;
 import py.com.capital.CapitaCreditos.services.cobranzas.*;
 
@@ -70,6 +71,8 @@ public class CobRecibosController {
     private LazyDataModel<CobCobrador> lazyModelCobCobrador;
     private LazyDataModel<BsTipoValor> lazyModelTipoValor;
 
+    private LazyDataModel<BsPersona> lazyPersonaList;
+
     private List<CobCobrosValores> cobrosValoresList;
     public BigDecimal montoTotalCobro = BigDecimal.ZERO;
     private ParametrosReporte parametrosReporte;
@@ -115,6 +118,8 @@ public class CobRecibosController {
     private BsTipoValorService bsTipoValorServiceImpl;
 
     // CobSaldoServiceImpl
+    @Autowired
+    private BsPersonaService bsPersonaServiceImpl;
 
     @Autowired
     private CommonsUtilitiesController commonsUtilitiesController;
@@ -163,6 +168,7 @@ public class CobRecibosController {
         this.lazyModelCliente = null;
         this.lazyModelCobCobrador = null;
         this.lazyModelTipoValor = null;
+        this.lazyPersonaList = null;
 
         this.estaCobrado = false;
         this.esNuegoRegistro = true;
@@ -345,6 +351,7 @@ public class CobRecibosController {
             cobCobrosValoresSelected.setIndDepositadoBoolean(false);
             cobCobrosValoresSelected.setIndConciliado("N");
             cobCobrosValoresSelected.setNroValor("0");
+            cobCobrosValoresSelected.setBsPersonaJuridica(new BsPersona());
             cobCobrosValoresSelected.setMontoValor(BigDecimal.ZERO);
             cobCobrosValoresSelected.setBsEmpresa(new BsEmpresa());
             cobCobrosValoresSelected.setBsTipoValor(new BsTipoValor());
@@ -537,6 +544,21 @@ public class CobRecibosController {
         this.lazyModelTipoValor = lazyModelTipoValor;
     }
 
+    public LazyDataModel<BsPersona> getLazyPersonaList() {
+        if (Objects.isNull(lazyPersonaList)) {
+            lazyPersonaList = new GenericLazyDataModel<BsPersona>(bsPersonaServiceImpl
+                    .buscarTodosLista()
+                    .stream()
+                    .filter(bsPersona -> bsPersona.getEsBanco())
+                    .collect(Collectors.toList()));
+        }
+        return lazyPersonaList;
+    }
+
+    public void setLazyPersonaList(LazyDataModel<BsPersona> lazyPersonaList) {
+        this.lazyPersonaList = lazyPersonaList;
+    }
+
     // SERVICES
     public CobRecibosService getCobRecibosServiceImpl() {
         return cobRecibosServiceImpl;
@@ -648,6 +670,14 @@ public class CobRecibosController {
 
     public void setUtilsService(UtilsService utilsService) {
         this.utilsService = utilsService;
+    }
+
+    public BsPersonaService getBsPersonaServiceImpl() {
+        return bsPersonaServiceImpl;
+    }
+
+    public void setBsPersonaServiceImpl(BsPersonaService bsPersonaServiceImpl) {
+        this.bsPersonaServiceImpl = bsPersonaServiceImpl;
     }
 
     public GenerarReporte getGenerarReporte() {

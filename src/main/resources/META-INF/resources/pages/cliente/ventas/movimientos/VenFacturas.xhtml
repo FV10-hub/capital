@@ -848,6 +848,14 @@
                             <p:outputPanel id="manageCobroValor" class="ui-fluid">
                                 <p:outputPanel>
                                     <div class="field">
+                                        <p:outputLabel for="bancoLb">Banco</p:outputLabel>
+                                        <p:inputText id="bancoLb" placeholder="Pulse F9 para buscar"
+                                                     value="#{venFacturasController.cobCobrosValoresSelected.bsPersonaJuridica.nombreCompleto}"
+                                                     onkeydown="if (event.keyCode == 120) {
+												PF('dlgBanco').show()
+											}"/>
+                                    </div>
+                                    <div class="field">
                                         <p:outputLabel for="tipoValorLb">Tipo Valor</p:outputLabel>
                                         <p:inputText id="tipoValorLb"
                                                      placeholder="Pulse F9 para buscar"
@@ -898,6 +906,39 @@
                                                  update=":form:dt-cobros" onclick="PF('dlgAddCobro').hide()"
                                                  class="ui-button-secondary"/>
                             </f:facet>
+                        </p:dialog>
+
+                        <p:dialog widgetVar="dlgBanco" header="Buscar Persona"
+                                  width="650" showEffect="fade" modal="true">
+                            <p:dataTable widgetVar="dtPersona" var="persona"
+                                         value="#{venFacturasController.lazyPersonaList}" id="dt-persona"
+                                         paginator="true" rows="10" paginatorPosition="bottom"
+                                         emptyMessage="No hay Registros">
+                                <f:facet name="header">
+                                    <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtPersona').filter()" placeholder="Buscar..." />
+										</span>
+                                    </div>
+                                </f:facet>
+                                <p:column style="width:3rem;text-align: center">
+                                    <p:commandButton oncomplete="PF('dlgBanco').hide()"
+                                                     icon="pi pi-check-circle" title="Seleccionar"
+                                                     update=":form:bancoLb">
+                                        <f:setPropertyActionListener value="#{persona}"
+                                                                     target="#{venFacturasController.cobCobrosValoresSelected.bsPersonaJuridica}" />
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
+                                          filterBy="#{persona.nombreCompleto}">
+                                    <h:outputText value="#{persona.nombreCompleto}" />
+                                </p:column>
+                                <p:column headerText="Documento" sortBy="#{persona.documento}"
+                                          filterBy="#{persona.documento}">
+                                    <h:outputText value="#{persona.documento}" />
+                                </p:column>
+                            </p:dataTable>
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgTipoValor" header="Buscar Tipo Valor"

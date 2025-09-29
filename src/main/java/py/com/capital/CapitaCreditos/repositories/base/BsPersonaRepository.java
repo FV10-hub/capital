@@ -16,7 +16,7 @@ public interface BsPersonaRepository extends JpaRepository<BsPersona, Long> {
 	@Query("SELECT m FROM BsPersona m")
 	Page<BsPersona> buscarTodos(Pageable pageable);
 	
-	@Query("SELECT m FROM BsPersona m")
+	@Query("SELECT m FROM BsPersona m where m.estado = 'ACTIVO' ")
 	List<BsPersona> buscarTodosLista();
 	
 	@Query("SELECT p "

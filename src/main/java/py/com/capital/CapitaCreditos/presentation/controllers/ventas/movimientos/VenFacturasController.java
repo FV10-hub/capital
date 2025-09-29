@@ -29,6 +29,7 @@ import py.com.capital.CapitaCreditos.presentation.utils.*;
 import py.com.capital.CapitaCreditos.services.UtilsService;
 import py.com.capital.CapitaCreditos.services.base.BsModuloService;
 import py.com.capital.CapitaCreditos.services.base.BsParametroService;
+import py.com.capital.CapitaCreditos.services.base.BsPersonaService;
 import py.com.capital.CapitaCreditos.services.base.BsTipoValorService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobClienteService;
 import py.com.capital.CapitaCreditos.services.cobranzas.CobCobrosValoresService;
@@ -80,6 +81,7 @@ public class VenFacturasController {
     private LazyDataModel<VenVendedor> lazyModelVenVendedor;
     private LazyDataModel<VenCondicionVenta> lazyModelVenCondicionVenta;
     private LazyDataModel<BsTipoValor> lazyModelTipoValor;
+    private LazyDataModel<BsPersona> lazyPersonaList;
     List<CobSaldo> listaSaldoAGenerar;
     private List<CobCobrosValores> cobrosValoresList;
     public BigDecimal montoTotalCobro = BigDecimal.ZERO;
@@ -126,6 +128,9 @@ public class VenFacturasController {
     @Autowired
     private BsTipoValorService bsTipoValorServiceImpl;
 
+    @Autowired
+    private BsPersonaService bsPersonaServiceImpl;
+
     /**
      * Propiedad de la logica de negocio inyectada con JSF y Spring.
      */
@@ -168,6 +173,7 @@ public class VenFacturasController {
         this.cobCobrosValoresSelected = null;
         this.lazyModelTipoValor = null;
         this.parametrosReporte = null;
+        this.lazyPersonaList = null;
 
         this.esNuegoRegistro = true;
         this.estaCobrado = false;
@@ -391,6 +397,7 @@ public class VenFacturasController {
             cobCobrosValoresSelected.setFechaVencimiento(LocalDate.now());
             cobCobrosValoresSelected.setIndDepositadoBoolean(false);
             cobCobrosValoresSelected.setNroValor("0");
+            cobCobrosValoresSelected.setBsPersonaJuridica(new BsPersona());
             cobCobrosValoresSelected.setMontoValor(BigDecimal.ZERO);
             cobCobrosValoresSelected.setBsEmpresa(new BsEmpresa());
             cobCobrosValoresSelected.setBsTipoValor(new BsTipoValor());
@@ -464,6 +471,7 @@ public class VenFacturasController {
             List<VenFacturaCabecera> listaOrdenada = venFacturasServiceImpl
                     .buscarVenFacturaCabeceraActivosLista(this.commonsUtilitiesController.getIdEmpresaLogueada())
                     .stream()
+                    .filter(f -> !f.getTipoFactura().equalsIgnoreCase("NCR"))
                     .sorted(Comparator.comparing(VenFacturaCabecera::getFechaFactura).reversed()
                             .thenComparing(Comparator.comparing(VenFacturaCabecera::getNroFacturaCompleto).reversed()))
                     .collect(Collectors.toList());
@@ -569,6 +577,22 @@ public class VenFacturasController {
         this.lazyModelTipoValor = lazyModelTipoValor;
     }
 
+    public LazyDataModel<BsPersona> getLazyPersonaList() {
+        if (Objects.isNull(lazyPersonaList)) {
+            lazyPersonaList = new GenericLazyDataModel<BsPersona>(bsPersonaServiceImpl
+                    .buscarTodosLista()
+                    .stream()
+                    .filter(bsPersona -> bsPersona.getEsBanco())
+                    .collect(Collectors.toList()));
+        }
+        return lazyPersonaList;
+    }
+
+    public void setLazyPersonaList(LazyDataModel<BsPersona> lazyPersonaList) {
+        this.lazyPersonaList = lazyPersonaList;
+    }
+
+
     // SERVICES
     public VenFacturasService getVenFacturasServiceImpl() {
         return venFacturasServiceImpl;
@@ -664,6 +688,14 @@ public class VenFacturasController {
 
     public void setCobCobrosValoresServiceImpl(CobCobrosValoresService cobCobrosValoresServiceImpl) {
         this.cobCobrosValoresServiceImpl = cobCobrosValoresServiceImpl;
+    }
+
+    public BsPersonaService getBsPersonaServiceImpl() {
+        return bsPersonaServiceImpl;
+    }
+
+    public void setBsPersonaServiceImpl(BsPersonaService bsPersonaServiceImpl) {
+        this.bsPersonaServiceImpl = bsPersonaServiceImpl;
     }
 
     public BigDecimal getMontoTotalCobro() {
