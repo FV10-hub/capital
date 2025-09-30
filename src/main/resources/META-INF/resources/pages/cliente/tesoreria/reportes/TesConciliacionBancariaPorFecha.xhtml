@@ -1,0 +1,189 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
+    <ui:define name="title">Conciliacion Bancaria</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <script>
+			PrimeFaces.locales['es'] = {
+				closeText : 'Cerrar',
+				prevText : 'Anterior',
+				nextText : 'Siguiente',
+				monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+						'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+						'Noviembre', 'Diciembre' ],
+				monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+				dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles',
+						'Jueves', 'Viernes', 'Sábado' ],
+				dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie',
+						'Sab' ],
+				dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+				weekHeader : 'Semana',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Sólo hora',
+				timeText : 'Tiempo',
+				hourText : 'Hora',
+				minuteText : 'Minuto',
+				secondText : 'Segundo',
+				millisecondText : 'Milisegundo',
+				currentText : 'Fecha actual',
+				ampm : false,
+				month : 'Mes',
+				week : 'Semana',
+				day : 'Día',
+				allDayText : 'Todo el día',
+				today : 'Hoy',
+				clear : 'Claro'
+			};
+
+
+
+
+
+
+        
+            
+
+
+
+            </script>
+            <div class="grid crud-demo">
+                <div class="col-12">
+                    <p:growl id="messages" showDetail="true"/>
+                    <div class="card ui-fluid">
+                        <h5>Conciliacion Bancaria</h5>
+                        <div class="field grid">
+                            <p:outputLabel for="bancoLb"
+                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Banco
+                            </p:outputLabel>
+                            <div class="col-12 md:col-2">
+                                <p:inputText id="bancoLb" placeholder="Pulse F9 para seleccionar banco"
+                                             autocomplete="off"
+                                             value="#{rptTesConciliacionPorFechaController.bsPersonaJuridica.nombreCompleto}"
+                                             styleClass="ui-state-error"
+                                             onkeydown="if (event.keyCode == 120) {
+										PF('dlgBanco').show()
+									}"/>
+                            </div>
+                        </div>
+                        <div class="field grid">
+                            <p:outputLabel for="fecdesde"
+                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Desde
+                            </p:outputLabel>
+                            <div class="col-12 md:col-2">
+                                <p:datePicker id="fecdesde" autocomplete="off" showIcon="true"
+                                              value="#{rptTesConciliacionPorFechaController.fecDesde}"
+                                              pattern="dd/MM/yyyy"
+                                              showButtonBar="true"
+                                              mask="true"
+                                              showOnFocus="false">
+                                </p:datePicker>
+                            </div>
+                        </div>
+                        <div class="field grid">
+                            <p:outputLabel for="fechasta"
+                                           styleClass="col-12 mb-2 md:col-2 mb-md-0">Fecha Hasta
+                            </p:outputLabel>
+                            <div class="col-12 md:col-2">
+                                <p:datePicker id="fechasta" autocomplete="off" showIcon="true"
+                                              value="#{rptTesConciliacionPorFechaController.fecHasta}"
+                                              pattern="dd/MM/yyyy"
+                                              showButtonBar="true"
+                                              mask="true"
+                                              showOnFocus="false">
+                                </p:datePicker>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h5>Procesar</h5>
+                            <div class="formgroup-inline flex justify-content-between align-items-center flex-wrap">
+
+                                <div class="field col-4 md:col-1">
+                                    <p:outputLabel for="estadoLb" value="Estado"/>
+                                </div>
+                                <div class="field col-4 md:col-2 mr-7">
+                                    <p:selectOneMenu id="estadoLb"
+                                                     value="#{rptTesConciliacionPorFechaController.indConciliado}">
+                                        <f:selectItem itemLabel="Selecciona un Estado"
+                                                      itemValue="#{null}" noSelectionOption="true"/>
+                                        <f:selectItem itemLabel="CONCILIADO" itemValue="S"/>
+                                        <f:selectItem itemLabel="NO CONCILIADO" itemValue="N"/>
+                                    </p:selectOneMenu>
+                                </div>
+                                <div class="field col-4 md:col-2">
+                                    <p:outputLabel for="formato" value="Formato"/>
+                                </div>
+                                <div class="field col-4 md:col-2">
+                                    <p:selectOneMenu id="formato"
+                                                     value="#{rptTesConciliacionPorFechaController.parametrosReporte.formato}">
+                                        <f:selectItem itemLabel="Selecciona un formato"
+                                                      itemValue="#{null}" noSelectionOption="true"/>
+                                        <f:selectItem itemLabel="PDF" itemValue="PDF"/>
+                                        <f:selectItem itemLabel="XLS" itemValue="XLS"/>
+                                    </p:selectOneMenu>
+                                </div>
+                                <div class="field col-4 md:col-2">
+                                    <p:commandButton ajax="false" value="Generar" id="btnGuardar"
+                                                     disabled="#{rptTesConciliacionPorFechaController.bsPersonaJuridica.id == null}"
+                                                     icon="pi pi-cloud-download"
+                                                     actionListener="#{rptTesConciliacionPorFechaController.downloadReport}"
+                                                     styleClass="ui-button-info"/>
+                                </div>
+                                <div class="field col-4 md:col-2">
+                                    <p:commandButton value="Limpiar"
+                                                     icon="pi pi-sync"
+                                                     update=":form"
+                                                     actionListener="#{rptTesConciliacionPorFechaController.cleanFields}"
+                                                     styleClass="ui-button-warning ml-2"/>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <p:dialog widgetVar="dlgBanco" header="Buscar Persona"
+                          width="850" showEffect="fade" modal="true">
+                    <p:dataTable widgetVar="dtPersona" var="persona"
+                                 value="#{rptTesConciliacionPorFechaController.lazyPersonaList}" id="dt-persona"
+                                 paginator="true" rows="10" paginatorPosition="bottom"
+                                 emptyMessage="No hay Registros">
+                        <f:facet name="header">
+                            <div class="products-table-header">
+										<span class="filter-container ui-input-icon-left"> <i
+                                                class="pi pi-search"></i> <p:inputText id="globalFilter"
+                                                                                       onkeyup="PF('dtPersona').filter()"
+                                                                                       placeholder="Buscar..."/>
+										</span>
+                            </div>
+                        </f:facet>
+                        <p:column style="width:3rem;text-align: center">
+                            <p:commandButton oncomplete="PF('dlgBanco').hide()"
+                                             icon="pi pi-check-circle" title="Seleccionar"
+                                             update=":form:bancoLb :form:btnGuardar">
+                                <f:setPropertyActionListener value="#{persona}"
+                                                             target="#{rptTesConciliacionPorFechaController.bsPersonaJuridica}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
+                                  filterBy="#{persona.nombreCompleto}">
+                            <h:outputText value="#{persona.nombreCompleto}"/>
+                        </p:column>
+                        <p:column headerText="Documento" sortBy="#{persona.documento}"
+                                  filterBy="#{persona.documento}">
+                            <h:outputText value="#{persona.documento}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog>
+            </div>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
