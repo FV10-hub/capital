@@ -3,8 +3,10 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
-    <h:head>
-        <script>
+    <ui:define name="title">Depositos</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <script>
 			PrimeFaces.locales['es'] = {
 				closeText : 'Cerrar',
 				prevText : 'Anterior',
@@ -43,10 +45,6 @@
 
 
         </script>
-    </h:head>
-    <ui:define name="title">Depositos</ui:define>
-    <ui:define name="content">
-        <h:form id="form">
             <div class="grid crud-demo">
                 <div class="col-12">
                     <div class="card">
