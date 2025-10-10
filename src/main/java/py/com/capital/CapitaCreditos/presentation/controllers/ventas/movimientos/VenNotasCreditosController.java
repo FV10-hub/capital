@@ -390,7 +390,7 @@ public class VenNotasCreditosController {
         if (Objects.isNull(parametrosReporte)) {
             parametrosReporte = new ParametrosReporte();
             parametrosReporte.setCodModulo(Modulos.VENTAS.getModulo());
-            parametrosReporte.setReporte("VenFactura");
+            parametrosReporte.setReporte("VenNotaCredito");
             parametrosReporte.setFormato("PDF");
         }
         return parametrosReporte;

@@ -275,7 +275,7 @@
                                                                styleClass="col-12 mb-2 md:col-6 mb-md-0">Talonario
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
-                                                    <p:inputText id="talonarioLb"
+                                                    <p:inputText id="talonarioLb" disabled="true"
                                                                  placeholder="Pulse F9 para buscar"
                                                                  value="#{venFacturasController.venFacturaCabecera.bsTalonario.bsTipoComprobante.descripcion}"
                                                                  onkeydown="if (event.keyCode == 120) {
@@ -291,7 +291,7 @@
                                                 </p:outputLabel>
                                                 <div class="col-12 md:col-6">
                                                     <p:inputText id="condicionLb"
-                                                                 placeholder="Pulse F9 para buscar"
+                                                                 placeholder="Pulse F9 para buscar" disabled="true"
                                                                  value="#{venFacturasController.venFacturaCabecera.venCondicionVenta.descripcion}"
                                                                  onkeydown="if (event.keyCode == 120) {
 						                                             PF('dlgConVenta').show()

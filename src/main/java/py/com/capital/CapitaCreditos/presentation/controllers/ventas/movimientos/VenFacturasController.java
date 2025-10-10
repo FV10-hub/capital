@@ -187,6 +187,19 @@ public class VenFacturasController {
     public VenFacturaCabecera getVenFacturaCabecera() {
         if (Objects.isNull(venFacturaCabecera)) {
             this.estaCobrado = false;
+            //TODO: seteo los valores de condicion y talonario por defecto en duro, cambiar esto si se quiere hacer facturacion flexible
+            var moduloVentas = this.bsModuloServiceImpl.findByCodigo(Modulos.VENTAS.getModulo());
+            this.bsTalonarioSelected = this.commonsUtilitiesController.bsTalonarioPorModuloLista(
+                            this.commonsUtilitiesController.getIdEmpresaLogueada(), moduloVentas.getId())
+                    .stream()
+                    .filter(t -> t.getBsTipoComprobante().getCodTipoComprobante().equalsIgnoreCase("CRE"))
+                    .findFirst().orElse(new BsTalonario());
+            var condicionAux = this.venCondicionVentaServiceImpl.buscarVenCondicionVentaActivosLista(this.commonsUtilitiesController.getIdEmpresaLogueada())
+                    .stream()
+                    .filter(con -> con.getCodCondicion().equalsIgnoreCase("CREDES") &&
+                            con.getBsEmpresa().getId() == this.commonsUtilitiesController.getIdEmpresaLogueada())
+                    .findFirst()
+                    .orElse(new VenCondicionVenta());
             venFacturaCabecera = new VenFacturaCabecera();
             venFacturaCabecera.setFechaFactura(LocalDate.now());
             venFacturaCabecera.setIndCobrado("N");
@@ -194,10 +207,8 @@ public class VenFacturasController {
             venFacturaCabecera.setTipoFactura("FACTURA");
             venFacturaCabecera.setEstado(Estado.ACTIVO.getEstado());
             venFacturaCabecera.setBsEmpresa(new BsEmpresa());
-            venFacturaCabecera.setVenCondicionVenta(new VenCondicionVenta());
-            venFacturaCabecera.setVenCondicionVenta(new VenCondicionVenta());
-            venFacturaCabecera.setBsTalonario(new BsTalonario());
-            venFacturaCabecera.getBsTalonario().setBsTipoComprobante(new BsTipoComprobante());
+            venFacturaCabecera.setVenCondicionVenta(condicionAux);
+            venFacturaCabecera.setBsTalonario(this.bsTalonarioSelected);
             venFacturaCabecera.setCobCliente(new CobCliente());
             venFacturaCabecera.getCobCliente().setBsPersona(new BsPersona());
             venFacturaCabecera.setVenVendedor(new VenVendedor());
