@@ -8,48 +8,6 @@
     <ui:define name="title">Notas de Creditos</ui:define>
     <ui:define name="content">
         <h:form id="form">
-            <script type="text/javascript">
-				window.onload = function() {
-					// Esperar hasta que se complete la carga dinámica del botón
-					const observer = new MutationObserver(function(mutations) {
-						mutations.forEach(function(mutation) {
-							// Verificar si el botón está ahora en el DOM
-							const boton = document
-									.getElementById('form:btnImprimirReporte');
-							if (boton) {
-								console.log('Botón encontrado:', boton);
-								boton.addEventListener('click', function() {
-									console.log('PASOO');
-									setTimeout(function() {
-										PF('imprimirDialog').hide();
-										PrimeFaces.current().ajax().update(
-												':form:messages',
-												':form:dt-facturas');
-									}, 2000);
-								});
-
-								observer.disconnect(); // Detener la observación después de encontrar el botón
-							}
-						});
-					});
-					observer.observe(document.body, {
-						childList : true,
-						subtree : true
-					});
-
-				};
-
-
-
-
-
-
-
-
-
-
-            
-            </script>
             <div class="grid crud-demo">
                 <div class="col-12">
                     <div class="card">
@@ -147,8 +105,8 @@
                                                      style="margin-right: .5rem"/>
                                     <p:commandButton
                                             value="#{venNotasCreditosController.venFacturaCabecera.indImpresoBoolean ? 'Impreso' : 'Imprimir'}"
-                                            id="btnImprimir" onclick="PF('imprimirDialog').show()"
-                                            disabled="#{venNotasCreditosController.venFacturaCabecera.indImpresoBoolean}"
+                                            id="btnImprimirNCR"
+                                            onclick="PF('imprimirDialog').show()"
                                             icon="pi pi-file-pdf" styleClass="ui-button-warning"
                                             style="margin-right: .5rem"/>
                                     <p:commandButton value="Eliminar" icon="pi pi-trash"
@@ -479,11 +437,15 @@
                                              onclick="PF('deleteFacturaDialog').hide()"/>
                         </p:confirmDialog>
 
+                        <p:remoteCommand name="rc" update=":form:messages"
+                                         action="#{venNotasCreditosController.execute}"/>
                         <p:confirmDialog widgetVar="imprimirDialog" showEffect="fade"
                                          width="300" message="Esta seguro que desea Imprimir?"
                                          header="Confirmacion" severity="warn">
-                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
-                                             id="btnImprimirReporte" onclick="handleImprimirButtonClick();"
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             ajax="false"
+                                             id="btnImprimir"
+                                             onclick="actualizarCampos();"
                                              actionListener="#{venNotasCreditosController.imprimir}">
                             </p:commandButton>
                             <p:commandButton value="No" type="button"
@@ -495,12 +457,38 @@
                 </div>
             </div>
             <script>
-				function handleImprimirButtonClick() {
-					setTimeout(function() {
-						PF('imprimirDialog').hide();
-						window.location.reload();
-					}, 4000);
-				}
+				function actualizarCampos() {
+                    var buttonId = 'form:btnImprimirNCR';
+
+                    var button = document.getElementById(buttonId);
+                    if (button) {
+                        button.disabled = true;
+
+                        button.classList.remove('ui-state-default');
+                        button.classList.remove('ui-state-hover');
+                        button.classList.remove('ui-state-active');
+                        button.classList.add('ui-state-disabled');
+
+                        var iconSpan = button.querySelector('.ui-button-icon-left');
+                        if (iconSpan) {
+                            iconSpan.style.opacity = '0.5';
+                        }
+
+                        var textSpan = button.querySelector('.ui-button-text');
+                        if (textSpan) {
+                            textSpan.style.opacity = '0.5';
+                        }
+
+                        button.style.cursor = 'not-allowed';
+
+                        button.onclick = null;
+                        button.setAttribute('onclick', 'return false;');
+                    }
+                    PF('imprimirDialog').hide();
+
+                    rc();
+
+                }
 				PrimeFaces.locales['es'] = {
 						closeText : 'Cerrar',
 						prevText : 'Anterior',
@@ -535,6 +523,7 @@
 						today : 'Hoy',
 						clear : 'Claro'
 					};
+
 
             </script>
         </h:form>

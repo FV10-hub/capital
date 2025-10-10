@@ -8,38 +8,6 @@
     <ui:define name="title">Facturas Venta</ui:define>
     <ui:define name="content">
         <h:form id="form">
-            <script type="text/javascript">
-				window.onload = function() {
-					// Esperar hasta que se complete la carga dinámica del botón
-					const observer = new MutationObserver(function(mutations) {
-						mutations.forEach(function(mutation) {
-							// Verificar si el botón está ahora en el DOM
-							const boton = document
-									.getElementById('form:btnImprimirReporte');
-							if (boton) {
-								console.log('Botón encontrado:', boton);
-								boton.addEventListener('click', function() {
-									console.log('PASOO');
-									setTimeout(function() {
-										PF('imprimirDialog').hide();
-										PrimeFaces.current().ajax().update(
-												':form:messages',
-												':form:dt-facturas');
-									}, 2000);
-								});
-
-								observer.disconnect(); // Detener la observación después de encontrar el botón
-							}
-						});
-					});
-					observer.observe(document.body, {
-						childList : true,
-						subtree : true
-					});
-
-				};
-
-            </script>
             <div class="grid crud-demo">
                 <div class="col-12">
                     <div class="card">
@@ -48,7 +16,7 @@
                                    rendered="#{not venFacturasController.esVisibleFormulario}">
                             <p:toolbarGroup>
                                 <p:commandButton value="Nuevo" icon="pi pi-plus" id="btnNuevo"
-												 disabled="#{not bsPermisoRolController.puedeCrear}"
+                                                 disabled="#{not bsPermisoRolController.puedeCrear}"
                                                  actionListener="#{venFacturasController.setEsVisibleFormulario(true)}"
                                                  update=":form" styleClass="ui-button-success"
                                                  style="margin-right: .5rem"/>
@@ -118,7 +86,7 @@
                                                                  target="#{venFacturasController.venFacturaCabeceraSelected}"/>
                                 </p:commandButton>
                                 <p:commandButton class="ui-button-danger rounded-button"
-												 disabled="#{not venFacturasController.puedeEliminar}"
+                                                 disabled="#{not venFacturasController.puedeEliminar}"
                                                  icon="pi pi-trash"
                                                  oncomplete="PF('deleteFacturaDialog').show()">
                                     <f:setPropertyActionListener value="#{factura}"
@@ -153,8 +121,8 @@
                                             styleClass="ui-button-primary" style="margin-right: .5rem"/>
                                     <p:commandButton
                                             value="#{venFacturasController.venFacturaCabecera.indImpresoBoolean ? 'Impreso' : 'Imprimir'}"
-                                            id="btnImprimir" onclick="PF('imprimirDialog').show()"
-                                            disabled="#{venFacturasController.venFacturaCabecera.indImpresoBoolean}"
+                                            id="btnImprimirFAC"
+                                            onclick="PF('imprimirDialog').show()"
                                             icon="pi pi-file-pdf" styleClass="ui-button-warning"
                                             style="margin-right: .5rem"/>
                                     <p:commandButton value="Eliminar" icon="pi pi-trash"
@@ -918,7 +886,8 @@
                                     <div class="products-table-header">
 										<span class="filter-container ui-input-icon-left"> <i
                                                 class="pi pi-search"></i> <p:inputText id="globalFilter"
-                                                                                       onkeyup="PF('dtPersona').filter()" placeholder="Buscar..." />
+                                                                                       onkeyup="PF('dtPersona').filter()"
+                                                                                       placeholder="Buscar..."/>
 										</span>
                                     </div>
                                 </f:facet>
@@ -927,16 +896,16 @@
                                                      icon="pi pi-check-circle" title="Seleccionar"
                                                      update=":form:bancoLb">
                                         <f:setPropertyActionListener value="#{persona}"
-                                                                     target="#{venFacturasController.cobCobrosValoresSelected.bsPersonaJuridica}" />
+                                                                     target="#{venFacturasController.cobCobrosValoresSelected.bsPersonaJuridica}"/>
                                     </p:commandButton>
                                 </p:column>
                                 <p:column headerText="Nombre" sortBy="#{persona.nombreCompleto}"
                                           filterBy="#{persona.nombreCompleto}">
-                                    <h:outputText value="#{persona.nombreCompleto}" />
+                                    <h:outputText value="#{persona.nombreCompleto}"/>
                                 </p:column>
                                 <p:column headerText="Documento" sortBy="#{persona.documento}"
                                           filterBy="#{persona.documento}">
-                                    <h:outputText value="#{persona.documento}" />
+                                    <h:outputText value="#{persona.documento}"/>
                                 </p:column>
                             </p:dataTable>
                         </p:dialog>
@@ -1029,11 +998,15 @@
                                              onclick="PF('deleteFacturaDialog').hide()"/>
                         </p:confirmDialog>
 
+                        <p:remoteCommand name="rc" update=":form:messages"
+                                         action="#{venFacturasController.execute}"/>
                         <p:confirmDialog widgetVar="imprimirDialog" showEffect="fade"
                                          width="300" message="Esta seguro que desea Imprimir?"
                                          header="Confirmacion" severity="warn">
-                            <p:commandButton value="Si" icon="pi pi-check" ajax="false"
-                                             id="btnImprimirReporte" onclick="handleImprimirButtonClick();"
+                            <p:commandButton value="Si" icon="pi pi-check"
+                                             ajax="false"
+                                             id="btnImprimir"
+                                             onclick="actualizarCampos();"
                                              actionListener="#{venFacturasController.imprimir}">
                             </p:commandButton>
                             <p:commandButton value="No" type="button"
@@ -1044,12 +1017,38 @@
                 </div>
             </div>
             <script>
-				function handleImprimirButtonClick() {
-					setTimeout(function() {
-						PF('imprimirDialog').hide();
-						window.location.reload();
-					}, 4000);
-				}
+                function actualizarCampos() {
+                    var buttonId = 'form:btnImprimirFAC';
+
+                    var button = document.getElementById(buttonId);
+                    if (button) {
+                        button.disabled = true;
+
+                        button.classList.remove('ui-state-default');
+                        button.classList.remove('ui-state-hover');
+                        button.classList.remove('ui-state-active');
+                        button.classList.add('ui-state-disabled');
+
+                        var iconSpan = button.querySelector('.ui-button-icon-left');
+                        if (iconSpan) {
+                            iconSpan.style.opacity = '0.5';
+                        }
+
+                        var textSpan = button.querySelector('.ui-button-text');
+                        if (textSpan) {
+                            textSpan.style.opacity = '0.5';
+                        }
+
+                        button.style.cursor = 'not-allowed';
+
+                        button.onclick = null;
+                        button.setAttribute('onclick', 'return false;');
+                    }
+                    PF('imprimirDialog').hide();
+
+                    rc();
+
+                }
 				PrimeFaces.locales['es'] = {
 						closeText : 'Cerrar',
 						prevText : 'Anterior',
@@ -1084,6 +1083,7 @@
 						today : 'Hoy',
 						clear : 'Claro'
 					};
+
 
             </script>
         </h:form>

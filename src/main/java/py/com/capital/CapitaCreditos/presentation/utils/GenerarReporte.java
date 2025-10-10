@@ -52,7 +52,7 @@ public class GenerarReporte {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 // Configura las cabeceras de la respuesta JSF
                 ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-                externalContext.responseReset();
+                //descomentar si hay error de que no termino la descarga externalContext.responseReset();
 
                 String contentType = response.getHeaders().getContentType().toString();
                 String contentDisposition = response.getHeaders()

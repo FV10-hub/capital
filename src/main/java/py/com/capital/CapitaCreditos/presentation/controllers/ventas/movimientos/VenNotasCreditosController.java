@@ -965,4 +965,11 @@ public class VenNotasCreditosController {
         return null;
     }
 
+    public void execute() {
+        CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "¡EXITOSO!",
+                "Se imprimio correctamente.");
+        PrimeFaces.current().ajax().update(":form:messages");
+    }
+
+
 }

@@ -28,20 +28,20 @@ services:
     networks:
       - app-network
 
-#  capital-reportes:
-#    build:
-#      context: ../reportes-spring
-#      dockerfile: Dockerfile
-#    image: capital/reportes:latest
-#    container_name: capital-reportes
-#    env_file:
-#      - ./.env
-#    ports:
-#      - "8080:8080"
-#    volumes:
-#      - reportes-data:/app/jasper
-#    networks:
-#      - app-network
+  capital-reportes:
+    build:
+      context: ../reportes-spring
+      dockerfile: Dockerfile
+    image: capital/reportes:latest
+    container_name: capital-reportes
+    env_file:
+      - ./.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - reportes-data:/app/jasper
+    networks:
+      - app-network
 
 volumes:
   reportes-data:
