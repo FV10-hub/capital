@@ -90,7 +90,7 @@
                                     </div>
                                     <div class="field">
                                         <p:outputLabel for="personalb">Persona</p:outputLabel>
-                                        <p:inputText id="personalb" placeholder="Pulse F9 para buscar"
+                                        <p:inputText id="personalb" placeholder="Pulse F9 para buscar" autocomplete="off"
                                                      value="#{venVendedorController.venVendedor.bsPersona.nombreCompleto}"
                                                      onkeydown="if (event.keyCode == 120) {
                                              PF('dlgPersona').show()

@@ -127,7 +127,7 @@
                                                            styleClass="col-12 mb-2 md:col-4 mb-md-0">Cliente
                                             </p:outputLabel>
                                             <div class="col-12 md:col-8">
-                                                <p:inputText id="clienteLb"
+                                                <p:inputText id="clienteLb" autocomplete="off"
                                                              placeholder="Pulse F9 para buscar"
                                                              value="#{venNotasCreditosController.venFacturaCabecera.cobCliente.bsPersona.nombreCompleto}"
                                                              onkeydown="if (event.keyCode == 120) {
@@ -141,7 +141,7 @@
                                                 Asociado
                                             </p:outputLabel>
                                             <div class="col-12 md:col-6">
-                                                <p:inputText id="nroComprobanteLb"
+                                                <p:inputText id="nroComprobanteLb" autocomplete="off"
                                                              placeholder="Pulse F9 para buscar"
                                                              value="#{venNotasCreditosController.venFacturaCabecera.idComprobante}"
                                                              onkeydown="if (event.keyCode == 120) {
@@ -385,7 +385,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgCliente" header="Buscar Clientes"
-                                  width="650" showEffect="fade" modal="true">
+                                  width="850" showEffect="fade" modal="true">
                             <p:dataTable widgetVar="dtCliente" var="cliente"
                                          value="#{venNotasCreditosController.lazyModelCliente}"
                                          id="dt-cliente" paginator="true" rows="10"

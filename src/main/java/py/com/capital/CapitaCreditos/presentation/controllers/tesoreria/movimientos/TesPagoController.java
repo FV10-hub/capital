@@ -602,8 +602,6 @@ public class TesPagoController {
                             .buscarCreDesembolsoParaPagosTesoreriarLista(
                                     this.commonsUtilitiesController.getIdEmpresaLogueada(),
                                     this.cobClienteSelected.getId()).stream()
-                            .filter(desembolso -> desembolso.getIndFacturado().equalsIgnoreCase("N") &&
-                                    desembolso.getIndDesembolsado().equalsIgnoreCase("N"))
                             .collect(Collectors.toList());
                 }
             } else {

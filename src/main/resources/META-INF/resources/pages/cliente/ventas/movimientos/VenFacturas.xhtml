@@ -144,7 +144,7 @@
                                                 Asociado(opcional)
                                             </p:outputLabel>
                                             <div class="col-12 md:col-6">
-                                                <p:inputText id="nroDesembolsoLb"
+                                                <p:inputText id="nroDesembolsoLb" autocomplete="off"
                                                              placeholder="Pulse F9 para buscar"
                                                              value="#{venFacturasController.venFacturaCabecera.idComprobante}"
                                                              onkeydown="if (event.keyCode == 120) {
@@ -453,7 +453,7 @@
 
 
                         <p:dialog widgetVar="dlgDesembolso" header="Buscar Desembolso"
-                                  width="800" showEffect="fade" modal="true">
+                                  width="900" showEffect="fade" modal="true">
                             <p:dataTable widgetVar="dtDesembolso" var="desembolso"
                                          value="#{venFacturasController.lazyModelDesembolso}"
                                          id="dt-desembolso" paginator="true" rows="10"
@@ -510,7 +510,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgCliente" header="Buscar Clientes"
-                                  width="650" showEffect="fade" modal="true">
+                                  width="850" showEffect="fade" modal="true">
                             <p:dataTable widgetVar="dtCliente" var="cliente"
                                          value="#{venFacturasController.lazyModelCliente}"
                                          id="dt-cliente" paginator="true" rows="10"
@@ -550,7 +550,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgVendedor" header="Buscar Vendedor"
-                                  width="650" showEffect="fade" modal="true">
+                                  width="850" showEffect="fade" modal="true">
                             <p:dataTable id="dt-vendedor" widgetVar="dtVenVendedor"
                                          var="vendedor"
                                          value="#{venFacturasController.lazyModelVenVendedor}"
@@ -591,7 +591,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgTalonario" header="Buscar Talonario"
-                                  width="650" showEffect="fade" modal="true">
+                                  width="850" showEffect="fade" modal="true">
                             <p:dataTable widgetVar="dtTalonario" var="talonario"
                                          value="#{venFacturasController.lazyModelTalonario}"
                                          id="dt-talonario" paginator="true" rows="10"
@@ -639,7 +639,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgArticulo" header="Buscar Articulo"
-                                  width="650" showEffect="fade" modal="true">
+                                  width="850" showEffect="fade" modal="true">
                             <p:dataTable widgetVar="dtArticulo" var="articulo"
                                          value="#{venFacturasController.lazyModelArticulos}"
                                          id="dt-articulo" paginator="true" rows="10"
@@ -685,7 +685,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgConVenta" header="Buscar Condicion Venta"
-                                  width="650" showEffect="fade" modal="true">
+                                  width="850" showEffect="fade" modal="true">
                             <p:dataTable id="dt-condicion" widgetVar="dtVenCondicion"
                                          var="condicion"
                                          value="#{venFacturasController.lazyModelVenCondicionVenta}"
@@ -877,7 +877,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgBanco" header="Buscar Persona"
-                                  width="650" showEffect="fade" modal="true">
+                                  width="850" showEffect="fade" modal="true">
                             <p:dataTable widgetVar="dtPersona" var="persona"
                                          value="#{venFacturasController.lazyPersonaList}" id="dt-persona"
                                          paginator="true" rows="10" paginatorPosition="bottom"

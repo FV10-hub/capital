@@ -72,17 +72,17 @@
 								<p:outputPanel>
 									<div class="field">
 										<p:outputLabel for="label">Nombre Fantasia</p:outputLabel>
-										<p:inputText id="label"
+										<p:inputText id="label" autocomplete="off"
 											value="#{bsEmpresaController.bsEmpresa.nombreFantasia}"/>
 									</div>
 									<div class="field">
 										<p:outputLabel for="direccion">Direccion</p:outputLabel>
-										<p:inputText id="direccion"
+										<p:inputText id="direccion" autocomplete="off"
 											value="#{bsEmpresaController.bsEmpresa.direcEmpresa}" />
 									</div>
 									<div class="field">
 										<p:outputLabel for="personalb">Representante Legal</p:outputLabel>
-										<p:inputText id="personalb" placeholder="Pulse F9 para buscar"
+										<p:inputText id="personalb" placeholder="Pulse F9 para buscar" autocomplete="off"
 											value="#{bsEmpresaController.bsEmpresa.bsPersona.nombreCompleto}"
 											onkeydown="if (event.keyCode == 120) {
                                              PF('dlgPersona').show()

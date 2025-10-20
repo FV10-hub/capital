@@ -78,12 +78,12 @@
 								<p:outputPanel>
 									<div class="field">
 										<p:outputLabel for="label">Codigo</p:outputLabel>
-										<p:inputText id="label"
+										<p:inputText id="label" autocomplete="off"
 											value="#{bsTipoComprobanteController.bsTipoComprobante.codTipoComprobante}" />
 									</div>
 									<div class="field">
 										<p:outputLabel for="direccion">Descripcion</p:outputLabel>
-										<p:inputText id="direccion"
+										<p:inputText id="direccion" autocomplete="off"
 											value="#{bsTipoComprobanteController.bsTipoComprobante.descripcion}" />
 									</div>
 									<div class="field flex flex-column">
@@ -93,7 +93,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="modulolb">Modulo</p:outputLabel>
-										<p:inputText id="modulolb" placeholder="Pulse F9 para buscar"
+										<p:inputText id="modulolb" placeholder="Pulse F9 para buscar" autocomplete="off"
 											value="#{bsTipoComprobanteController.bsTipoComprobante.bsModulo.nombre}"
 											onkeydown="if (event.keyCode == 120) {
                                              PF('dlgModulo').show()

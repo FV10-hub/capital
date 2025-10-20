@@ -84,7 +84,7 @@
 								<p:outputPanel>
 									<div class="field">
 										<p:outputLabel for="timbradoLb">Timbrado</p:outputLabel>
-										<p:inputText id="timbradoLb"
+										<p:inputText id="timbradoLb" autocomplete="off"
 											placeholder="Pulse F9 para buscar"
 											value="#{bsTalonarioController.bsTalonario.bsTimbrado.nroTimbrado}"
 											onkeydown="if (event.keyCode == 120) {
@@ -93,7 +93,7 @@
 									</div>
 									<div class="field">
 										<p:outputLabel for="comprobanteLb">Tipo Comprobante</p:outputLabel>
-										<p:inputText id="comprobanteLb"
+										<p:inputText id="comprobanteLb" autocomplete="off"
 											placeholder="Pulse F9 para buscar"
 											value="#{bsTalonarioController.bsTalonario.bsTipoComprobante.descripcion}"
 											onkeydown="if (event.keyCode == 120) {

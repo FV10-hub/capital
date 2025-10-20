@@ -353,7 +353,7 @@ public class LoginController implements Serializable {
         modelo.put("nombreEmpresa", "CapitalSys");
         modelo.put("nombreUsuario", bsUsuario.getBsPersona().getNombreCompleto());
         modelo.put("codigo", hash);
-        boolean envioExitoso = true;//emailService.sendEmail(generarRequest(bsUsuario.getBsPersona().getEmail(), modelo), "email-template.html");
+        boolean envioExitoso = emailService.sendEmail(generarRequest(bsUsuario.getBsPersona().getEmail(), modelo), "email-template.html");
         if (!envioExitoso) {
             CommonUtils.mostrarMensaje(FacesMessage.SEVERITY_INFO, "NO SE ENVIO",
                     "Algo salio mal contacte con el Administrador: " + this.correoParaRecuperacion);

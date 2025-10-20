@@ -3,8 +3,10 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui" template="/templates/template.xhtml">
-    <h:head>
-        <script>
+    <ui:define name="title">Desembolsos de Creditos</ui:define>
+    <ui:define name="content">
+        <h:form id="form">
+            <script>
 
         function handleImprimirButtonClick() {
 					setTimeout(function() {
@@ -66,10 +68,6 @@
 
 
         </script>
-    </h:head>
-    <ui:define name="title">Desembolsos de Creditos</ui:define>
-    <ui:define name="content">
-        <h:form id="form">
             <div class="grid crud-demo">
                 <div class="col-12">
                     <div class="card">
@@ -496,7 +494,7 @@
 
                         <!-- DIALOGOS -->
                         <p:dialog widgetVar="dlgSolicitud" header="Buscar Solicitud"
-                                  width="800" showEffect="fade" modal="true">
+                                  width="850" showEffect="fade" modal="true">
                             <p:dataTable widgetVar="wdlgSolicitud" var="solicitud"
                                          value="#{creDesembolsoController.lazyModelSolicitudes}"
                                          id="dt-solicitud" paginator="true" rows="10"
@@ -543,7 +541,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgTipoAmort"
-                                  header="Buscar Tipo Amortizacion" width="650" showEffect="fade"
+                                  header="Buscar Tipo Amortizacion" width="850" showEffect="fade"
                                   modal="true">
                             <p:dataTable widgetVar="wdlgTipoAmort" var="tipoAmort"
                                          value="#{creDesembolsoController.lazyModelTipoAmortizacion}"
@@ -570,7 +568,7 @@
                         </p:dialog>
 
                         <p:dialog widgetVar="dlgTalonario" header="Buscar Talonario"
-                                  width="650" showEffect="fade" modal="true">
+                                  width="850" showEffect="fade" modal="true">
                             <p:dataTable widgetVar="wdlgTalonario" var="talonario"
                                          value="#{creDesembolsoController.lazyModelTalonario}"
                                          id="dt-talonario" paginator="true" rows="10"

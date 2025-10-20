@@ -82,12 +82,12 @@
 								<p:outputPanel>
 									<div class="field">
 										<p:outputLabel for="label">Codigo</p:outputLabel>
-										<p:inputText id="label"
+										<p:inputText id="label" autocomplete="off"
 											value="#{bsUsuarioController.bsUsuario.codUsuario}" />
 									</div>
 									<div class="field">
 										<p:outputLabel for="pass">Contraseña</p:outputLabel>
-										<p:password id="pass"
+										<p:password id="pass" autocomplete="off"
 											value="#{bsUsuarioController.bsUsuario.password}" />
 									</div>
 									<div class="field">
@@ -140,7 +140,7 @@
 						</p:dialog>
 
 						<p:dialog widgetVar="dlgPersona" header="Buscar Persona"
-							width="650" showEffect="fade" modal="true">
+							width="850" showEffect="fade" modal="true">
 							<p:dataTable widgetVar="wdlgPersona" var="persona"
 								value="#{bsUsuarioController.lazyPersonaList}" id="dt-persona"
 								paginator="true" rows="10" paginatorPosition="bottom"
